@@ -20,6 +20,10 @@ function C:init(source)
 	-- Set our game paused paramter
 	-- This determines if actions should be held until the game is un-paused again.
 	self._pause_held = false
+
+	-- Set initial values for the gain and raw gain
+	self._gain = 1
+	self._raw_gain = 1
 end
 
 function C:close()
@@ -91,6 +95,24 @@ function C:set_direction(...)
 	self._source:setdirection(process_vector(...))
 end
 
+function C:set_volume(gain)
+	if gain > 1 then
+		error("Cannot set gain to more than 1")
+	elseif gain < 0 then
+		error("Cannot set gain to less than 0")
+	end
+
+	self._gain = gain
+end
+
+function C:get_volume()
+	return self._gain
+end
+
+function C:get_raw_volume()
+	return self._raw_gain
+end
+
 function C:update(t, dt, paused)
 	-- Pause/unpause this source when the game is paused/unpaused
 	if paused ~= self._pause_held and self:is_active() then
@@ -104,4 +126,14 @@ function C:update(t, dt, paused)
 			self._queue_paused = false
 		end
 	end
+
+	local last_gain = self._raw_gain
+	self:_compute_gains()
+	if self._raw_gain ~= last_gain then
+		self._source:setgain(self._raw_gain)
+	end
+end
+
+function C:_compute_gains()
+	self._raw_gain = self._gain * XAudio._base_gains.sfx
 end

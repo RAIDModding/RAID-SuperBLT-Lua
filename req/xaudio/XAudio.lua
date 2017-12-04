@@ -1,6 +1,10 @@
 _G.XAudio = {}
 XAudio._sources = {}
 XAudio._next_source_id = 1
+XAudio._base_gains = {
+	sfx = 1,
+	music = 1
+}
 
 BLT:Require("req/xaudio/XAudioBuffer")
 BLT:Require("req/xaudio/XAudioSource")
@@ -15,6 +19,9 @@ blt.xaudio.setworldscale(300)
 blt.xaudio.reset()
 
 local function update(t, dt, paused)
+	XAudio._base_gains.music = managers.user:get_setting("music_volume") / 100
+	XAudio._base_gains.sfx = managers.user:get_setting("sfx_volume") / 100
+
 	for id, src in pairs(XAudio._sources) do
 		src:update(t, dt, paused)
 	end
