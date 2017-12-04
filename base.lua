@@ -52,6 +52,7 @@ BLT:Require("req/BLTLocalization")
 BLT:Require("req/BLTNotificationsManager")
 BLT:Require("req/BLTPersistScripts")
 BLT:Require("req/BLTKeybindsManager")
+BLT:Require("req/xaudio/XAudio")
 
 -- BLT base functions
 function BLT:Initialize()
