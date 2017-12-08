@@ -1,4 +1,9 @@
 _G.XAudio = {}
+
+-- Constants
+XAudio.PLAYER = "xa_player_1"
+
+-- Variables
 XAudio._sources = {}
 XAudio._next_source_id = 1
 XAudio._base_gains = {
@@ -8,6 +13,7 @@ XAudio._base_gains = {
 
 BLT:Require("req/xaudio/XAudioBuffer")
 BLT:Require("req/xaudio/XAudioSource")
+BLT:Require("req/xaudio/XAudioUnitSource")
 
 -- This is our wu-to-meters conversion
 -- You can get it using blt.xaudio.getworldscale() if you need to use it

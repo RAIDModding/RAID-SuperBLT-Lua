@@ -5,8 +5,19 @@ local l = blt.xaudio.listener
 local mvec_cam_fwd = Vector3()
 local mvec_cam_up = Vector3()
 
+--[[local buffer = XAudio.Buffer:new("test.ogg")
+local source = XAudio.UnitSource:new(XAudio.PLAYER)
+source:set_buffer(buffer)--]]
+
 Hooks:PostHook(PlayerMovement, "update", "XAudioUpdateListenerPosition", function(self, unit, t, dt)
+	XAudio._player_unit = self._unit
+
 	if not blt.xaudio.issetup() then return end
+
+	--[[if source:get_state() ~= XAudio.Source.PLAYING then
+		source:play()
+		log("Playing")
+	end--]]
 
 	local pos = self:m_stand_pos()
 	l:setposition(pos.x, pos.y, pos.z)
