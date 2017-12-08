@@ -2,12 +2,6 @@
 
 local l = blt.xaudio.listener
 
-local buff = XAudio.Buffer:new("test.ogg")
-local src = XAudio.Source:new()
-src:set_buffer(buff)
-
-local last_played = 0
-
 local mvec_cam_fwd = Vector3()
 local mvec_cam_up = Vector3()
 
@@ -16,16 +10,6 @@ Hooks:PostHook(PlayerMovement, "update", "XAudioUpdateListenerPosition", functio
 
 	local pos = self:m_stand_pos()
 	l:setposition(pos.x, pos.y, pos.z)
-
-	-- XXX REMOVEME testing only
-	if last_played + 3 < t then
-		if last_played == 0 then
-			src:set_position(pos)
-		end
-
-		last_played = t
-		src:play()
-	end
 
 	local state = self:current_state()
 	if not state then return end
