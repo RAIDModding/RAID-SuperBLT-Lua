@@ -15,6 +15,8 @@ BLT:Require("req/xaudio/XAudioBuffer")
 BLT:Require("req/xaudio/XAudioSource")
 BLT:Require("req/xaudio/XAudioUnitSource")
 
+BLT:Require("req/xaudio/VoicelineManager")
+
 -- This is our wu-to-meters conversion
 -- You can get it using blt.xaudio.getworldscale() if you need to use it
 -- This means we can use positions from the game without worrying about
