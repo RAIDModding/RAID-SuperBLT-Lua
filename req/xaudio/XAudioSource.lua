@@ -32,10 +32,12 @@ function C:close()
 
 	-- Close the audio source
 	self._source:close()
+
+	-- Mark ourselves as closed
+	self._closed = true
 end
 
 for _, name in ipairs({
-	"close",
 	"play",
 	"pause",
 	"stop"
@@ -62,11 +64,15 @@ function C:is_active()
 	return state == C.PLAYING or state == C.PAUSED
 end
 
+function C:is_closed()
+	return self._closed
+end
+
 function C:get_state()
 	local state = ({
 		playing = C.PLAYING,
 		paused = C.PAUSED,
-		stoppped = C.STOPPED,
+		stopped = C.STOPPED,
 		initial = C.INITIAL
 	})[self._source:getstate()]
 
@@ -114,6 +120,10 @@ function C:get_raw_volume()
 end
 
 function C:update(t, dt, paused)
+	if self:is_closed() then
+		error("Cannot update closed source")
+	end
+
 	-- Pause/unpause this source when the game is paused/unpaused
 	if paused ~= self._pause_held and self:is_active() then
 		self._pause_held = paused
