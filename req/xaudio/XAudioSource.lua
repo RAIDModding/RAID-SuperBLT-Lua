@@ -7,7 +7,7 @@ C.STOPPED = 3
 C.INITIAL = 4
 C.OTHER = 5
 
-function C:init(source)
+function C:init(buffer, source)
 	self._source = source and source._buffer or blt.xaudio.newsource()
 
 	-- Get a source ID
@@ -24,6 +24,20 @@ function C:init(source)
 	-- Set initial values for the gain and raw gain
 	self._gain = 1
 	self._raw_gain = 1
+
+	if buffer then
+		-- Set the initial buffer
+		self:set_buffer(buffer)
+
+		-- Enable single-sound mode
+		-- This destroyes the source when done playing, and automatically starts
+		--  the source playing if this is not disabled before the first update
+		--  or passing 'false' as the buffer argument
+		self._single_sound = true
+	end
+
+	-- We're currently open
+	self._closed = false
 end
 
 function C:close()
@@ -56,7 +70,12 @@ function C:set_buffer(buffer, set)
 		end
 	end
 
+	self._buffer = buffer
 	self._source:setbuffer(buffer._buffer)
+end
+
+function C:set_single_sound(enable)
+	self._single_sound = enable
 end
 
 function C:is_active()
@@ -141,6 +160,22 @@ function C:update(t, dt, paused)
 	self:_compute_gains()
 	if self._raw_gain ~= last_gain then
 		self._source:setgain(self._raw_gain)
+	end
+
+	if self._single_sound then
+		local state = self:get_state()
+		if state == C.INITIAL then
+			self:play()
+		elseif state == C.STOPPED then
+			self:close()
+		elseif state == C.PLAYING then
+			-- We're fine, do nothing
+		elseif state == C.PAUSED and paused then
+			-- Game is paused, not a problem
+		else
+			error("Illegal state " .. tostring(self._source:getstate()) ..
+				" for single-sound audio source")
+		end
 	end
 end
 
