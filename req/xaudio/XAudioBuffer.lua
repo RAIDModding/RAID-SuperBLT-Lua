@@ -22,3 +22,7 @@ function C:close(force)
 
 	self._buffer:close(force or false)
 end
+
+function C:get_length()
+	return self._buffer:getsamplecount() / self._buffer:getsamplerate()
+end

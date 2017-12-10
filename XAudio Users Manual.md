@@ -21,6 +21,8 @@ it does not actually destroy the buffer and free up it's memory use (done in cas
 later on) - for that, use `buff:close(true)` (note this only has an effect if this is done on the last buffer
 object referencing the physical buffer).
 
+You can also find the length in seconds of a buffer with `buff:get_length()`.
+
 ## Sources
 A basic source is an instance of `XAudio.Source`. You probably won't use these basic sources very much, if
 at all. They are Lua objects (via `blt_class`), and can be subclassed and extended to perform custom tasks.
