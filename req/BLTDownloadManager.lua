@@ -92,7 +92,7 @@ function BLTDownloadManager:start_download( update )
 	end
 
 	-- Start the download
-	local url = "http://download.paydaymods.com/download/latest/" .. update:GetId()
+	local url = update:GetDownloadURL()
 	local http_id = dohttpreq( url, callback(self, self, "clbk_download_finished"), callback(self, self, "clbk_download_progress") )
 
 	-- Cache the download for access

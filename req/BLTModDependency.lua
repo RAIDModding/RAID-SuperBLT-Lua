@@ -51,6 +51,7 @@ function BLTModDependency:Retrieve( clbk )
 	self._retrieving = true
 
 	-- Perform the request from the server
+	-- TODO custom server URLs
 	local url = "http://api.paydaymods.com/updates/retrieve/?mod[0]=" .. self:GetId()
 	dohttpreq( url, function( json_data, http_id )
 		self:clbk_got_data( clbk, json_data, http_id )
@@ -63,8 +64,8 @@ function BLTModDependency:clbk_got_data( clbk, json_data, http_id )
 	self._retrieving = false
 
 	if json_data:is_nil_or_empty() then
-		log("[Error] Could not connect to the PaydayMods.com API!")
-		return self:_run_update_callback( clbk, false, "Could not connect to the PaydayMods.com API." )
+		log("[Error] Could not connect to the downloads server!")
+		return self:_run_update_callback( clbk, false, "Could not connect to the downloads server." )
 	end
 
 	local server_data = json.decode( json_data )

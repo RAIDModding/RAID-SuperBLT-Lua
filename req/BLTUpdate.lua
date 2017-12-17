@@ -22,6 +22,11 @@ function BLTUpdate:init( parent_mod, data )
 	self.disallow_update = data["disallow_update"] or false
 	self.hash_file = data["hash_file"] or false
 	self.critical = data["critical"] or false
+	self.host = data["host"] or {
+		meta = "http://api.paydaymods.com/updates/retrieve/?mod[0]=" .. self:GetId(),
+		download = "http://download.paydaymods.com/download/latest/" .. self:GetId(),
+		patchnotes = "http://download.paydaymods.com/download/patchnotes/" .. self:GetId()
+	}
 
 end
 
@@ -47,7 +52,9 @@ function BLTUpdate:CheckForUpdates( clbk )
 	self._requesting_updates = true
 
 	-- Perform the request from the server
-	local url = "http://api.paydaymods.com/updates/retrieve/?mod[0]=" .. self:GetId()
+	local url = self.host.meta
+
+	-- Make the actual request
 	dohttpreq( url, function( json_data, http_id )
 		self:clbk_got_update_data( clbk, json_data, http_id )
 	end)
@@ -59,8 +66,8 @@ function BLTUpdate:clbk_got_update_data( clbk, json_data, http_id )
 	self._requesting_updates = false
 
 	if json_data:is_nil_or_empty() then
-		log("[Error] Could not connect to the PaydayMods.com API!")
-		return self:_run_update_callback( clbk, false, "Could not connect to the PaydayMods.com API." )
+		log("[Error] Could not connect to the download server!")
+		return self:_run_update_callback( clbk, false, "Could not connect to the download server." )
 	end
 
 	local server_data = json.decode( json_data )
@@ -69,6 +76,7 @@ function BLTUpdate:clbk_got_update_data( clbk, json_data, http_id )
 		for _, data in pairs( server_data ) do
 			log(string.format("[Updates] Received update data for '%s'", data.ident))
 			if data.ident == self:GetId() then
+				self._update_data = json_data
 
 				self._server_hash = data.hash
 				local local_hash = self:GetHash()
@@ -148,10 +156,29 @@ function BLTUpdate:IsCritical()
 end
 
 function BLTUpdate:ViewPatchNotes()
-	local url = "http://download.paydaymods.com/download/patchnotes/" .. self:GetId()
+	-- Use the URL returned in the update metadata if possible
+	-- this allows for easier migration of URLs
+	local url = (self._update_data and self._update_data.patchnotes_url) or self.host.patchnotes
+
 	if Steam:overlay_enabled() then
 		Steam:overlay_activate( "url", url )
 	else
 		os.execute( "cmd /c start " .. url )
 	end
+end
+
+function BLTUpdate:GetDownloadURL()
+	-- Use the URL returned in the update metadata if possible
+	-- this allows for easier migration of URLs
+	if self._update_data and self._update_data.download_url then
+		return self._update_data.download_url
+	end
+
+	return self.host.download
+end
+
+function BLTUpdate:GetUpdateMiscData()
+	if not self._update_data then return nil end
+
+	return self._update_data.misc_data
 end
