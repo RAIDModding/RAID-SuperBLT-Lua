@@ -87,7 +87,7 @@ function BLTDownloadManager:start_download( update )
 
 	-- Check if this update is allowed to be updated by the download manager
 	if update:DisallowsUpdate() then
-		MenuCallbackHandler[ update:GetDisallowCallback() ]( MenuCallbackHandler )
+		MenuCallbackHandler[ update:GetDisallowCallback() ]( MenuCallbackHandler, update )
 		return false
 	end
 
