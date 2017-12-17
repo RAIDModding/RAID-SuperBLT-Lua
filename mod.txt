@@ -12,14 +12,23 @@
 	"disable_safe_mode" : true,
 	"updates" : [
 		{
-			"identifier" : "payday2blt"
+			"identifier" : "payday2blt",
+			"host": {
+				"meta": "https://znix.xyz/paydaymods/updates/meta.php?id=payday2blt",
+				"download": "https://znix.xyz/paydaymods/download/get.php?src=mod&id=payday2blt",
+				"patchnotes": "https://znix.xyz/paydaymods/patchnotes/view.php?id=payday2blt"
+			}
 		},
 		{
 			"identifier" : "payday2bltdll",
 			"hash_file" : "./IPHLPAPI.dll",
 			"display_name" : "Payday 2 BLT Hook DLL",
 			"disallow_update" : "blt_update_dll_dialog",
-			"critical" : true
+			"critical" : true,
+			"host": {
+				"meta": "https://znix.xyz/paydaymods/updates/meta.php?id=payday2bltdll",
+				"patchnotes": "https://znix.xyz/paydaymods/patchnotes/view.php?id=payday2bltdll"
+			}
 		}
 	],
 	"pre_hooks" : [
