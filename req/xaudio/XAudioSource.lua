@@ -7,6 +7,9 @@ C.STOPPED = 3
 C.INITIAL = 4
 C.OTHER = 5
 
+C.SOUND_EFFECT="sfx"
+C.MUSIC="music"
+
 function C:init(buffer, source)
 	self._source = source and source._buffer or blt.xaudio.newsource()
 
@@ -24,7 +27,7 @@ function C:init(buffer, source)
 	-- Set initial values for the gain and raw gain
 	self._gain = 1
 	self._raw_gain = 1
-	self._type = "sfx"
+	self:set_type(C.SOUND_EFFECT)
 
 	if buffer then
 		-- Set the initial buffer
@@ -132,10 +135,10 @@ function C:set_volume(gain)
 end
 
 function C:set_type(typ)
-	if typ == "sfx" or typ == "music" then
+	if typ == C.SOUND_EFFECT or typ == C.MUSIC then
 		self._type = typ
 	else
-		error("Audio type can only be set to 'sfx' and 'music'")
+		error("Audio type can only be set to XAudioSource.SOUND_EFFECT and XAudioSource.MUSIC")
 	end
 end
 
