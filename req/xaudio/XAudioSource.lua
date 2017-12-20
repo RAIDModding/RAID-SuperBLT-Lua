@@ -24,6 +24,7 @@ function C:init(buffer, source)
 	-- Set initial values for the gain and raw gain
 	self._gain = 1
 	self._raw_gain = 1
+	self._type = "sfx"
 
 	if buffer then
 		-- Set the initial buffer
@@ -130,6 +131,18 @@ function C:set_volume(gain)
 	self._gain = gain
 end
 
+function C:set_type(typ)
+	if typ == "sfx" or typ == "music" then
+		self._type = typ
+	else
+		error("Audio type can only be set to 'sfx' and 'music'")
+	end
+end
+
+function C:get_type()
+	return self._type
+end
+
 function C:get_volume()
 	return self._gain
 end
@@ -180,5 +193,5 @@ function C:update(t, dt, paused)
 end
 
 function C:_compute_gains()
-	self._raw_gain = self._gain * XAudio._base_gains.sfx
+	self._raw_gain = self._gain * XAudio._base_gains[self._type]
 end
