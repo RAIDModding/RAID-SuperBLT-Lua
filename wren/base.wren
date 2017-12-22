@@ -41,13 +41,13 @@ var ExecMods = []
 
 {
 	for (mod in IO.listDirectory("mods", true)) {
-		if (IO.info("mods/%(mod)/tweaker.wren") == "file") {
+		if (IO.info("mods/%(mod)/wren/init.wren") == "file") {
 			ExecMods.add(mod)
 		}
 	}
 
 	for (mod in ExecMods) {
 		Logger.log("Loading mod %(mod)")
-		IO.dynamic_import("%(mod)/tweaker")
+		IO.dynamic_import("%(mod)/init")
 	}
 }
