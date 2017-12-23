@@ -73,10 +73,11 @@ class XMLTweakApplier {
 				if(match) {
 					var next_search_node = search_node.next_element
 					if(next_search_node == null) {
-						var mult = root_search_node["multiple"] == "true"
+						var mult = target_node["multiple"] == "true"
+						var replace = target_node["mode"] == "replace"
 						info["count"] = info["count"] + 1
 
-						apply_tweak_elem(elem, target_node, mult)
+						apply_tweak_elem(elem, target_node, mult, replace)
 
 						if(!mult) return false
 					} else {
@@ -91,15 +92,24 @@ class XMLTweakApplier {
 		return true
 	}
 
-	apply_tweak_elem(xml, target_node, multiple) {
+	apply_tweak_elem(xml, target_node, multiple, replace) {
+		var previous_child = xml
+		if(replace) xml = xml.parent
+
 		for (elem in target_node.element_children) {
 			if(multiple) {
 				elem = elem.clone()
 			} else {
 				elem.detach()
 			}
-			xml.attach(elem)
+			if(replace) {
+				xml.attach(elem, previous_child)
+			} else {
+				xml.attach(elem)
+			}
 		}
+
+		if(replace) previous_child.detach().delete()
 	}
 
 	static find_tweaks(path, name, ext, tweaks) {

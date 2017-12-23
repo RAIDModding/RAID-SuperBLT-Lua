@@ -31,6 +31,7 @@ foreign class XML {
 	foreign detach()
 	foreign clone()
 	foreign attach(child)
+	foreign attach(child, prev_child)
 
 	// Structure accessors
 	foreign next
