@@ -38,4 +38,37 @@ foreign class XML {
 	foreign parent
 	foreign first_child
 	foreign last_child
+
+	// Helpers
+	is_element {
+		return this.name[0..2] != "!--"
+	}
+
+	next_element {
+		var elem = next
+		while(elem != null) {
+			if(elem.is_element) break
+			elem = elem.next
+		}
+		return elem
+	}
+
+	ensure_element_next {
+		var elem = this
+		while(elem != null) {
+			if(elem.is_element) break
+			elem = elem.next
+		}
+		return elem
+	}
+
+	element_children {
+		var arr = []
+		var elem = first_child
+		while(elem != null) {
+			if(elem.is_element) arr.add(elem)
+			elem = elem.next
+		}
+		return arr
+	}
 }

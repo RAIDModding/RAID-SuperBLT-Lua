@@ -29,8 +29,7 @@ class XMLTweakApplier {
 			var search_node = null
 			var target_node = null
 
-			var elem = tweak.first_child
-			while (elem != null) {
+			for (elem in tweak.element_children) {
 				var name = elem.name
 				if(name == "search") {
 					search_node = elem
@@ -39,14 +38,13 @@ class XMLTweakApplier {
 				} else {
 					Fiber.abort("Unknown element type in unknown tweak XML: %(name)")
 				}
-				elem = elem.next
 			}
 
 			if(search_node == null) Fiber.abort("Missing <search> node in unknown tweak XML")
 			if(target_node == null) Fiber.abort("Missing <target> node in unknown tweak XML")
 
 			var info = {"count": 0}
-			dive_tweak_elem(xml, search_node, search_node.first_child, target_node, info)
+			dive_tweak_elem(xml.ensure_element_next, search_node, search_node.first_child.ensure_element_next, target_node, info)
 
 			if(info["count"] == 0) {
 				Logger.log("Warning: Failed to apply tweak in unknown XML for %(name).%(ext)")
@@ -73,7 +71,7 @@ class XMLTweakApplier {
 				// TODO something with elem.attribute_names == search_node.attribute_names
 
 				if(match) {
-					var next_search_node = search_node.next
+					var next_search_node = search_node.next_element
 					if(next_search_node == null) {
 						var mult = root_search_node["multiple"] == "true"
 						info["count"] = info["count"] + 1
@@ -87,23 +85,20 @@ class XMLTweakApplier {
 					}
 				}
 			}
-			elem = elem.next
+			elem = elem.next_element
 		}
 
 		return true
 	}
 
 	apply_tweak_elem(xml, target_node, multiple) {
-		var elem = target_node.first_child
-		while(elem != null) {
-			var xnode = elem
-			elem = elem.next
+		for (elem in target_node.element_children) {
 			if(multiple) {
-				xnode = xnode.clone()
+				elem = elem.clone()
 			} else {
-				xnode.detach()
+				elem.detach()
 			}
-			xml.attach(xnode)
+			xml.attach(elem)
 		}
 	}
 
@@ -113,10 +108,8 @@ class XMLTweakApplier {
 		var root = xml.first_child // <?xml?> -> <tweak/tweaks>
 		var tweaked = false
 		if(root.name == "tweaks") {
-			var elem = root.first_child
-			while (elem != null) {
+			for (elem in root.element_children) {
 				if(handle_tweak_element(name, ext, elem, tweaks)) tweaked = true
-				elem = elem.next
 			}
 		} else if(root.name == "tweak") {
 			if(handle_tweak_element(name, ext, root, tweaks)) tweaked = true
@@ -153,8 +146,7 @@ class XMLLoader {
 			if (IO.info(path) == "file") {
 				var data = IO.read(path)
 				var xml = XML.new(data)
-				var elem = xml.first_child.first_child // <?xml?> -> <mod> -> first elem
-				while (elem != null) {
+				for (elem in xml.first_child.element_children) { // <?xml?> -> <mod> -> first elem
 					var name = elem.name
 					if(name == "include") {
 						// TODO include logic
@@ -165,7 +157,6 @@ class XMLLoader {
 					} else {
 						Fiber.abort("Unknown element type in %(path): %(name)")
 					}
-					elem = elem.next
 				}
 				xml.delete()
 			}
@@ -178,8 +169,7 @@ class XMLLoader {
 	}
 
 	static handle_wren_tag(mod, tag) {
-		var elem = tag.first_child
-		while (elem != null) {
+		for (elem in tag.element_children) {
 			var name = elem.name
 			if(name == "base-path") {
 				// TODO set base path
@@ -188,7 +178,6 @@ class XMLLoader {
 			} else {
 				Fiber.abort("Unknown element type in %(mod):<wren>: %(name)")
 			}
-			elem = elem.next
 		}
 	}
 
@@ -198,10 +187,8 @@ class XMLLoader {
 		var xml = XML.new(data)
 		var root = xml.first_child // <?xml?> -> <tweak/tweaks>
 		if(root.name == "tweaks") {
-			var elem = root.first_child
-			while (elem != null) {
+			for (elem in root.element_children) {
 				handle_tweak_element(mod, path, elem)
-				elem = elem.next
 			}
 		} else if(root.name == "tweak") {
 			handle_tweak_element(mod, path, root)
