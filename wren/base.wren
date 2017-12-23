@@ -32,22 +32,9 @@ class TweakRegistry {
 	static RegisterTextTweaker(tweaker) {
 		Tweakers.add(tweaker)
 	}
-	static RegisterTweaker(tweaker) {
+	static RegisterXMLTweaker(tweaker) {
 		XMLTweakers.add(tweaker)
 	}
 }
 
-var ExecMods = []
-
-{
-	for (mod in IO.listDirectory("mods", true)) {
-		if (IO.info("mods/%(mod)/wren/init.wren") == "file") {
-			ExecMods.add(mod)
-		}
-	}
-
-	for (mod in ExecMods) {
-		Logger.log("Loading mod %(mod)")
-		IO.dynamic_import("%(mod)/init")
-	}
-}
+import "base/private/xml_loader"
