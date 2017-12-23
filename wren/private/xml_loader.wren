@@ -92,6 +92,14 @@ class XMLTweakApplier {
 	}
 
 	apply_tweak_elem(xml, target_node, multiple, mode) {
+		if (mode == "attributes") {
+			for (elem in target_node.element_children) {
+				if(elem.name != "attr") Fiber.abort("In unknown attributes target: bad elem <%(elem.name)>, should be <attr>")
+				xml[elem["name"]] = elem["value"]
+			}
+			return
+		}
+
 		var insert_after = mode == "replace" || mode == "append"
 
 		var previous_child = xml
