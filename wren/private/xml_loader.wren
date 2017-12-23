@@ -60,12 +60,6 @@ class XMLTweakApplier {
 	}
 
 	dive_tweak_elem(xml, root_search_node, search_node, target_node, info) {
-		if(search_node == null) {
-			Logger.log("found target, applying...")
-			info["count"] = info["count"] + 1
-			return root_search_node["multiple"] == "true"
-		}
-
 		var elem = xml
 		while (elem != null) {
 			if(elem.name == search_node.name) {
@@ -79,14 +73,38 @@ class XMLTweakApplier {
 				// TODO something with elem.attribute_names == search_node.attribute_names
 
 				if(match) {
-					var continue = dive_tweak_elem(elem.first_child, root_search_node, search_node.next, target_node, info)
-					if(!continue) return false
+					var next_search_node = search_node.next
+					if(next_search_node == null) {
+						var mult = root_search_node["multiple"] == "true"
+						info["count"] = info["count"] + 1
+
+						apply_tweak_elem(elem, target_node, mult)
+
+						if(!mult) return false
+					} else {
+						var continue = dive_tweak_elem(elem.first_child, root_search_node, next_search_node, target_node, info)
+						if(!continue) return false
+					}
 				}
 			}
 			elem = elem.next
 		}
 
 		return true
+	}
+
+	apply_tweak_elem(xml, target_node, multiple) {
+		var elem = target_node.first_child
+		while(elem != null) {
+			var xnode = elem
+			elem = elem.next
+			if(multiple) {
+				xnode = xnode.clone()
+			} else {
+				xnode.detach()
+			}
+			xml.attach(xnode)
+		}
 	}
 
 	static find_tweaks(path, name, ext, tweaks) {

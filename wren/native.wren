@@ -28,6 +28,10 @@ foreign class XML {
 	foreign create_element(name)
 	foreign delete()
 
+	foreign detach()
+	foreign clone()
+	foreign attach(child)
+
 	// Structure accessors
 	foreign next
 	foreign prev
