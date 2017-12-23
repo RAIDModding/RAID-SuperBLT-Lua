@@ -8,6 +8,7 @@ class IO {
 	foreign static info(path) // returns: none, file, dir
 	foreign static read(path) // get file contents
 	foreign static dynamic_import(path) // import a file dynamically
+	foreign static idstring_hash(data) // hash a string
 }
 
 foreign class XML {
@@ -31,6 +32,6 @@ foreign class XML {
 	foreign next
 	foreign prev
 	foreign parent
-	foreign child
+	foreign first_child
 	foreign last_child
 }
