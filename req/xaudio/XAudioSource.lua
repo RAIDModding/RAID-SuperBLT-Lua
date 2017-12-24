@@ -42,6 +42,10 @@ function C:init(buffer, source)
 
 	-- We're currently open
 	self._closed = false
+
+	-- Default state
+	self._looping = false
+	self._relative = false
 end
 
 function C:close()
@@ -140,6 +144,24 @@ function C:set_type(typ)
 	else
 		error("Audio type can only be set to XAudioSource.SOUND_EFFECT and XAudioSource.MUSIC")
 	end
+end
+
+function C:set_looping(looping)
+	self._looping = looping
+	self._source:setlooping(looping)
+end
+
+function C:set_relative(relative)
+	self._relative = relative
+	self._source:setrelative(relative)
+end
+
+function C:is_looping()
+	return self._looping
+end
+
+function C:is_looping()
+	return self._relative
 end
 
 function C:get_type()
