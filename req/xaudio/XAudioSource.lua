@@ -160,7 +160,7 @@ function C:is_looping()
 	return self._looping
 end
 
-function C:is_looping()
+function C:is_relative()
 	return self._relative
 end
 
