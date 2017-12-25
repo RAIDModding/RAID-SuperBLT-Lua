@@ -84,6 +84,11 @@ function BLT:Setup()
 	self.Localization = BLTLocalization:new()
 	self.Notifications = BLTNotificationsManager:new()
 
+	-- Create the required base directories, if necessary
+	self:CheckDirectory(BLTModManager.Constants:DownloadsDirectory())
+	self:CheckDirectory(BLTModManager.Constants:LogsDirectory())
+	self:CheckDirectory(BLTModManager.Constants:SavesDirectory())
+
 	-- Initialization functions
 	self.Logs:CleanLogs()
 	self.Mods:SetModsList( self:ProcessModsList( self:FindMods() ) )
@@ -218,6 +223,14 @@ function BLT:ProcessModsList( mods_list )
 
 	return mods_list
 
+end
+
+function BLT:CheckDirectory(path)
+	path = path:sub(1, #path - 1)
+	if not file.DirectoryExists(path) then
+		log("[BLT] Creating missing directory " .. path)
+		file.CreateDirectory(path)
+	end
 end
 
 -- Perform startup
