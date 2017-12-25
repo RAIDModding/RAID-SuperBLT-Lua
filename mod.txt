@@ -1,9 +1,9 @@
 {
-	"name" : "Payday 2 BLT",
+	"name" : "SuperBLT",
 	"description" : "The collection of Lua files that allow the BLT hook to function.",
-	"author" : "James Wilkinson",
-	"contact" : "Details below, Twitter gets quicker answers than emails do.\nEmail: jw@jameswilko.com\nTwitter: @_JamesWilko",
-	"version" : "2.0",
+	"author" : "ZNix, James Wilkinson",
+	"contact" : "znix@znix.xyz",
+	"version" : "1.0.2.0",
 	"blt_version" : 2,
 	"priority" : 1001,
 	"image" : "blt.png",
