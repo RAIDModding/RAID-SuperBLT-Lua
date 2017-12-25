@@ -284,7 +284,6 @@ BLTModManager.Constants.ExcludedModDirectories = {
 	["logs"] = true,
 	["saves"] = true,
 	["downloads"] = true,
-	["_temp"] = true,
 }
 BLTModManager.Constants.required_script_global = "RequiredScript"
 BLTModManager.Constants.mod_path_global = "ModPath"
