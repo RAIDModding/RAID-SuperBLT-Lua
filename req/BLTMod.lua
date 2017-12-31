@@ -36,6 +36,7 @@ function BLTMod:init( ident, data )
 	self.disable_safe_mode = data["disable_safe_mode"] or false
 	self.undisablable = data["undisablable"] or false
 	self.safe_mode = true
+	self.supermod = BLTSuperMod.try_load(self, data["supermod_definition"])
 
 	-- Parse color info
 	-- Stored as a table until first requested due to Color not existing yet
