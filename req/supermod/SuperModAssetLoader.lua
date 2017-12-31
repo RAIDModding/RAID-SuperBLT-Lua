@@ -70,7 +70,8 @@ _flush_assets = function(dres)
 			error("Cannot load unreadable asset " .. path)
 		end
 
-		log("Loading " .. asset.dbpath .. " " .. asset.extension .. " from " .. path)
+		-- TODO a good way to log this
+		-- log("Loading " .. asset.dbpath .. " " .. asset.extension .. " from " .. path)
 
 		DB:create_entry(ext, dbpath, path)
 
