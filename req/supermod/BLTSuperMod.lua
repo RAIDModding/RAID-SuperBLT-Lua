@@ -111,6 +111,19 @@ function BLTSuperMod._recurse_xml(xml, parent_scope, callbacks)
 		setmetatable(scope, {__index = parent_scope})
 
 		for name, val in pairs(tag.params) do
+			while true do
+				local first, last = val:find("#{%a[%w_]-}")
+				if not first then break end
+
+				local name = val:sub(first + 2, last - first)
+				local target_var = scope[name]
+
+				assert(target_var, "Trying to use missing parameter '"
+					.. name .. "' as a #{value} in " .. tag._doc.filename)
+
+				val = val:sub(1, first - 1) .. target_var .. val:sub(last + 1)
+			end
+
 			if name:sub(1,1) == ":" then
 				name = name:sub(2)
 				if not scope[name] then
