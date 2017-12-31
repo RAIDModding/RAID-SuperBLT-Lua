@@ -42,6 +42,10 @@ function BLTSuperMod:_load_xml(xml, parent_scope)
 		assets = function(tag, scope)
 			self._assets:FromXML(tag, scope)
 		end,
+
+		-- These tags are used by the Wren-based XML Tweaker
+		wren = function(tag, scope) end,
+		tweak = function(tag, scope) end,
 	})
 end
 

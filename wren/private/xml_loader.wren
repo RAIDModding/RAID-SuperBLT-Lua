@@ -167,14 +167,15 @@ class XMLLoader {
 				var xml = XML.new(data)
 				for (elem in xml.first_child.element_children) { // <?xml?> -> <mod> -> first elem
 					var name = elem.name
-					if(name == "include") {
+					if(name == ":include") {
 						// TODO include logic
 					} else if(name == "wren") {
 						handle_wren_tag(mod, elem)
 					} else if(name == "tweak") {
 						handle_tweak_file(mod, elem["definition"])
 					} else {
-						Fiber.abort("Unknown element type in %(path): %(name)")
+						// Since this XML file is also used by Lua, don't do anything
+						// Fiber.abort("Unknown element type in %(path): %(name)")
 					}
 				}
 				xml.delete()
