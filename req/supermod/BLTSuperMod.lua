@@ -42,11 +42,38 @@ function BLTSuperMod:_load_xml(xml, parent_scope)
 		assets = function(tag, scope)
 			self._assets:FromXML(tag, scope)
 		end,
+		hooks = function(tag, scope)
+			self:_add_hooks(tag, scope)
+		end,
 
 		-- These tags are used by the Wren-based XML Tweaker
 		wren = function(tag, scope) end,
 		tweak = function(tag, scope) end,
 	})
+end
+
+function BLTSuperMod:_add_hooks(xml, parent_scope)
+	BLTSuperMod._recurse_xml(xml, parent_scope, {
+		pre = function(tag, scope)
+			self:_add_hook(tag, scope, "pre_hooks", "pre")
+		end,
+		post = function(tag, scope)
+			self:_add_hook(tag, scope, "hooks", "post")
+		end,
+		wildcard = function(tag, scope)
+			error("TODO implement wildcard")
+		end,
+	})
+end
+
+function BLTSuperMod:_add_hook(tag, scope, data_key, destination)
+	local hook_id = scope.hook_id
+	local script_path = scope.script_path
+
+	assert(hook_id, "missing parameter hook_id" .. tag._doc.filename)
+	assert(script_path, "missing parameter script_path in " .. tag._doc.filename)
+
+	self._mod:AddHook(data_key, hook_id, script_path, BLT.hook_tables[destination])
 end
 
 function BLTSuperMod:_replace_includes(xml)

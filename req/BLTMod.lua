@@ -36,7 +36,6 @@ function BLTMod:init( ident, data )
 	self.disable_safe_mode = data["disable_safe_mode"] or false
 	self.undisablable = data["undisablable"] or false
 	self.safe_mode = true
-	self.supermod = BLTSuperMod.try_load(self, data["supermod_definition"])
 
 	-- Parse color info
 	-- Stored as a table until first requested due to Color not existing yet
@@ -104,44 +103,53 @@ function BLTMod:Setup()
 		end
 	end	
 
+	-- Set up the supermod instance
+	self.supermod = BLTSuperMod.try_load(self, self.json_data["supermod_definition"])
+
 end
 
 function BLTMod:AddHooks( data_key, destination, wildcards_destination )
-
-	self.hooks[data_key] = {}
 
 	for i, hook_data in ipairs( self.json_data[data_key] or {} ) do
 
 		local hook_id = hook_data["hook_id"] and hook_data["hook_id"]:lower()
 		local script = hook_data["script_path"]
 
-		-- Add hook to info table
-		local unique = true
-		for i, hook in ipairs( self.hooks[data_key] ) do
-			if hook == hook_id then
-				unique = false
-				break
-			end
+		self:AddHook( data_key, hook_id, script, destination, wildcards_destination )
+
+	end
+
+end
+
+function BLTMod:AddHook( data_key, hook_id, script, destination, wildcards_destination )
+
+	self.hooks[data_key] = self.hooks[data_key] or {}
+
+	-- Add hook to info table
+	local unique = true
+	for i, hook in ipairs( self.hooks[data_key] ) do
+		if hook == hook_id then
+			unique = false
+			break
 		end
-		if unique then
-			table.insert( self.hooks[data_key], hook_id )
-		end
+	end
+	if unique then
+		table.insert( self.hooks[data_key], hook_id )
+	end
 
-		-- Add hook to hooks tables
-		if hook_id and script and self:IsEnabled() then
+	-- Add hook to hooks tables
+	if hook_id and script and self:IsEnabled() then
 
-			local data = {
-				mod = self,
-				script = script
-			}
+		local data = {
+			mod = self,
+			script = script
+		}
 
-			if hook_id ~= "*" then
-				destination[ hook_id ] = destination[ hook_id ] or {}
-				table.insert( destination[ hook_id ], data )
-			else
-				table.insert( wildcards_destination, data )
-			end
-
+		if hook_id ~= "*" then
+			destination[ hook_id ] = destination[ hook_id ] or {}
+			table.insert( destination[ hook_id ], data )
+		else
+			table.insert( wildcards_destination, data )
 		end
 
 	end
