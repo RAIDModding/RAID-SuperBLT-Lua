@@ -45,7 +45,7 @@ function c:LoadAsset(name, file, params)
 	table.insert(_dynamic_unloaded_assets, {
 		dbpath = dbpath,
 		extension = extension,
-		file = file,
+		file = self._mod._mod:GetPath() .. file,
 		dyn_package = dyn_package
 	})
 

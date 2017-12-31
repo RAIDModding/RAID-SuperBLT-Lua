@@ -32,9 +32,7 @@ function BLTSuperMod:new(mod, xml)
 
 	self:_replace_includes(xml)
 
-	self:_load_xml(xml, {
-		base_path = mod:GetPath()
-	})
+	self:_load_xml(xml, {})
 end
 
 function BLTSuperMod:_load_xml(xml, parent_scope)
