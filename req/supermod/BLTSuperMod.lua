@@ -84,6 +84,10 @@ function BLTSuperMod._recurse_xml(xml, parent_scope, callbacks)
 		for name, val in pairs(tag.params) do
 			if name:sub(1,1) == ":" then
 				name = name:sub(2)
+				if not scope[name] then
+					error("Trying to append to missing parameter '" .. name
+							.. "' in " .. tag._doc.filename)
+				end
 				scope[name] = scope[name] .. val
 			else
 				scope[name] = val
