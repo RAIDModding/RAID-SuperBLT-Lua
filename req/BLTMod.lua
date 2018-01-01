@@ -520,6 +520,10 @@ function BLTMod:GetDeveloperInfo()
 
 end
 
+function BLTMod:GetSuperMod()
+	return self.supermod
+end
+
 function BLTMod:__tostring()
 	return string.format("[BLTMod %s (%s)]", self:GetName(), self:GetId())
 end

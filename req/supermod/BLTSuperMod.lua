@@ -35,6 +35,10 @@ function BLTSuperMod:new(mod, xml)
 	self:_load_xml(xml, {})
 end
 
+function BLTSuperMod:GetAssetLoader()
+	return self._assets
+end
+
 function BLTSuperMod:_load_xml(xml, parent_scope)
 	BLTSuperMod._recurse_xml(xml, parent_scope, {
 		assets = function(tag, scope)

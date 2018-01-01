@@ -289,6 +289,7 @@ BLTModManager.Constants.required_script_global = "RequiredScript"
 BLTModManager.Constants.mod_path_global = "ModPath"
 BLTModManager.Constants.logs_path_global = "LogsPath"
 BLTModManager.Constants.save_path_global = "SavePath"
+BLTModManager.Constants.mod_instance_global = "ModInstance"
 
 BLTModManager.Constants.lua_mods_menu_id = "blt_mods_new"
 BLTModManager.Constants.lua_mod_options_menu_id = "blt_options"

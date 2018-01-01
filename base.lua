@@ -124,6 +124,7 @@ end
 function BLT:RunHookFile( path, hook_data )
 	rawset( _G, BLTModManager.Constants.required_script_global, path or false )
 	rawset( _G, BLTModManager.Constants.mod_path_global, hook_data.mod:GetPath() or false )
+	rawset( _G, BLTModManager.Constants.mod_instance_global, hook_data.mod or false )
 	dofile( hook_data.mod:GetPath() .. hook_data.script )
 end
 
