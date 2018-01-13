@@ -12,6 +12,9 @@ local _flush_assets
 
 function c:init(mod)
 	self._mod = mod
+
+	self.script_loadable_packages = {
+	}
 end
 
 function c:FromXML(xml, parent_scope)
@@ -42,12 +45,46 @@ function c:LoadAsset(name, file, params)
 		dyn_package = false
 	end
 
-	table.insert(_dynamic_unloaded_assets, {
+	local spec = {
 		dbpath = dbpath,
 		extension = extension,
 		file = self._mod._mod:GetPath() .. file,
 		dyn_package = dyn_package
-	})
+	}
+
+	if params.target == "immediate" or not params.target then
+		table.insert(_dynamic_unloaded_assets, spec)
+		_flush_assets()
+	elseif params.target == "scripted" then
+		local group_name = params.load_group
+
+		local group = self.script_loadable_packages[group_name] or {
+			assets = {},
+			loaded = false
+		}
+		self.script_loadable_packages[group_name] = group
+
+		table.insert(group.assets, spec)
+	else
+		error("Unrecognised load type " .. params.target)
+	end
+end
+
+function c:LoadAssetGroup(group_name)
+	assert(group_name, "cannot load nil group")
+	local group = self.script_loadable_packages[group_name]
+
+	if not group then
+		error("Group '" .. group_name .. "' does not exist")
+	end
+
+	if group.loaded then return end
+
+	group.loaded = true
+
+	for _, spec in ipairs(group.assets) do
+		table.insert(_dynamic_unloaded_assets, spec)
+	end
 
 	_flush_assets()
 end
