@@ -76,7 +76,7 @@ function BLTUpdate:clbk_got_update_data( clbk, json_data, http_id )
 		for _, data in pairs( server_data ) do
 			log(string.format("[Updates] Received update data for '%s'", data.ident))
 			if data.ident == self:GetId() then
-				self._update_data = json_data
+				self._update_data = data
 
 				self._server_hash = data.hash
 				local local_hash = self:GetHash()
