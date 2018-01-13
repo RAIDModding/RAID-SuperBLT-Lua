@@ -26,7 +26,7 @@ function BLTSuperMod.try_load(mod, file_name)
 	return nil
 end
 
-function BLTSuperMod:new(mod, xml)
+function BLTSuperMod:init(mod, xml)
 	self._mod = mod
 	self._assets = self.AssetLoader:new(self)
 
