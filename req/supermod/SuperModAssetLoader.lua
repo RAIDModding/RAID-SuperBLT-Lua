@@ -10,6 +10,8 @@ c.DYNAMIC_LOAD_TYPES = {
 local _dynamic_unloaded_assets = {}
 local _flush_assets
 
+local next_asset_id = 1
+
 function c:init(mod)
 	self._mod = mod
 
@@ -49,11 +51,14 @@ function c:LoadAsset(name, file, params)
 		dbpath = dbpath,
 		extension = extension,
 		file = self._mod._mod:GetPath() .. file,
-		dyn_package = dyn_package
+		dyn_package = dyn_package,
+		id = next_asset_id,
 	}
 
+	next_asset_id = next_asset_id + 1
+
 	if params.target == "immediate" or not params.target then
-		table.insert(_dynamic_unloaded_assets, spec)
+		_dynamic_unloaded_assets[spec.id] = spec
 		_flush_assets()
 	elseif params.target == "scripted" then
 		local group_name = params.load_group
@@ -83,10 +88,42 @@ function c:LoadAssetGroup(group_name)
 	group.loaded = true
 
 	for _, spec in ipairs(group.assets) do
-		table.insert(_dynamic_unloaded_assets, spec)
+		_dynamic_unloaded_assets[spec.id] = spec
 	end
 
 	_flush_assets()
+end
+
+function c:FreeAssetGroup(group_name)
+	assert(group_name, "cannot free nil group")
+	local group = self.script_loadable_packages[group_name]
+
+	if not group then
+		error("Group '" .. group_name .. "' does not exist")
+	end
+
+	-- We don't care if the group is loaded or not, as each asset
+	-- is checked if it's unloaded.
+
+	group.loaded = false
+
+	for _, spec in ipairs(group.assets) do
+		-- If it's queued to be loaded, ignore it.
+		_dynamic_unloaded_assets[spec.id] = nil
+
+		local ext = Idstring(spec.extension)
+		local dbpath = Idstring(spec.dbpath)
+
+		if spec._entry_created then
+			spec._entry_created = false
+			DB:remove_entry(ext, dbpath)
+		end
+
+		if spec._targeted_package then
+			managers.dyn_resource:unload(ext, dbpath, spec._targeted_package, false)
+			spec._targeted_package = nil
+		end
+	end
 end
 
 
@@ -98,7 +135,7 @@ _flush_assets = function(dres)
 	local next_to_load = {}
 
 	local i = 1
-	for _, asset in pairs(_dynamic_unloaded_assets) do
+	for id, asset in pairs(_dynamic_unloaded_assets) do
 		local ext = Idstring(asset.extension)
 		local dbpath = Idstring(asset.dbpath)
 		local path = asset.file
@@ -110,10 +147,14 @@ _flush_assets = function(dres)
 		-- TODO a good way to log this
 		-- log("Loading " .. asset.dbpath .. " " .. asset.extension .. " from " .. path)
 
-		DB:create_entry(ext, dbpath, path)
+		if not asset._entry_created then
+			DB:create_entry(ext, dbpath, path)
+			asset._entry_created = true
+		end
 
-		if asset.dyn_package then
-			dres:load(ext, dbpath, dres.DYN_RESOURCES_PACKAGE, function()
+		if asset.dyn_package and not asset._targeted_package then
+			asset._targeted_package = dres.DYN_RESOURCES_PACKAGE
+			dres:load(ext, dbpath, asset._targeted_package, function()
 				-- This is called when the asset is done loading.
 				-- Should we wait for these to all be called?
 			end)
