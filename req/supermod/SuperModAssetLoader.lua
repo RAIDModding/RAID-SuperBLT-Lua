@@ -148,6 +148,7 @@ _flush_assets = function(dres)
 		-- log("Loading " .. asset.dbpath .. " " .. asset.extension .. " from " .. path)
 
 		if not asset._entry_created then
+			blt.ignoretweak(dbpath, ext)
 			DB:create_entry(ext, dbpath, path)
 			asset._entry_created = true
 		end
