@@ -63,8 +63,6 @@ end
 
 function BLTUpdate:clbk_got_update_data( clbk, json_data, http_id )
 
-	self._requesting_updates = false
-
 	if json_data:is_nil_or_empty() then
 		log("[Error] Could not connect to the download server!")
 		return self:_run_update_callback( clbk, false, "Could not connect to the download server." )
@@ -78,19 +76,27 @@ function BLTUpdate:clbk_got_update_data( clbk, json_data, http_id )
 			if data.ident == self:GetId() then
 				self._update_data = data
 
-				self._server_hash = data.hash
-				local local_hash = self:GetHash()
-				log(string.format("[Updates] Comparing hash data:\nServer: %s\n Local: %s", data.hash, local_hash))
-				if data.hash then
-					if data.hash ~= local_hash then
-						return self:_run_update_callback( clbk, true )
+				local check_hash = function(local_hash)
+					self._requesting_updates = false
+
+					log(string.format("[Updates] Comparing hash data:\nServer: %s\n Local: %s", data.hash, local_hash))
+					if data.hash then
+						if data.hash ~= local_hash then
+							return self:_run_update_callback( clbk, true )
+						else
+							return self:_run_update_callback( clbk, false )
+						end
 					else
 						return self:_run_update_callback( clbk, false )
 					end
-				else
-					return self:_run_update_callback( clbk, false )
 				end
 
+				self._server_hash = data.hash
+				local hash_result = self:GetHash(check_hash)
+
+				if not hash_result or hash_result ~= true then
+					check_hash(hash_result)
+				end
 			end
 		end
 		
@@ -122,12 +128,12 @@ function BLTUpdate:GetName()
 	return self.name
 end
 
-function BLTUpdate:GetHash()
+function BLTUpdate:GetHash(callback)
 	if self.hash_file then
-		return SystemFS:exists(self.hash_file) and file.FileHash(self.hash_file) or nil
+		return SystemFS:exists(self.hash_file) and file.FileHash(self.hash_file, callback) or nil
 	else
 		local directory = Application:nice_path( self:GetInstallDirectory() .. "/" .. self:GetInstallFolder(), true )
-		return SystemFS:exists(directory) and file.DirectoryHash(directory) or nil
+		return SystemFS:exists(directory) and file.DirectoryHash(directory, callback) or nil
 	end
 end
 
