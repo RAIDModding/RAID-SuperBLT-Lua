@@ -176,6 +176,17 @@ _flush_assets = function(dres)
 				end
 			end)
 
+			-- Warn the user if a file has not loaded in the last fifteen seconds
+			DelayedCalls:Add("SuperBLTAssetLoaderModelWatchdog", 15, function()
+				if next(_currently_loading_assets) then
+log("[BLT] No asset has been loaded in the last 15 seconds, and these assets have not yet loaded.")
+log("[BLT] This suggests they may be corrupt, and could prevent the game from exiting the current level:")
+					for spec, info in pairs(_currently_loading_assets) do
+						log("\t" .. spec.dbpath .. "." .. spec.extension .. " (" .. path .. ")")
+					end
+				end
+			end)
+
 			i = i + 1
 		end
 	end
