@@ -9,6 +9,7 @@ c.DYNAMIC_LOAD_TYPES = {
 
 local _dynamic_unloaded_assets = {}
 local _flush_assets
+local _currently_loading_assets = {}
 
 local next_asset_id = 1
 
@@ -122,6 +123,8 @@ function c:FreeAssetGroup(group_name)
 		if spec._targeted_package then
 			managers.dyn_resource:unload(ext, dbpath, spec._targeted_package, false)
 			spec._targeted_package = nil
+
+			_currently_loading_assets[spec] = nil
 		end
 	end
 end
@@ -155,9 +158,22 @@ _flush_assets = function(dres)
 
 		if asset.dyn_package and not asset._targeted_package then
 			asset._targeted_package = dres.DYN_RESOURCES_PACKAGE
+
+			_currently_loading_assets[asset] = {}
+
 			dres:load(ext, dbpath, asset._targeted_package, function()
 				-- This is called when the asset is done loading.
 				-- Should we wait for these to all be called?
+
+				_currently_loading_assets[asset] = nil
+
+				if BLT.DEBUG_MODE then
+					log("[BLT] Assets remaining to load:")
+					for spec, info in pairs(_currently_loading_assets) do
+						log("\t" .. spec.dbpath)
+					end
+					log("\tEnd of asset list")
+				end
 			end)
 
 			i = i + 1

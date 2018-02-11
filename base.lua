@@ -1,3 +1,4 @@
+local DEBUG_MODE = false
 
 -- Create console
 if false then
@@ -15,7 +16,7 @@ local io = io
 local file = file
 
 -- BLT Global table
-_G.BLT = { version = 2.0 }
+_G.BLT = { version = 2.0, DEBUG_MODE = DEBUG_MODE }
 _G.BLT.Base = {}
 
 _G.print = function(...)
