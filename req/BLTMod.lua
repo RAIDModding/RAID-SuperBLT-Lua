@@ -280,6 +280,10 @@ end
 
 function BLTMod:GetModImage()
 
+	if self.mod_image_id then
+		return self.mod_image_id
+	end
+
 	if not self:HasModImage() or not DB or not DB.create_entry then
 		return nil
 	end
@@ -295,6 +299,8 @@ function BLTMod:GetModImage()
 		DB:create_entry( type_texture_id, texture_id, path )
 		table.insert( new_textures, texture_id )
 		Application:reload_textures( new_textures )
+
+		self.mod_image_id = texture_id
 
 		return texture_id
 
