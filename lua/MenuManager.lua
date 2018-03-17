@@ -89,7 +89,7 @@ function MenuManager._base_process_menu( menu_manager, menu_names, parent_menu_n
 			local hook_id_build = build_hook or "MenuManagerBuildCustomMenus"
 
 			MenuHelper:SetupMenu( nodes, parent_menu_name or "video" )
-			MenuHelper:SetupMenuButton( nodes, parent_menu_button or "options" )
+			MenuHelper:SetupMenuButton( nodes, parent_menu_button or "options", not parent_menu_button and "sound" )
 
 			Hooks:RegisterHook( hook_id_setup )
 			Hooks:RegisterHook( hook_id_populate )

@@ -9,12 +9,20 @@ function MenuHelper:SetupMenu( menu, id )
 	self.menu_to_clone = menu[id]
 end
 
-function MenuHelper:SetupMenuButton( menu, id, button_id )
+function MenuHelper:SetupMenuButton( menu, id, button_name )
 	if menu[id] == nil then
 		log("[Error] Could not find '" .. id .. "' in menu!")
 		return
 	end
-	if button_id == nil then
+
+	local button_id
+	if button_name then
+		for id, item in pairs(menu[id]:items()) do
+			if type(item) == "table" and item._parameters and item._parameters.name == button_name then
+				button_id = id
+			end
+		end
+	else
 		button_id = 1
 	end
 	self.menubutton_to_clone = menu[id]:items()[button_id]
