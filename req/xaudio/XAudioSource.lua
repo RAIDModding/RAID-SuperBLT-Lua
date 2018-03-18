@@ -24,6 +24,9 @@ function C:init(buffer, source)
 	-- This determines if actions should be held until the game is un-paused again.
 	self._pause_held = false
 
+	-- Should the source pause when the game pauses
+	self._auto_pause = true
+
 	-- Set initial values for the gain and raw gain
 	self._gain = 1
 	self._raw_gain = 1
@@ -86,6 +89,10 @@ function C:set_single_sound(enable)
 	self._single_sound = enable
 end
 
+function C:set_auto_pause(enable)
+	self._auto_pause = enable
+end
+
 function C:is_active()
 	local state = self:get_state()
 	return state == C.PLAYING or state == C.PAUSED
@@ -93,6 +100,10 @@ end
 
 function C:is_closed()
 	return self._closed
+end
+
+function C:is_auto_pausing()
+	return self._auto_pause
 end
 
 function C:get_state()
@@ -182,7 +193,7 @@ function C:update(t, dt, paused)
 	end
 
 	-- Pause/unpause this source when the game is paused/unpaused
-	if paused ~= self._pause_held and self:is_active() then
+	if paused ~= self._pause_held and self:is_active() and self:is_auto_pausing() then
 		self._pause_held = paused
 
 		if paused and self:get_state() == C.PLAYING then
