@@ -183,22 +183,24 @@ function BLTDownloadManager:clbk_download_finished( data, http_id )
 			return
 		end
 
-		-- Remove old installation
-		log("[Downloads] Removing old installation...")
-		wait()
-		local old_install_path = install_path .. '_old'
-		if not file.MoveDirectory( install_path, old_install_path ) then
-			log("[Downloads] Failed to rename old installation!")
-			download.state = "failed"
-			cleanup()
-			return
-		end
+		-- Remove old installation, unless we're installing a mod (via dependencies)
+		if not download.update:IsInstall() then
+			log("[Downloads] Removing old installation...")
+			wait()
+			local old_install_path = install_path .. '_old'
+			if not file.MoveDirectory( install_path, old_install_path ) then
+				log("[Downloads] Failed to rename old installation!")
+				download.state = "failed"
+				cleanup()
+				return
+			end
 
-		if not SystemFS:delete_file( old_install_path ) then
-			log("[Downloads] Failed to delete old installation!")
-			download.state = "failed"
-			cleanup()
-			return
+			if not SystemFS:delete_file( old_install_path ) then
+				log("[Downloads] Failed to delete old installation!")
+				download.state = "failed"
+				cleanup()
+				return
+			end
 		end
 
 		-- Move the temporary installation

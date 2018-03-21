@@ -405,7 +405,7 @@ function BLTMod:IsUndisablable()
 end
 
 function BLTMod:HasDependencies()
-	return table.size(self.dependencies) > 0
+	return next(self.dependencies) and true or false
 end
 
 function BLTMod:GetDependencies()
@@ -427,7 +427,15 @@ function BLTMod:AreDependenciesInstalled()
 	self.disabled_dependencies = {}
 
 	-- Iterate all mods and updates to find dependencies, store any that are missing
-	for _, id in ipairs( self:GetDependencies() ) do
+	for key, value in pairs( self:GetDependencies() ) do
+		local id, download_data
+
+		if type(value) == "string" then
+			id = value
+		else
+			id = key
+			download_data = value
+		end
 
 		local found = false
 		for _, mod in ipairs( BLT.Mods:Mods() ) do
@@ -449,7 +457,7 @@ function BLTMod:AreDependenciesInstalled()
 
 		if not found then
 			installed = false
-			local dependency = BLTModDependency:new( self, id )
+			local dependency = BLTModDependency:new( self, id, download_data )
 			table.insert( self.missing_dependencies, dependency )
 		end
 

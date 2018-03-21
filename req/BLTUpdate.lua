@@ -188,3 +188,7 @@ function BLTUpdate:GetUpdateMiscData()
 
 	return self._update_data.misc_data
 end
+
+function BLTUpdate:IsInstall()
+	return false
+end

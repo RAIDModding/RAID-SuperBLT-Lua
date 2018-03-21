@@ -1,10 +1,11 @@
 
 BLTModDependency = BLTModDependency or blt_class()
 
-function BLTModDependency:init( parent_mod, id )
+function BLTModDependency:init( parent_mod, id, download_data )
 
 	self._id = id
 	self._parent_mod = parent_mod
+	self._download_data = download_data
 
 end
 
@@ -59,6 +60,15 @@ function BLTModDependency:Retrieve( clbk )
 
 end
 
+function BLTModDependency:GetDownloadURL()
+	-- Allow the use of custom download URLs
+	if self._download_data and self._download_data.download_url then
+		return self._download_data.download_url
+	end
+
+	return "http://download.paydaymods.com/download/latest/" .. self:GetId()
+end
+
 function BLTModDependency:clbk_got_data( clbk, json_data, http_id )
 
 	self._retrieving = false
@@ -97,4 +107,8 @@ end
 
 function BLTModDependency:GetServerHash()
 	return self._server_data.hash
+end
+
+function BLTModDependency:IsInstall()
+	return true
 end
