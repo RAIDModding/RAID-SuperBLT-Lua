@@ -21,25 +21,26 @@ function BLTPersistScripts:update_persists()
 	-- Iterate through all mods and their persist scripts
 	for _, mod in ipairs( BLT.Mods:Mods() ) do
 
-		if not mod:IsEnabled() then
-			return -- Do not update persist scripts if the mod is disabled!
-		end
+		-- Do not update persist scripts if the mod is disabled!
+		if mod:IsEnabled() then
 
-		for _, persist in ipairs( mod:GetPersistScripts() ) do
+			for _, persist in ipairs( mod:GetPersistScripts() ) do
 
-			-- Check if the persist global has not been set
-			if not rawget( _G, persist.global ) then
+				-- Check if the persist global has not been set
+				if not rawget( _G, persist.global ) then
 
-				-- Create the path here, otherwise Application.nice_path doesn't exist yet
-				if not persist.path then
-					persist.path = Application:nice_path( mod:GetPath() .. "/" .. persist.file, false )
+					-- Create the path here, otherwise Application.nice_path doesn't exist yet
+					if not persist.path then
+						persist.path = Application:nice_path( mod:GetPath() .. "/" .. persist.file, false )
+					end
+
+					-- Set the PersistScriptPath for legacy support
+					rawset( _G, "PersistScriptPath", persist.path )
+
+					-- Run the persist script file
+					dofile( persist.path )
+
 				end
-
-				-- Set the PersistScriptPath for legacy support
-				rawset( _G, "PersistScriptPath", persist.path )
-
-				-- Run the persist script file
-				dofile( persist.path )
 
 			end
 
