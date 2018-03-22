@@ -62,7 +62,9 @@ function BLTMod:init( ident, data )
 	self.updates = {}
 	for i, update_data in ipairs( self.json_data["updates"] or {} ) do
 		local new_update = BLTUpdate:new( self, update_data )
-		table.insert( self.updates, new_update )
+		if new_update:IsPresent() then
+			table.insert( self.updates, new_update )
+		end
 	end
 
 end

@@ -27,6 +27,7 @@ function BLTUpdate:init( parent_mod, data )
 		download = "http://download.paydaymods.com/download/latest/" .. self:GetId(),
 		patchnotes = "http://download.paydaymods.com/download/patchnotes/" .. self:GetId()
 	}
+	self.present_func = data["present_func"]
 
 end
 
@@ -191,4 +192,12 @@ end
 
 function BLTUpdate:IsInstall()
 	return false
+end
+
+function BLTUpdate:IsPresent()
+	if self.present_func then
+		return BLTUpdateCallbacks[self.present_func](self)
+	end
+
+	return true
 end
