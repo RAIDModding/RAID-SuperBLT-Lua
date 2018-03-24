@@ -1,4 +1,3 @@
-
 CloneClass( LocalizationManager )
 
 LocalizationManager._custom_localizations = LocalizationManager._custom_localizations or {}
@@ -7,6 +6,16 @@ Hooks:RegisterHook("LocalizationManagerPostInit")
 function LocalizationManager.init( self )
 	self.orig.init( self )
 	Hooks:Call( "LocalizationManagerPostInit", self )
+end
+
+function LocalizationManager.exists( self, str )
+
+	if self._custom_localizations[str] then
+		return true
+	end
+
+	return self.orig.exists(self, str)
+
 end
 
 function LocalizationManager.text( self, str, macros )
