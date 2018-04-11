@@ -1,5 +1,8 @@
 
-BLTViewModGui = BLTViewModGui or blt_class( MenuGuiComponentGeneric )
+BLTViewModGui = BLTViewModGui or blt_class( BLTCustomComponent )
+
+-- Use the modified BLT back button
+BLTViewModGui._add_back_button = BLTViewModGui._add_custom_back_button
 
 local padding = 10
 
@@ -13,12 +16,6 @@ local large_font_size = tweak_data.menu.pd2_large_font_size
 local medium_font_size = tweak_data.menu.pd2_medium_font_size
 local small_font_size = tweak_data.menu.pd2_small_font_size
 
-local function make_fine_text( text )
-	local x,y,w,h = text:text_rect()
-	text:set_size( w, h )
-	text:set_position( math.round( text:x() ), math.round( text:y() ) )
-end
-
 -- attaches white corners to panel, which will align correctly when 'panel' changes size
 local function attach_corners(parent)
 	local top_left = BoxGuiObject:new( parent, { sides = { 3, 0, 3, 0 } } )
@@ -31,70 +28,12 @@ local function attach_corners(parent)
 	bottom_right:set_aligns("right", "bottom")
 end
 
-function BLTViewModGui:init( ws, fullscreen_ws, node )
-
-	self._ws = ws
-	self._fullscreen_ws = fullscreen_ws
-	self._fullscreen_panel = self._fullscreen_ws:panel():panel({})
-	self._panel = self._ws:panel():panel({})
-	self._init_layer = self._ws:panel():layer()
-
-	self._data = node:parameters().menu_component_data or {}
-	self._buttons = {}
-
-	self:_setup()
-
-end
-
-function BLTViewModGui:close()
-	self._ws:panel():remove( self._panel )
-	self._fullscreen_ws:panel():remove( self._fullscreen_panel )
-end
-
-function BLTViewModGui:_setup()
-
+function BLTViewModGui:setup()
 	-- Background
-	self._background = self._fullscreen_panel:rect({
-		color = Color.black,
-		alpha = 0.4,
-		layer = -1
-	})
+	self:make_background()
 
 	-- Back button
-	local back_button = self._panel:text({
-		name = "back",
-		text = managers.localization:text("menu_back"),
-		align = "right",
-		vertical = "bottom",
-		font_size = tweak_data.menu.pd2_large_font_size,
-		font = tweak_data.menu.pd2_large_font,
-		color = tweak_data.screen_colors.button_stage_3,
-		layer = 40,
-		blend_mode = "add"
-	})
-	make_fine_text( back_button )
-	back_button:set_right( self._panel:w() - 10 )
-	back_button:set_bottom( self._panel:h() - 10 )
-	back_button:set_visible( managers.menu:is_pc_controller() )
-	self._back_button = back_button
-
-	local bg_back = self._fullscreen_panel:text({
-		name = "back_button",
-		text = utf8.to_upper( managers.localization:text("menu_back") ),
-		h = 90,
-		align = "right",
-		vertical = "bottom",
-		blend_mode = "add",
-		font_size = tweak_data.menu.pd2_massive_font_size,
-		font = tweak_data.menu.pd2_massive_font,
-		color = tweak_data.screen_colors.button_stage_3,
-		alpha = 0.4,
-		layer = 1
-	})
-	local x, y = managers.gui_data:safe_to_full_16_9( self._panel:child("back"):world_right(), self._panel:child("back"):world_center_y() )
-	bg_back:set_world_right( x )
-	bg_back:set_world_center_y( y )
-	bg_back:move( 13, -9 )
+	-- Automatically added by BLTCustomComponent
 
 	-- Create page info
 	self._mod = managers.menu_component:blt_mods_gui() and managers.menu_component:blt_mods_gui():inspecting_mod()
@@ -112,20 +51,7 @@ end
 function BLTViewModGui:_setup_mod_info( mod )
 
 	-- Page title
-	local title = self._panel:text({
-		name = "title",
-		x = padding,
-		y = padding,
-		font_size = large_font_size,
-		font = large_font,
-		layer = 10,
-		blend_mode = "add",
-		color = tweak_data.screen_colors.title,
-		text = mod:GetName(),
-		align = "left",
-		vertical = "top",
-	})
-	make_fine_text( title )
+	local title = self:make_title(mod:GetName())
 	self._title = title
 
 	local version = self._panel:text({
@@ -140,7 +66,7 @@ function BLTViewModGui:_setup_mod_info( mod )
 		align = "left",
 		vertical = "top",
 	})
-	make_fine_text( version )
+	self:make_fine_text( version )
 	version:set_left( title:right() + padding )
 	version:set_bottom( title:bottom() - 4 )
 
@@ -154,11 +80,7 @@ function BLTViewModGui:_setup_mod_info( mod )
 	attach_corners(info_panel)
 	self._info_panel = info_panel
 
-	self._info_panel:rect({
-		color = Color.black,
-		alpha = 0.4,
-		layer = -1
-	})
+	self:make_background(self._info_panel)
 	self._info_panel:bitmap({
 		texture = "guis/textures/test_blur_df",
 		w = self._info_panel:w(),
@@ -212,7 +134,7 @@ function BLTViewModGui:_setup_mod_info( mod )
 			wrap = true,
 			word_wrap = true,
 		})
-		make_fine_text( error_text )
+		self:make_fine_text(error_text)
 
 	end
 
@@ -233,7 +155,7 @@ function BLTViewModGui:_setup_mod_info( mod )
 		wrap = true,
 		word_wrap = true,
 	})
-	make_fine_text( desc )
+	self:make_fine_text(desc)
 	if error_text then
 		desc:set_top( error_text:bottom() + padding )
 	end
@@ -255,7 +177,7 @@ function BLTViewModGui:_setup_mod_info( mod )
 		wrap = true,
 		word_wrap = true,
 	})
-	make_fine_text( author )
+	self:make_fine_text(author)
 	author:set_top( desc:bottom() )
 
 	-- Mod contact
@@ -275,7 +197,7 @@ function BLTViewModGui:_setup_mod_info( mod )
 		wrap = true,
 		word_wrap = true,
 	})
-	make_fine_text( contact )
+	self:make_fine_text(contact)
 	contact:set_top( author:bottom() )
 
 	self._info_scroll:update_canvas_size()
@@ -294,11 +216,7 @@ function BLTViewModGui:_setup_dev_info( mod )
 	BoxGuiObject:new( dev_panel:panel({ layer = 100 }), { sides = { 1, 1, 1, 1 } } )
 	self._dev_panel = dev_panel
 
-	self._dev_panel:rect({
-		color = Color.black,
-		alpha = 0.4,
-		layer = -1
-	})
+	self:make_background( dev_panel )
 	self._dev_panel:bitmap({
 		texture = "guis/textures/test_blur_df",
 		w = self._dev_panel:w(),
@@ -328,7 +246,7 @@ function BLTViewModGui:_setup_dev_info( mod )
 		wrap = true,
 		word_wrap = true,
 	})
-	make_fine_text( info )
+	self:make_fine_text( info )
 
 	self._dev_scroll:update_canvas_size()
 	self._dev_panel:set_visible( false )
@@ -425,61 +343,45 @@ end
 
 --------------------------------------------------------------------------------
 
-function BLTViewModGui:mouse_clicked( o, button, x, y )
-
-	if button == Idstring( "0" ) then -- left click
-
-		if alive(self._back_button) and self._back_button:visible() then
-			if self._back_button:inside(x, y) then
-				managers.menu:back()
-				return true
-			end
+function BLTViewModGui:mouse_pressed(o, x, y)
+	if alive(self._info_scroll) then
+		if self._info_scroll:mouse_pressed(o, x, y) then
+			return true
 		end
-
-		for _, item in ipairs( self._buttons ) do
-			if item:inside( x, y ) then
-				if item:parameters().callback then
-					item:parameters().callback()
-				end
-				managers.menu_component:post_event( "menu_enter" )
-				return true
-			end
+	end
+	if alive(self._dev_scroll) then
+		if self._dev_scroll:mouse_pressed(o, x, y) then
+			return true
 		end
 
 	end
-
+	return BLTViewModGui.super.mouse_pressed(self, o, x, y)
 end
 
-function BLTViewModGui:mouse_moved( button, x, y )
-
-	if managers.menu_scene and managers.menu_scene:input_focus() then
-		return false
+function BLTViewModGui:mouse_released(o, x, y)
+	BLTViewModGui.super.mouse_released(self, o, x, y)
+	if alive(self._info_scroll) then
+		self._info_scroll:mouse_released(o, x, y)
 	end
+	if alive(self._dev_scroll) then
+		self._dev_scroll:mouse_released(o, x, y)
+	end
+end
 
+function BLTViewModGui:mouse_move(o, x, y)
 	local used, pointer
-
-	if alive(self._back_button) and self._back_button:visible() then
-		if self._back_button:inside(x, y) then
-			if self._back_button:color() ~= tweak_data.screen_colors.button_stage_2 then
-				self._back_button:set_color( tweak_data.screen_colors.button_stage_2 )
-				managers.menu_component:post_event( "highlight" )
-			end
-			used, pointer = true, "link"
-		else
-			self._back_button:set_color( tweak_data.screen_colors.button_stage_3 )
-		end
+	if alive(self._info_scroll) then
+		used, pointer = self._info_scroll:mouse_moved(o, x, y)
 	end
 
-	for _, item in ipairs( self._buttons ) do
-		if not used and item:inside( x, y ) then
-			item:set_highlight( true )
-			used, pointer = true, "link"
-		else
-			item:set_highlight( false )
-		end
+	if alive(self._dev_scroll) and not used then
+		used, pointer = self._dev_scroll:mouse_moved(o, x, y)
 	end
-
-	return used, pointer
+	if not used then
+		return BLTViewModGui.super.mouse_move(self, o, x, y)
+	else
+		return used, pointer
+	end
 
 end
 
