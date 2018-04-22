@@ -68,7 +68,7 @@
 	"blt_download_dependency" : "$dependency, krävs av $mod",
 	"blt_download_all" : "Uppdatera alla",
 
-	"blt_checking_updates" : "Sök efter uppdateringar",
+	"blt_checking_updates" : "Söker efter uppdateringar",
 	"blt_checking_updates_help" : "Söker på PaydayMods-servern efter uppdateringar till dina moddar, var god vänta...",
 	"blt_checking_updates_required" : "Uppdateringar krävs",
 	"blt_checking_updates_required_help" : "Uppdateringar finns tillgängliga till dina moddar, besök nedladdningshanteraren för att uppdatera dem!",
