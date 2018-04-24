@@ -47,6 +47,9 @@ function BLTSuperMod:_load_xml(xml, parent_scope)
 		hooks = function(tag, scope)
 			self:_add_hooks(tag, scope)
 		end,
+		native_module = function(tag, scope)
+			self:_add_native_module(tag, scope)
+		end,
 
 		-- These tags are used by the Wren-based XML Tweaker
 		wren = function(tag, scope) end,
@@ -76,6 +79,22 @@ function BLTSuperMod:_add_hook(tag, scope, data_key, destination)
 	assert(script_path, "missing parameter script_path in " .. tag._doc.filename)
 
 	self._mod:AddHook(data_key, hook_id, script_path, BLT.hook_tables[destination])
+end
+
+function BLTSuperMod:_add_native_module(tag, scope)
+	if not blt.load_native or not blt.blt_info then
+		log("[BLT] Cannot load native module for mod " .. self._mod:GetId()
+			.. " as such functionality is not available in this version of the SuperBLT DLL/SO")
+		return
+	end
+
+	if blt.blt_info().platform ~= scope.platform then
+		log("[BLT] Incorrect platform for native module for " .. self._mod:GetId())
+		return
+	end
+
+	log("[BLT] Loading native module for " .. self._mod:GetId())
+	blt.load_native(self._mod:GetPath() .. scope.filename)
 end
 
 function BLTSuperMod:_replace_includes(xml)
