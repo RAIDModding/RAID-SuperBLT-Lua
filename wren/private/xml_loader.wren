@@ -173,6 +173,8 @@ class XMLLoader {
 						handle_wren_tag(mod, elem)
 					} else if(name == "tweak") {
 						handle_tweak_file(mod, elem["definition"])
+					} else if(name == "native_module") {
+						handle_native_module(mod, elem)
 					} else {
 						// Since this XML file is also used by Lua, don't do anything
 						// Fiber.abort("Unknown element type in %(path): %(name)")
@@ -222,6 +224,19 @@ class XMLLoader {
 		var name = XMLTweakApplier.handle_idstring(root["name"])
 		var extension = XMLTweakApplier.handle_idstring(root["extension"])
 		Tweaker.add_tweak(name, extension, path)
+	}
+
+	static handle_native_module(mod, elem) {
+		// Lua handles everything except "preload" DLLs
+		if(elem["loading_vector"] != "preload") return
+
+		var path = "mods/%(mod)/%(elem["filename"])"
+
+		// TODO check platform/architecture
+
+		Logger.log("Loading native plugin for mod \"%(mod)\"")
+
+		IO.load_plugin(path)
 	}
 }
 

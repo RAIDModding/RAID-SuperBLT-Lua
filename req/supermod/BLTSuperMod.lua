@@ -92,6 +92,10 @@ function BLTSuperMod:_run_entry_script(tag, scope, data_key, destination)
 end
 
 function BLTSuperMod:_add_native_module(tag, scope)
+	if scope.loading_vector == "preload" then
+		return -- Uses Wren
+	end
+
 	if not blt.load_native or not blt.blt_info then
 		log("[BLT] Cannot load native module for mod " .. self._mod:GetId()
 			.. " as such functionality is not available in this version of the SuperBLT DLL/SO")
