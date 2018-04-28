@@ -65,6 +65,9 @@ function BLTSuperMod:_add_hooks(xml, parent_scope)
 		post = function(tag, scope)
 			self:_add_hook(tag, scope, "hooks", "post")
 		end,
+		entry = function(tag, scope)
+			self:_run_entry_script(tag, scope, "hooks", "post")
+		end,
 		wildcard = function(tag, scope)
 			error("TODO implement wildcard")
 		end,
@@ -79,6 +82,13 @@ function BLTSuperMod:_add_hook(tag, scope, data_key, destination)
 	assert(script_path, "missing parameter script_path in " .. tag._doc.filename)
 
 	self._mod:AddHook(data_key, hook_id, script_path, BLT.hook_tables[destination])
+end
+
+function BLTSuperMod:_run_entry_script(tag, scope, data_key, destination)
+	BLT:RunHookFile(scope.script_path, {
+		mod = self._mod,
+		script = scope.script_path
+	})
 end
 
 function BLTSuperMod:_add_native_module(tag, scope)
