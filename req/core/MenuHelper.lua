@@ -69,6 +69,7 @@ function MenuHelper:AddButton( button_data )
 		disabled_color = button_data.disabled_color or Color(0.25, 1, 1, 1),
 		next_node = button_data.next_node,
 		localize = button_data.localized,
+		localize_help = button_data.localized,
 	}
 
 	local menu = self:GetMenu( button_data.menu_id )
@@ -146,6 +147,7 @@ function MenuHelper:AddToggle( toggle_data )
 		disabled_color = toggle_data.disabled_color or Color( 0.25, 1, 1, 1 ),
 		icon_by_text = toggle_data.icon_by_text or false,
 		localize = toggle_data.localized,
+		localize_help = toggle_data.localized,
 	}
 
 	local menu = self:GetMenu( toggle_data.menu_id )
@@ -211,6 +213,7 @@ function MenuHelper:AddMultipleChoice( multi_data )
 		callback = multi_data.callback,
 		filter = true,
 		localize = multi_data.localized,
+		localize_help = multi_data.localized,
 	}
 	
 	local menu = self:GetMenu( multi_data.menu_id )
@@ -267,6 +270,7 @@ function MenuHelper:AddInput( input_data )
 		callback = input_data.callback,
 		disabled_color = input_data.disabled_color or Color( 0.25, 1, 1, 1 ),
 		localize = input_data.localized,
+		localize_help = input_data.localized,
 	}
 
 	local menu = self:GetMenu( input_data.menu_id )
