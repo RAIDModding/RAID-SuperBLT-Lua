@@ -283,26 +283,4 @@ end
 --------------------------------------------------------------------------------
 -- Patch MenuComponentManager to create the BLT Mods component
 
-Hooks:Add("MenuComponentManagerInitialize", "BLTModsGui.MenuComponentManagerInitialize", function(menu)
-	menu._active_components["blt_mods"] = { create = callback(menu, menu, "create_blt_mods_gui"), close = callback(menu, menu, "close_blt_mods_gui") }
-end)
-
-function MenuComponentManager:blt_mods_gui()
-	return self._blt_mods_gui
-end
-
-function MenuComponentManager:create_blt_mods_gui( node )
-	if not node then
-		return
-	end
-	self._blt_mods_gui = self._blt_mods_gui or BLTModsGui:new( self._ws, self._fullscreen_ws, node )
-	self:register_component( "blt_mods_gui", self._blt_mods_gui )
-end
-
-function MenuComponentManager:close_blt_mods_gui()
-	if self._blt_mods_gui then
-		self._blt_mods_gui:close()
-		self._blt_mods_gui = nil
-		self:unregister_component( "blt_mods_gui" )
-	end
-end
+MenuHelper:AddComponent("blt_mods", BLTModsGui)

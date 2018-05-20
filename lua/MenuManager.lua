@@ -127,7 +127,7 @@ function MenuCallbackHandler:close_blt_mods()
 end
 
 function MenuCallbackHandler:close_blt_download_manager()
-	managers.menu_component:close_blt_downloads_gui()
+	managers.menu_component:close_blt_download_manager_gui()
 end
 
 --------------------------------------------------------------------------------

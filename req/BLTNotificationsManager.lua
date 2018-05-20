@@ -42,7 +42,7 @@ function BLTNotificationsManager:add_notification( parameters )
 	table.insert( self._notifications, data )
 
 	-- Add the notification immediately if the gui is visible
-	local notifications = managers.menu_component:blt_notifications()
+	local notifications = managers.menu_component:blt_notifications_gui()
 	if notifications then
 		notifications:add_notification( data )
 	end
@@ -60,7 +60,7 @@ function BLTNotificationsManager:remove_notification( uid )
 		table.remove( self._notifications, idx )
 
 		-- Update the ui
-		local notifications = managers.menu_component:blt_notifications()
+		local notifications = managers.menu_component:blt_notifications_gui()
 		if notifications then
 			notifications:remove_notification( uid )
 		end

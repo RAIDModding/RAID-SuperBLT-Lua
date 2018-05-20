@@ -644,3 +644,82 @@ function MenuHelper:ResetItemsToDefaultValue( item, items_table, value )
 	managers.viewport:resolution_changed()
 
 end
+
+--[[
+	Registers a new BLTCustomComponent
+
+	Please note you still need to set up your component in BLTMenuNodes
+
+	This does the following:
+	- adds a method named name_gui to MenuComponentManager
+	- adds a method named create_name_gui to MenuComponentManager
+	- adds a method named close_name_gui to MenuComponentManager
+	- Sets up managers.component._active_components to refer to the create and close functions
+
+	In other words, calling AddComponent("mycmp", MyCmp) will result in:
+
+	function MenuComponentManager:mycmp_gui()
+		return self._mycmp
+	end
+
+	function MenuComponentManager:create_mycmp_gui(node)
+		if not node then
+			return
+		end
+		self._mycmp = self._mycmp or MyCmp:new(self._ws, self._fullscreen_ws, node)
+		self:register_component("mycmp_gui", self._mycmp)
+	end
+
+	function MenuComponentManager:close_mycmp_gui()
+		if self._mycmp then
+			self._mycmp:close()
+			self._mycmp = nil
+			self:unregister_component("mycmp_gui")
+		end
+	end
+]]
+function MenuHelper:AddComponent(name, clss)
+	local function add(component)
+		local c_name = name.."_gui"
+		local u_name = "_"..name
+		local create = "create_"..c_name
+		local close = "close_"..c_name
+
+		-- function MenuComponentManager:name_gui()
+		MenuComponentManager[c_name] = function(self)
+			return self[u_name]
+		end
+
+		-- function MenuComponentManager:create_name_gui()
+		MenuComponentManager[create] = function(self, node)
+			if not node then
+				return
+			end
+			self[u_name] = self[u_name] or clss:new(self._ws, self._fullscreen_ws, node)
+			self:register_component(c_name, self[u_name])
+		end
+
+		-- function MenuComponentManager:close_name_gui()
+		MenuComponentManager[close] = function(self)
+			if self[u_name] then
+				self[u_name]:close()
+				self[u_name] = nil
+				self:unregister_component(c_name)
+			end
+		end
+
+		-- Make the component available
+		component._active_components[name] = {
+			create = callback(component, component, create),
+			close = callback(component, component, close)
+		}
+	end
+
+	-- If the component manager is already loaded then set everything up now,
+	-- otherwise set it up as it's loaded
+	if managers.component then
+		add(managers.component)
+	else
+		Hooks:Add("MenuComponentManagerInitialize", name..".MenuComponentManagerInitialize", add)
+	end
+end

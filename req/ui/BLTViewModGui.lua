@@ -669,32 +669,7 @@ function BLTViewModGui:refresh()
 
 end
 
---------------------------------------------------------------------------------
--- Patch MenuComponentManager to create the BLT Mods component
-
-Hooks:Add("MenuComponentManagerInitialize", "BLTViewModGui.MenuComponentManagerInitialize", function(menu)
-	menu._active_components["blt_view_mod"] = { create = callback(menu, menu, "create_blt_view_mod_gui"), close = callback(menu, menu, "close_blt_view_mod_gui") }
-end)
-
-function MenuComponentManager:blt_view_mod_gui()
-	return self._blt_view_mod_gui
-end
-
-function MenuComponentManager:create_blt_view_mod_gui( node )
-	if not node then
-		return
-	end
-	self._blt_view_mod_gui = self._blt_view_mod_gui or BLTViewModGui:new( self._ws, self._fullscreen_ws, node )
-	self:register_component( "blt_view_mod_gui", self._blt_view_mod_gui )
-end
-
-function MenuComponentManager:close_blt_view_mod_gui()
-	if self._blt_view_mod_gui then
-		self._blt_view_mod_gui:close()
-		self._blt_view_mod_gui = nil
-		self:unregister_component( "blt_view_mod_gui" )
-	end
-end
+MenuHelper:AddComponent("blt_view_mod", BLTViewModGui)
 
 --------------------------------------------------------------------------------
 -- Create the menu node for the BLT Mods menu

@@ -256,26 +256,4 @@ end
 --------------------------------------------------------------------------------
 -- Patch MenuComponentManager to create the BLT Download Manager component
 
-Hooks:Add("MenuComponentManagerInitialize", "BLTDownloadManagerGui.MenuComponentManagerInitialize", function(menu)
-	menu._active_components["blt_download_manager"] = { create = callback(menu, menu, "create_blt_downloads_gui"), close = callback(menu, menu, "close_blt_downloads_gui") }
-end)
-
-function MenuComponentManager:blt_downloads_gui()
-	return self._blt_downloads_gui
-end
-
-function MenuComponentManager:create_blt_downloads_gui( node )
-	if not node then
-		return
-	end
-	self._blt_downloads_gui = self._blt_downloads_gui or BLTDownloadManagerGui:new( self._ws, self._fullscreen_ws, node )
-	self:register_component( "blt_downloads_gui", self._blt_downloads_gui )
-end
-
-function MenuComponentManager:close_blt_downloads_gui()
-	if self._blt_downloads_gui then
-		self._blt_downloads_gui:close()
-		self._blt_downloads_gui = nil
-		self:unregister_component( "blt_downloads_gui" )
-	end
-end
+MenuHelper:AddComponent("blt_download_manager", BLTDownloadManagerGui)

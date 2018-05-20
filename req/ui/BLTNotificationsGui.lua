@@ -511,32 +511,7 @@ function BLTNotificationsGui:input_focus()
 	return nil
 end
 
---------------------------------------------------------------------------------
--- Patch MenuComponentManager to create the BLT Notifications component
-
-Hooks:Add("MenuComponentManagerInitialize", "BLTNotificationsGui.MenuComponentManagerInitialize", function(menu)
-	menu._active_components["blt_notifications"] = { create = callback(menu, menu, "create_blt_notifications_gui"), close = callback(menu, menu, "close_blt_notifications_gui") }
-end)
-
-function MenuComponentManager:blt_notifications()
-	return self._blt_notifications
-end
-
-function MenuComponentManager:create_blt_notifications_gui( node )
-	if not node then
-		return
-	end
-	self._blt_notifications = self._blt_notifications or BLTNotificationsGui:new( self._ws, self._fullscreen_ws, node )
-	self:register_component( "blt_notifications", self._blt_notifications )
-end
-
-function MenuComponentManager:close_blt_notifications_gui()
-	if self._blt_notifications then
-		self._blt_notifications:close()
-		self._blt_notifications = nil
-		self:unregister_component( "blt_notifications" )
-	end
-end
+MenuHelper:AddComponent("blt_notifications", BLTNotificationsGui)
 
 --------------------------------------------------------------------------------
 -- Patch main menu to add notifications menu component
