@@ -1,116 +1,26 @@
 
-BLTDownloadManagerGui = BLTDownloadManagerGui or blt_class( MenuGuiComponentGeneric )
+BLTDownloadManagerGui = BLTDownloadManagerGui or blt_class( BLTCustomComponent )
+
+-- Use the modified BLT back button
+BLTDownloadManagerGui._add_back_button = BLTDownloadManagerGui._add_custom_back_button
 
 local padding = 10
 
-local massive_font = tweak_data.menu.pd2_massive_font
-local large_font = tweak_data.menu.pd2_large_font
-local medium_font = tweak_data.menu.pd2_medium_font
-local small_font = tweak_data.menu.pd2_small_font
-
-local massive_font_size = tweak_data.menu.pd2_massive_font_size
-local large_font_size = tweak_data.menu.pd2_large_font_size
-local medium_font_size = tweak_data.menu.pd2_medium_font_size
-local small_font_size = tweak_data.menu.pd2_small_font_size
-
-local function make_fine_text( text )
-	local x,y,w,h = text:text_rect()
-	text:set_size( w, h )
-	text:set_position( math.round( text:x() ), math.round( text:y() ) )
-end
-
-function BLTDownloadManagerGui:init( ws, fullscreen_ws, node )
-
-	self._ws = ws
-	self._fullscreen_ws = fullscreen_ws
-	self._fullscreen_panel = self._fullscreen_ws:panel():panel({})
-	self._panel = self._ws:panel():panel({})
-	self._init_layer = self._ws:panel():layer()
-
-	self._data = node:parameters().menu_component_data or {}
-	self._buttons = {}
+function BLTDownloadManagerGui:setup()
+	self:make_into_listview("downloads_scroll", managers.localization:text("blt_download_manager"), true)
 	self._downloads_map = {}
 
-	self:_setup()
-
-end
-
-function BLTDownloadManagerGui:close()
-	self._ws:panel():remove( self._panel )
-	self._fullscreen_ws:panel():remove( self._fullscreen_panel )
-	BLT.Downloads:flush_complete_downloads()
-end
-
-function BLTDownloadManagerGui:_setup()
-
 	-- Background
-	self._background = self._fullscreen_panel:rect({
-		color = Color.black,
-		alpha = 0.4,
-		layer = -1
-	})
+	-- Added by make_into_listview
 
 	-- Back button
-	local back_button = self._panel:text({
-		name = "back",
-		text = managers.localization:text("menu_back"),
-		align = "right",
-		vertical = "bottom",
-		font_size = tweak_data.menu.pd2_large_font_size,
-		font = tweak_data.menu.pd2_large_font,
-		color = tweak_data.screen_colors.button_stage_3,
-		layer = 40,
-		blend_mode = "add"
-	})
-	make_fine_text( back_button )
-	back_button:set_right( self._panel:w() - 10 )
-	back_button:set_bottom( self._panel:h() - 10 )
-	back_button:set_visible( managers.menu:is_pc_controller() )
-	self._back_button = back_button
-
-	local bg_back = self._fullscreen_panel:text({
-		name = "back_button",
-		text = utf8.to_upper( managers.localization:text("menu_back") ),
-		h = 90,
-		align = "right",
-		vertical = "bottom",
-		blend_mode = "add",
-		font_size = tweak_data.menu.pd2_massive_font_size,
-		font = tweak_data.menu.pd2_massive_font,
-		color = tweak_data.screen_colors.button_stage_3,
-		alpha = 0.4,
-		layer = 1
-	})
-	local x, y = managers.gui_data:safe_to_full_16_9( self._panel:child("back"):world_right(), self._panel:child("back"):world_center_y() )
-	bg_back:set_world_right( x )
-	bg_back:set_world_center_y( y )
-	bg_back:move( 13, -9 )
+	-- Automatically added by BLTCustomComponent
 
 	-- Title
-	local title = self._panel:text({
-		name = "title",
-		x = padding,
-		y = padding,
-		font_size = large_font_size,
-		font = large_font,
-		h = large_font_size,
-		layer = 10,
-		blend_mode = "add",
-		color = tweak_data.screen_colors.title,
-		text = managers.localization:text("blt_download_manager"),
-		align = "left",
-		vertical = "top",
-	})
+	-- This has already been added, thanks to make_into_listview
 
 	-- Download scroll panel
-	local scroll_panel = self._panel:panel({
-		h = self._panel:h() - large_font_size - back_button:h() - padding * 2,
-		y = large_font_size + padding,
-	})
-	BoxGuiObject:new( scroll_panel:panel({layer=100}), { sides = { 1, 1, 1, 1 } })
-	BoxGuiObject:new( scroll_panel:panel({layer=100}), { sides = { 1, 1, 2, 2 } })
-
-	self._scroll = ScrollablePanel:new( scroll_panel, "downloads_scroll", {} )
+	-- Again, this has already been added by make_into_listview
 
 	-- Add download items
 	local h = 80
@@ -143,10 +53,6 @@ function BLTDownloadManagerGui:_setup()
 		} )
 		table.insert( self._buttons, button )
 	end
-
-	-- Update scroll
-	self._scroll:update_canvas_size()
-
 end
 
 function BLTDownloadManagerGui:clbk_download_all()
@@ -167,90 +73,8 @@ function BLTDownloadManagerGui:update( t, dt )
 
 end
 
-function BLTDownloadManagerGui:mouse_clicked( o, button, x, y )
-
-	local result = false
-
-	for _, item in ipairs( self._buttons ) do
-		if item:inside( x, y ) then
-			if item.mouse_clicked then
-				result = item:mouse_clicked( button, x, y )
-			end
-			break
-		end
-	end
-
-	if button == Idstring( "0" ) then
-
-		if alive(self._back_button) and self._back_button:visible() then
-			if self._back_button:inside(x, y) then
-				managers.menu:back()
-				return true
-			end
-		end
-
-		for _, item in ipairs( self._buttons ) do
-			if item:inside( x, y ) then
-				if item:parameters().callback then
-					item:parameters().callback()
-				end
-				managers.menu_component:post_event( "menu_enter" )
-				return true
-			end
-		end
-
-	end
-
-	return result
-
-end
-
-function BLTDownloadManagerGui:mouse_moved( button, x, y )
-
-	if managers.menu_scene and managers.menu_scene:input_focus() then
-		return false
-	end
-
-	local used, pointer
-
-	if alive(self._back_button) and self._back_button:visible() then
-		if self._back_button:inside(x, y) then
-			if self._back_button:color() ~= tweak_data.screen_colors.button_stage_2 then
-				self._back_button:set_color( tweak_data.screen_colors.button_stage_2 )
-				managers.menu_component:post_event( "highlight" )
-			end
-			used, pointer = true, "link"
-		else
-			self._back_button:set_color( tweak_data.screen_colors.button_stage_3 )
-		end
-	end
-
-	for _, item in ipairs( self._buttons ) do
-		if item.mouse_moved then
-			item:mouse_moved( button, x, y )
-		end
-		if not used and item:inside( x, y ) then
-			item:set_highlight( true )
-			used, pointer = true, "link"
-		else
-			item:set_highlight( false )
-		end
-	end
-
-	return used, pointer
-
-end
-
-function BLTDownloadManagerGui:mouse_wheel_up( x, y )
-	if alive(self._scroll) then
-		self._scroll:scroll( x, y, 1 )
-	end
-end
-
-function BLTDownloadManagerGui:mouse_wheel_down( x, y )
-	if alive(self._scroll) then
-		self._scroll:scroll( x, y, -1 )
-	end
+function BLTDownloadManagerGui:on_close()
+	BLT.Downloads:flush_complete_downloads()
 end
 
 --------------------------------------------------------------------------------
