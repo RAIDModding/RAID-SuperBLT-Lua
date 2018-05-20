@@ -63,6 +63,10 @@
 
 		{
 			"hook_id" : "lib/managers/menu/menucomponentmanager",
+			"script_path" : "req/ui/BLTCustomComponent.lua"
+		},
+		{
+			"hook_id" : "lib/managers/menu/menucomponentmanager",
 			"script_path" : "req/ui/BLTModsGui.lua"
 		},
 		{ 
