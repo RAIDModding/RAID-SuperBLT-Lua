@@ -85,6 +85,19 @@ function BLTDownloadManager:start_download( update )
 		return false
 	end
 
+	-- If there is a .git or .hg file at the root of the mod, don't update it
+	-- the dev has most likely misclicked, so let's not wipe their work
+	local moddir = Application:nice_path( update:GetInstallDirectory() .. "/" .. update:GetInstallFolder(), true )
+	if file.DirectoryExists(moddir .. ".hg") or file.DirectoryExists(moddir .. ".git") then
+		QuickMenu:new(
+			"Update Blocked", -- TODO i18n
+			"Mercerial or Git version control are in use for this mod, update blocked", -- TODO i18n
+			{},
+			true
+		)
+		return false
+	end
+
 	-- Check if this update is allowed to be updated by the download manager
 	if update:DisallowsUpdate() then
 		MenuCallbackHandler[ update:GetDisallowCallback() ]( MenuCallbackHandler, update )
