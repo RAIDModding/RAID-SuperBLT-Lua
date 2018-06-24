@@ -152,7 +152,7 @@ function BLT:OverrideRequire()
 		self:RunHookTable( self.hook_tables.post, path_lower )
 
 		for k, v in ipairs( self.hook_tables.wildcards ) do
-			self:RunHookFile( path, v.mod_path, v.script )
+			self:RunHookFile( path, v )
 		end
 
 		return require_result
