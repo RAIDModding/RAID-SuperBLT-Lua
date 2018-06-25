@@ -396,7 +396,7 @@ function BLTDownloadControl:mouse_moved( button, x, y )
 
 end
 
-function BLTDownloadControl:mouse_clicked( button, x, y )
+function BLTDownloadControl:mouse_pressed( button, x, y )
 
 	if button == Idstring( "0" ) then -- left click
 
