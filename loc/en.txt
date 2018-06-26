@@ -6,6 +6,8 @@
 	"blt_options_menu_keybinds" : "Mod Keybinds",
 	"blt_options_menu_keybinds_desc" : "Set your keybinds for your BLT mods",
 
+	"blt_libraries" : "$count Libraries",
+
 	"blt_mod_outdated" : "This mod is for an older BLT version and is no longer supported; the developer must update this mod to the latest version of the BLT. You will get errors and crashes by leaving this mod installed.",
 	"blt_mod_missing_dependencies" : "This mod requires other mods to function which are not installed, so it has been disabled.",
 	"blt_mod_missing_dependency" : "    Missing: $dependency",

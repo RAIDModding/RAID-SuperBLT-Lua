@@ -34,7 +34,7 @@ function BLTCustomComponent:_setup()
 		self._scroll:update_canvas_size()
 	end
 	if self.last_y_position then
-		self._scroll:scroll_to(BLTModsGui.last_y_position)
+		self._scroll:scroll_to(self.last_y_position)
 	end
 	self:check_items()
 end
