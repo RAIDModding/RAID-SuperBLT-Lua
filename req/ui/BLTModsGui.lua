@@ -249,6 +249,7 @@ function BLTModsGui:update_visible_mods(scroll_position)
 
 	-- Clear the scroll panel
 	self._scroll:canvas():clear()
+	self._scroll:update_canvas_size() -- Ensure the canvas always starts at it's maximum size
 	self._buttons = {}
 
 	-- Create download manager button
