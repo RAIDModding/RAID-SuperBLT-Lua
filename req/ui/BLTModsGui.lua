@@ -6,6 +6,7 @@ BLT:Require("req/ui/BLTViewModGui")
 BLTModsGui = BLTModsGui or blt_class( MenuGuiComponentGeneric )
 BLTModsGui.last_y_position = 0
 BLTModsGui.show_libraries = false
+BLTModsGui.show_mod_icons = true
 
 local padding = 10
 
@@ -185,6 +186,45 @@ function BLTModsGui:_setup()
 		end,
 	}
 
+	-- Set up the toggle icons button
+	params.width = self._panel:w() - padding*2
+	params.height = params.height - small_font_size
+
+	local icons_text = self._panel:text(customize({
+		text = managers.localization:to_upper_text("blt_mod_icons"),
+		color = tweak_data.screen_colors.text,
+	}))
+
+	-- Shift the show and hide buttons to the left of the label
+	make_fine_text_aligning(icons_text)
+	params.width = icons_text:x() - params.x - 4 -- 4px padding
+
+	self._mod_icons_show_button = self._panel:text(customize({
+		text = managers.localization:to_upper_text("menu_button_show"),
+	}))
+
+	self._mod_icons_hide_button = self._panel:text(customize({
+		text = managers.localization:to_upper_text("menu_button_hide"),
+	}))
+
+	make_fine_text_aligning(self._mod_icons_show_button)
+	make_fine_text_aligning(self._mod_icons_hide_button)
+
+	self._custom_buttons[self._mod_icons_show_button] = {
+		clbk = function()
+			BLTModsGui.show_mod_icons = true
+			self:update_visible_mods()
+			return true
+		end,
+	}
+	self._custom_buttons[self._mod_icons_hide_button] = {
+		clbk = function()
+			BLTModsGui.show_mod_icons = false
+			self:update_visible_mods()
+			return true
+		end,
+	}
+
 	-- Mods scroller
 	local scroll_panel = self._panel:panel({
 		h = self._panel:h() - large_font_size * 2 - padding * 2,
@@ -197,9 +237,12 @@ function BLTModsGui:_setup()
 end
 
 function BLTModsGui:update_visible_mods(scroll_position)
-	-- Update the show libraries button
+	-- Update the show libraries and mod icons button
 	self._libraries_show_button:set_visible(not BLTModsGui.show_libraries)
 	self._libraries_hide_button:set_visible(BLTModsGui.show_libraries)
+
+	self._mod_icons_show_button:set_visible(not BLTModsGui.show_mod_icons)
+	self._mod_icons_hide_button:set_visible(BLTModsGui.show_mod_icons)
 
 	-- Save the position of the scroll panel
 	BLTModsGui.last_y_position = scroll_position or self._scroll:canvas():y() * -1
@@ -220,7 +263,7 @@ function BLTModsGui:update_visible_mods(scroll_position)
 		x = 0,
 		y = 0,
 		w = (self._scroll:canvas():w() - (BLTModItem.layout.x + 1) * padding) / BLTModItem.layout.x,
-		h = 256,
+		h = 256 + (BLTModsGui.show_mod_icons and 0 or padding),
 		title = title_text,
 		text = managers.localization:text("blt_download_manager_help"),
 		image = icon,
@@ -233,7 +276,14 @@ function BLTModsGui:update_visible_mods(scroll_position)
 	-- Create mod boxes
 	for _, mod in ipairs( BLT.Mods:Mods() ) do
 		if BLTModsGui.show_libraries or not mod:IsLibrary() then
-			local item = BLTModItem:new( self._scroll:canvas(), #self._buttons + 1, mod )
+			local i = #self._buttons + 1
+
+			-- Wrap mods around the download button, if mod icons are disabled
+			if i >= 5 and not BLTModsGui.show_mod_icons then
+				i = i + 1
+			end
+
+			local item = BLTModItem:new( self._scroll:canvas(), i, mod, BLTModsGui.show_mod_icons )
 			table.insert( self._buttons, item )
 		end
 	end

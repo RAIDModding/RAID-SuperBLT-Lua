@@ -25,11 +25,12 @@ BLTModItem.layout = {
 }
 BLTModItem.image_size = 108
 
-function BLTModItem:init( panel, index, mod )
+function BLTModItem:init( panel, index, mod, show_icon )
 
 	local w = (panel:w() - (self.layout.x + 1) * padding) / self.layout.x
-	local h = 256
+	local h = show_icon and 256 or 128
 	local column, row = self:_get_col_row( index )
+	local icon_size = 32
 
 	self._mod = mod
 
@@ -81,11 +82,12 @@ function BLTModItem:init( panel, index, mod )
 		vertical = "top",
 		wrap = true,
 		word_wrap = true,
-		w = self._panel:w() - padding * 2,
 	})
 	make_fine_text( mod_name )
-	mod_name:set_center_x( self._panel:w() * 0.5 )
-	mod_name:set_top( self._panel:h() * 0.5 )
+	local name_padding = show_icon and padding or (icon_size + 4 + padding)
+	mod_name:set_x( name_padding )
+	mod_name:set_width( self._panel:w() - mod_name:x() - name_padding )
+	mod_name:set_top( self._panel:h() * (show_icon and 0.5 or 0.1) )
 
 	-- Mod description
 	local mod_desc = self._panel:text({
@@ -108,7 +110,7 @@ function BLTModItem:init( panel, index, mod )
 
 	-- Mod image
 	local image_path
-	if mod:HasModImage() then
+	if show_icon and mod:HasModImage() then
 		image_path = mod:GetModImage()
 	end
 
@@ -123,7 +125,7 @@ function BLTModItem:init( panel, index, mod )
 		})
 		image:set_center_x( self._panel:w() * 0.5 )
 		image:set_top( padding )
-	else
+	elseif show_icon then
 
 		local no_image_panel = self._panel:panel({
 			w = BLTModItem.image_size,
@@ -152,7 +154,6 @@ function BLTModItem:init( panel, index, mod )
 	end
 
 	-- Mod settings
-	local icon_size = 32
 	local icon_y = padding
 
 	if not mod:IsUndisablable() then
@@ -194,8 +195,13 @@ function BLTModItem:init( panel, index, mod )
 			w = icon_size,
 			h = icon_size,
 		})
-		icon_updates:set_left( padding )
-		icon_updates:set_top( icon_y )
+		if show_icon then
+			icon_updates:set_left( padding )
+			icon_updates:set_top( icon_y )
+		else
+			icon_updates:set_right( self._panel:w() - padding )
+			icon_updates:set_top( padding )
+		end
 
 	end
 
