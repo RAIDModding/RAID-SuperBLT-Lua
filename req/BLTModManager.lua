@@ -195,6 +195,9 @@ function BLTModManager:Load()
 
 	-- Call load hook
 	Hooks:Call("BLTOnLoadData", saved_data)
+	
+	-- Stash it for use later
+	self._saved_data = saved_data
 
 end
 
@@ -262,6 +265,8 @@ function BLTModManager:Save()
 
 	-- Hook to allow modules to save data
 	Hooks:Call("BLTOnSaveData", save_data)
+
+	self._saved_data = save_data
 
 	local success = io.save_as_json( save_data, BLTModManager.Constants:ModManagerSaveFile() )
 	log("[BLT] Save complete? " .. tostring(success))

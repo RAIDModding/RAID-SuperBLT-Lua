@@ -431,6 +431,29 @@ function BLTModsGui:mouse_wheel_down( x, y )
 	end
 end
 
+-- Load and save settings from savefile
+local function load_data(cache)
+	local data = cache.mods_gui
+	if data then
+		BLTModsGui.show_libraries = data.show_libraries
+		BLTModsGui.show_mod_icons = data.show_mod_icons
+		log("Loading mod settings : " .. tostring(cache.show_libraries))
+	end
+end
+Hooks:Add("BLTOnLoadData", "BLTOnLoadData.BLTModsGui", load_data)
+
+-- If the data has already been loaded, use it now
+if BLT.Mods._saved_data then
+	load_data(BLT.Mods._saved_data)
+end
+
+Hooks:Add("BLTOnSaveData", "BLTOnSaveData.BLTModsGui", function(cache)
+	cache.mods_gui = {
+		show_libraries = BLTModsGui.show_libraries,
+		show_mod_icons = BLTModsGui.show_mod_icons,
+	}
+end)
+
 --------------------------------------------------------------------------------
 -- Patch MenuComponentManager to create the BLT Mods component
 
