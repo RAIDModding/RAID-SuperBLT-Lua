@@ -200,6 +200,43 @@ function BLTViewModGui:_setup_mod_info( mod )
 	self:make_fine_text(contact)
 	contact:set_top( author:bottom() )
 
+	-- Mod update status
+	local update_status = info_canvas:text({
+		name = "update_status",
+		x = padding,
+		y = padding,
+		w = info_canvas:w() - padding * 2,
+		font_size = medium_font_size,
+		font = medium_font,
+		layer = 10,
+		blend_mode = "add",
+		color = tweak_data.screen_colors.title,
+		align = "left",
+		vertical = "top",
+		wrap = true,
+		word_wrap = true,
+	})
+	update_status:set_top( contact:bottom() )
+
+	if mod:GetUpdateError() then
+		update_status:set_text(managers.localization:text("blt_update_mod_error", {
+			reason = mod:GetUpdateError()
+		}))
+		update_status:set_color(Color.red)
+	elseif mod:IsCheckingForUpdates() then
+		update_status:set_text(managers.localization:text("blt_checking_updates"))
+		update_status:set_color(Color.blue)
+	elseif BLT.Downloads:get_pending_downloads_for(mod) then
+		update_status:set_text(managers.localization:text("blt_update_mod_available", {
+			name = mod:GetName()
+		}))
+		update_status:set_color(Color.yellow)
+	else
+		update_status:hide()
+	end
+
+	self:make_fine_text(update_status)
+
 	self._info_scroll:update_canvas_size()
 
 end

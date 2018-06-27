@@ -20,6 +20,19 @@ function BLTDownloadManager:get_pending_download( update )
 	return false
 end
 
+function BLTDownloadManager:get_pending_downloads_for( mod )
+	local result = nil
+	for _, update in ipairs( mod:GetUpdates() ) do
+		for i, download in ipairs( self._pending_downloads ) do
+			if download.update:GetId() == update:GetId() then
+				if not result then result = {} end
+				table.insert(result, download)
+			end
+		end
+	end
+	return result or false
+end
+
 function BLTDownloadManager:pending_downloads()
 	return self._pending_downloads
 end

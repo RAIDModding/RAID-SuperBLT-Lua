@@ -365,6 +365,15 @@ function BLTMod:IsCheckingForUpdates()
 	return false
 end
 
+function BLTMod:GetUpdateError()
+	for _, update in ipairs(self:GetUpdates()) do
+		if update:GetError() then
+			return update:GetError(), update
+		end
+	end
+	return false
+end
+
 function BLTMod:clbk_check_for_updates( update, required, reason )
 
 	self._update_cache = self._update_cache or {}

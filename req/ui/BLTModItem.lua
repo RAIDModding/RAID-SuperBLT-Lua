@@ -203,8 +203,47 @@ function BLTModItem:init( panel, index, mod, show_icon )
 			icon_updates:set_top( padding )
 		end
 
+		-- Animate the icon. When the update is done, the animation ends and
+		-- sets the icon to the appropriate colour
+		icon_updates:animate(callback(self, self, "_clbk_animate_update_icon"))
 	end
 
+end
+
+function BLTModItem:_clbk_animate_update_icon(icon)
+	-- While the update is still in progress, fade the icon
+	local time = 0
+	while self._mod:IsCheckingForUpdates() do
+		local dt = coroutine.yield()
+		time = time + dt
+
+		-- Fade colour from 0 to 1 to 0 over the course of two seconds
+		local colour = time % 2 -- From 0-2
+
+		if colour > 1 then
+			-- If the colour has gone past half way, subtract it from two. This
+			-- causes it to decrease starting from 1 (as 2-1=1) to 0 (as 2-2=0).
+			colour = 2 - colour
+		end
+
+		-- Lerb between white and blue to make it fade in and out
+		icon:set_color(math.lerp(Color.white, Color.blue, colour))
+	end
+
+	-- Check for corrupted downloads, and set the colour accordingly
+	if self._mod:GetUpdateError() then
+		icon:set_color( Color.red )
+		return
+	end
+
+	-- Check if the update is resolved
+	if BLT.Downloads:get_pending_downloads_for(self._mod) then
+		icon:set_color( Color.yellow )
+		return
+	end
+
+	-- Update check finished and no updates are due, colour it white
+	icon:set_color( Color.white )
 end
 
 function BLTModItem:_get_col_row( index )
