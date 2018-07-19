@@ -29,6 +29,11 @@ class XMLTweakApplier {
 		if(_xml_tweaks[full] == null) _xml_tweaks[full] = []
 		var tweaklist = _xml_tweaks[full]
 
+		// Ensure we don't add the same tweak twice
+		for(tweak in tweaklist) {
+			if(tweak == path) return
+		}
+
 		// Add the tweak
 		tweaklist.add(path)
 	}
