@@ -1,45 +1,88 @@
 import "base/native" for Logger, IO, XML
 import "base/base" for TweakRegistry
 
+/**
+ * XML Tweak Applier
+ *
+ * This loads and applies XML tweak files
+ */
 class XMLTweakApplier {
 	construct new() {
+		/**
+		 * A map of lists of tweak filenames
+		 * Here's an example value of it (in Lua syntax):
+		 * _xml_tweaks = {
+		 *   ["2301c70c9bd10234.e8cc76b954399722"] = { -- light intensity db
+		 *     "mods/mytest/mytweak-1.xml",
+		 *     "mods/mytest/mytweak-2.xml",
+		 *     "mods/myothermod/tweak.xml",
+		 *   },
+		 * }
+		 */
 		_xml_tweaks = {}
 	}
+
+	// Mark that an XML file <path> tweaks the bundled file <name>.<ext>
 	add_tweak(name, ext, path) {
+		// Check the tweak list exists
 		var full = "%(name).%(ext)"
 		if(_xml_tweaks[full] == null) _xml_tweaks[full] = []
-		_xml_tweaks[full].add(path)
+		var tweaklist = _xml_tweaks[full]
+
+		// Add the tweak
+		tweaklist.add(path)
 	}
+
+	// Returns whether or not the tweaker needs to tweak the bundled file <name>.<ext>
 	tweaks(name, ext) {
 		var full = "%(name).%(ext)"
 		return _xml_tweaks[full] != null
 	}
+
+	// Tweak an XML file
 	tweak_xml(name, ext, xml) {
+		// Find the tweak list
 		var full = "%(name).%(ext)"
 		var tweaks = _xml_tweaks[full]
+
+		// Apply each of the required tweaks
 		for(path in tweaks) {
 			apply_tweak(name, ext, xml, path)
 		}
 	}
+
+	/**
+	 * Apply a tweak file to a bundled file
+	 *
+	 * @param name The (hashed) name of the bundle file
+	 * @param ext The (hashed) extension of the bundle file
+	 * @param xml The XML object representation of the bundled file
+	 * @param tweak_path The path of the tweak file to read and apply
+	 */
 	apply_tweak(name, ext, xml, tweak_path) {
-		var tweaks = []
+		// Find all the relevant tweaks
+		var tweaks = [] // List of XML elements representing `<tweak>` tags
 		XMLTweakApplier.find_tweaks(tweak_path, name, ext, tweaks)
 
 		for(tweak in tweaks) {
+			// Search for the <search> and <target> elements
 			var search_node = null
 			var target_node = null
 
 			for (elem in tweak.element_children) {
 				var name = elem.name
 				if(name == "search") {
+					// TODO raise error if duplicate search elements exist
 					search_node = elem
 				} else if(name == "target") {
+					// TODO raise error if duplicate target elements exist
 					target_node = elem
 				} else {
 					Fiber.abort("Unknown element type in unknown tweak XML: %(name)")
 				}
 			}
 
+			// Verify the presence of the search and target nodes
 			if(search_node == null) Fiber.abort("Missing <search> node in unknown tweak XML")
 			if(target_node == null) Fiber.abort("Missing <target> node in unknown tweak XML")
 
@@ -91,6 +134,7 @@ class XMLTweakApplier {
 		return true
 	}
 
+	// We've found a element that maches the search tag, now tweak it
 	apply_tweak_elem(xml, target_node, multiple, mode) {
 		if (mode == "attributes") {
 			for (elem in target_node.element_children) {
