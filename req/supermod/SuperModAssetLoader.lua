@@ -255,4 +255,9 @@ log("[BLT] This suggests they may be corrupt, and could prevent the game from ex
 
 	_dynamic_unloaded_assets = {}
 end
-Hooks:Add("DynamicResourceManagerCreated", "BLTAssets.DynamicResourceManagerCreated", _flush_assets)
+Hooks:Add("DynamicResourceManagerCreated", "BLTAssets.DynamicResourceManagerCreated", function(...)
+	local success, err = pcall(_flush_assets, ...)
+	if not success then
+		log("[BLT] Error in asset loader: " .. err)
+	end
+end)
