@@ -26,7 +26,8 @@ function c:FromXML(xml, parent_scope)
 
 	-- Recurse over the XML, and find all the <file/> tags
 	BLTSuperMod._recurse_xml(xml, parent_scope, {
-		file = function(...) self:_asset_from_xml(...) end
+		file = function(...) self:_asset_from_xml(...) end,
+		xml = function(...) self:_converted_xml_file(...) end,
 	})
 end
 
@@ -36,7 +37,27 @@ function c:_asset_from_xml(tag, scope)
 	self:LoadAsset(name, path, scope)
 end
 
-function c:LoadAsset(name, file, params)
+function c:_converted_xml_file(tag, scope)
+	local name = scope.name
+	local path = scope.path or (scope.base_path .. name)
+	local built_path = path .. ".sblt_autoconvert"
+
+	local from_type = scope.from_type
+	local to_type = scope.to_type
+	assert(from_type, "Missing 'from_type' tag in converted XML asset tag for '" .. name .. "'")
+	assert(to_type, "Missing 'to_type' tag in converted XML asset tag for '" .. name .. "'")
+
+	local convert_params = {
+		path = self._mod._mod:GetPath() .. path,
+		built_path = self._mod._mod:GetPath() .. built_path,
+		from_type = from_type,
+		to_type = to_type,
+	}
+
+	self:LoadAsset(name, built_path, scope, convert_params)
+end
+
+function c:LoadAsset(name, file, params, xml_convert)
 	local dot_index = name:find(".", 1, true)
 	local dbpath = name:sub(1, dot_index - 1)
 	local extension = name:sub(dot_index + 1)
@@ -54,6 +75,7 @@ function c:LoadAsset(name, file, params)
 		file = self._mod._mod:GetPath() .. file,
 		dyn_package = dyn_package,
 		id = next_asset_id,
+		xml_convert = xml_convert,
 	}
 
 	next_asset_id = next_asset_id + 1
@@ -129,6 +151,43 @@ function c:FreeAssetGroup(group_name)
 	end
 end
 
+local function convert_xml_asset(params)
+	log("[BLT] Converting " .. tostring(params.path) .. " into " .. tostring(params.built_path))
+	-- Read the source file
+	local input_str
+	do
+		local file = io.open(params.path, "rb")
+		assert(file, "Could not open XML file input " .. params.path)
+		input_str = file:read("*a")
+		file:close()
+	end
+
+	-- Convert it to data
+	local data = nil
+	do
+		local from_type = params.from_type
+		local func = ScriptSerializer["from_" .. from_type]
+		assert(func, "Unknown XML input type '" .. from_type .. "'")
+		data = func(ScriptSerializer, input_str)
+	end
+
+	-- Convert it to the desired format
+	local output_str = nil
+	do
+		local to_type = params.to_type
+		local func = ScriptSerializer["to_" .. to_type]
+		assert(func, "Unknown XML output type '" .. to_type .. "'")
+		output_str = func(ScriptSerializer, data)
+		assert(output_str)
+	end
+
+	-- Write it out
+	do
+		local file = io.open(params.built_path, "wb")
+		file:write(output_str)
+		file:close()
+	end
+end
 
 -- Asset system - independent of any object
 _flush_assets = function(dres)
@@ -151,6 +210,9 @@ _flush_assets = function(dres)
 		-- log("Loading " .. asset.dbpath .. " " .. asset.extension .. " from " .. path)
 
 		if not asset._entry_created then
+			if asset.xml_convert then
+				convert_xml_asset(asset.xml_convert)
+			end
 			blt.ignoretweak(dbpath, ext)
 			DB:create_entry(ext, dbpath, path)
 			asset._entry_created = true
