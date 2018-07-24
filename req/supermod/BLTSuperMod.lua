@@ -183,7 +183,7 @@ function BLTSuperMod._recurse_xml(xml, parent_scope, callbacks)
 		elseif callbacks[tag.name] then
 			callbacks[tag.name](tag, scope, callbacks)
 		else
-			error("Unknown tag name " .. tag.name .. " in:" .. tag._doc.filename)
+			error("Unknown tag name '" .. tag.name .. "' in: " .. tag._doc.filename)
 		end
 	end
 end
