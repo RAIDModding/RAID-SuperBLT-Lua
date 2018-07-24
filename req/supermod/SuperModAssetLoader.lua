@@ -202,6 +202,11 @@ _flush_assets = function(dres)
 		local dbpath = Idstring(asset.dbpath)
 		local path = asset.file
 
+		if asset.xml_convert and not asset.xml_convert._done then
+			convert_xml_asset(asset.xml_convert)
+			asset.xml_convert._done = true
+		end
+
 		if not io.file_is_readable(path) then
 			error("Cannot load unreadable asset " .. path)
 		end
@@ -210,9 +215,6 @@ _flush_assets = function(dres)
 		-- log("Loading " .. asset.dbpath .. " " .. asset.extension .. " from " .. path)
 
 		if not asset._entry_created then
-			if asset.xml_convert then
-				convert_xml_asset(asset.xml_convert)
-			end
 			blt.ignoretweak(dbpath, ext)
 			DB:create_entry(ext, dbpath, path)
 			asset._entry_created = true
@@ -258,6 +260,6 @@ end
 Hooks:Add("DynamicResourceManagerCreated", "BLTAssets.DynamicResourceManagerCreated", function(...)
 	local success, err = pcall(_flush_assets, ...)
 	if not success then
-		log("[BLT] Error in asset loader: " .. err)
+		log("[BLT] Error in asset loader: " .. tostring(err))
 	end
 end)
