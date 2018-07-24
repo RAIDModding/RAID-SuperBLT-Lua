@@ -28,7 +28,10 @@ end
 
 function BLTSuperMod:init(mod, xml)
 	self._mod = mod
-	self._assets = self.AssetLoader:new(self)
+
+	if mod:IsEnabled() then
+		self._assets = self.AssetLoader:new(self)
+	end
 
 	self:_replace_includes(xml)
 
@@ -42,7 +45,9 @@ end
 function BLTSuperMod:_load_xml(xml, parent_scope)
 	BLTSuperMod._recurse_xml(xml, parent_scope, {
 		assets = function(tag, scope)
-			self._assets:FromXML(tag, scope)
+			if self._assets then
+				self._assets:FromXML(tag, scope)
+			end
 		end,
 		hooks = function(tag, scope)
 			self:_add_hooks(tag, scope)
