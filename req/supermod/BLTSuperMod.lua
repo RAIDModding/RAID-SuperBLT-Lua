@@ -53,7 +53,9 @@ function BLTSuperMod:_load_xml(xml, parent_scope)
 			self:_add_hooks(tag, scope)
 		end,
 		native_module = function(tag, scope)
-			self:_add_native_module(tag, scope)
+			if self._mod:IsEnabled() then
+				self:_add_native_module(tag, scope)
+			end
 		end,
 
 		-- These tags are used by the Wren-based XML Tweaker
