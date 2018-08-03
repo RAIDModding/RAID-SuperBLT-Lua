@@ -98,11 +98,31 @@ class XMLTweakApplier {
 			if(search_node == null) Fiber.abort("Missing <search> node in %(tweak_path)")
 			if(target_node == null) Fiber.abort("Missing <target> node in %(tweak_path)")
 
-			var info = {"count": 0}
+			var info = {
+				"count": 0,
+				"level": 0, // This tracks the recursion depth of dive_tweak_elem()
+				"deepestlevel": 0 // This tracks the deepest ever level of recursion, which is
+								  // usually good enough for pointing out problematic search
+								  // nodes
+			}
 			dive_tweak_elem(xml.ensure_element_next, search_node, search_node.first_child.ensure_element_next, target_node, info)
 
 			if(info["count"] == 0) {
 				Logger.log("Warning: Failed to apply tweak %(tweak_index) of %(tweaks.count) in %(tweak_path) for %(name).%(ext)")
+				// Pulling info["deepestlevel"] into its own variable because it makes string
+				// literals hard to read when embedded within them
+				var deepestlevel = info["deepestlevel"]
+				var search_elements = search_node.element_children
+				var failed_node = search_elements[deepestlevel]
+				var last_found_node = search_elements[deepestlevel - 1]
+				Logger.log("  Failure details:")
+				// Using .name instead of .string because the latter is unstable and has a high
+				// chance of crashing out
+				Logger.log("    Failed to find node: #%(deepestlevel + 1) <%(failed_node.name) />")
+				Logger.log("    Last found node: #%(deepestlevel) <%(last_found_node.name) />")
+				Logger.log("  You may inadvertently have specified an intermediate node that doesn't have any child nodes, such as <else />")
+				Logger.log("  Alternatively, you may have missed out an intermediate node that subsequent search nodes are child nodes of")
+				Logger.log("  Please verify your list of search nodes against an up-to-date, pristine copy of the game's XML file")
 			}
 		}
 
@@ -126,6 +146,7 @@ class XMLTweakApplier {
 				// TODO something with elem.attribute_names == search_node.attribute_names
 
 				if(match) {
+					info["level"] = info["level"] + 1
 					var next_search_node = search_node.next_element
 					if(next_search_node == null) {
 						var mult = target_node["multiple"] == "true"
@@ -136,7 +157,14 @@ class XMLTweakApplier {
 						if(!mult) return false
 					} else {
 						var continue = dive_tweak_elem(elem.first_child, root_search_node, next_search_node, target_node, info)
-						if(!continue) return false
+						if(!continue) {
+							return false
+						} else {
+							if(info["level"] > info["deepestlevel"]) {
+								info["deepestlevel"] = info["level"]
+							}
+							info["level"] = info["level"] - 1
+						}
 					}
 				}
 			}
