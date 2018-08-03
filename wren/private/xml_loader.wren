@@ -69,7 +69,14 @@ class XMLTweakApplier {
 		var tweaks = [] // List of XML elements representing `<tweak>` tags
 		XMLTweakApplier.find_tweaks(tweak_path, name, ext, tweaks)
 
+		// As with pairs() in Lua, Wren makes no guarantees about the iteration order of maps
+		// (see http://wren.io/maps.html#iterating-over-the-contents). Fortunately, tweaks is a
+		// list (since new elements are appended with .add() in handle_tweak_element() below),
+		// so iteration order should be consistent enough to be tracked this way (or if need be,
+		// indexing it like an array within a range loop)
+		var tweak_index = 0
 		for(tweak in tweaks) {
+			tweak_index = tweak_index + 1
 			// Search for the <search> and <target> elements
 			var search_node = null
 			var target_node = null
@@ -83,19 +90,19 @@ class XMLTweakApplier {
 					// TODO raise error if duplicate target elements exist
 					target_node = elem
 				} else {
-					Fiber.abort("Unknown element type in unknown tweak XML: %(name)")
+					Fiber.abort("Unknown element type in %(tweak_path): %(name)")
 				}
 			}
 
 			// Verify the presence of the search and target nodes
-			if(search_node == null) Fiber.abort("Missing <search> node in unknown tweak XML")
-			if(target_node == null) Fiber.abort("Missing <target> node in unknown tweak XML")
+			if(search_node == null) Fiber.abort("Missing <search> node in %(tweak_path)")
+			if(target_node == null) Fiber.abort("Missing <target> node in %(tweak_path)")
 
 			var info = {"count": 0}
 			dive_tweak_elem(xml.ensure_element_next, search_node, search_node.first_child.ensure_element_next, target_node, info)
 
 			if(info["count"] == 0) {
-				Logger.log("Warning: Failed to apply tweak in unknown XML for %(name).%(ext)")
+				Logger.log("Warning: Failed to apply tweak %(tweak_index) of %(tweaks.count) in %(tweak_path) for %(name).%(ext)")
 			}
 		}
 
