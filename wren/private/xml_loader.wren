@@ -20,6 +20,12 @@ class XMLTweakApplier {
 		 * }
 		 */
 		_xml_tweaks = {}
+		/**
+		 * Bump this if breaking changes to the tweak format or behavior occur
+		 * 1/(unspecified): Initial release
+		 * 2: 'replace' and 'append' modes now insert nodes in the expected order (see !19)
+		 */
+		_current_version = 2
 	}
 
 	// Mark that an XML file <path> tweaks the bundled file <name>.<ext>
@@ -98,8 +104,29 @@ class XMLTweakApplier {
 			if(search_node == null) Fiber.abort("Missing <search> node in %(tweak_path)")
 			if(target_node == null) Fiber.abort("Missing <target> node in %(tweak_path)")
 
+			var tweakversion = tweak["version"]
+			if(tweakversion is String) {
+				tweakversion = Num.fromString(tweakversion)
+				if(tweakversion == null || tweakversion < 1) {
+					tweakversion = _current_version
+					Logger.log("Warning: Unrecognized tweak version specified; assuming %(tweakversion) instead.")
+				} else {
+					// Integers only, please. Using .floor instead of .round to ensure that all
+					// fractional values that exceed _current_version are still considered the
+					// same as their integer portion
+					tweakversion = tweakversion.floor
+					if(tweakversion > _current_version) {
+						Logger.log("Warning: A tweak version (%(tweakversion)) greater than the current version (%(_current_version)) has been specified. This may cause problems in future.")
+					}
+				}
+			} else {
+				// Missing version attribute
+				tweakversion = 1
+			}
+
 			var info = {
 				"count": 0,
+				"tweakversion": tweakversion,
 				"level": 0, // This tracks the recursion depth of dive_tweak_elem()
 				"deepestlevel": 0 // This tracks the deepest ever level of recursion, which is
 								  // usually good enough for pointing out problematic search
@@ -152,7 +179,7 @@ class XMLTweakApplier {
 						var mult = target_node["multiple"] == "true"
 						info["count"] = info["count"] + 1
 
-						apply_tweak_elem(elem, target_node, mult, target_node["mode"])
+						apply_tweak_elem(elem, target_node, mult, target_node["mode"], info["tweakversion"])
 
 						if(!mult) return false
 					} else {
@@ -175,7 +202,7 @@ class XMLTweakApplier {
 	}
 
 	// We've found a element that maches the search tag, now tweak it
-	apply_tweak_elem(xml, target_node, multiple, mode) {
+	apply_tweak_elem(xml, target_node, multiple, mode, version) {
 		if (mode == "attributes") {
 			for (elem in target_node.element_children) {
 				if(elem.name != "attr") Fiber.abort("In unknown attributes target: bad elem <%(elem.name)>, should be <attr>")
@@ -188,6 +215,7 @@ class XMLTweakApplier {
 
 		var previous_child = xml
 		if(insert_after) xml = xml.parent
+		var child_to_append_to = previous_child
 
 		for (elem in target_node.element_children) {
 			if(multiple) {
@@ -196,7 +224,10 @@ class XMLTweakApplier {
 				elem.detach()
 			}
 			if(insert_after) {
-				xml.attach(elem, previous_child)
+				xml.attach(elem, child_to_append_to)
+				if(version > 1) {
+					child_to_append_to = elem
+				}
 			} else {
 				xml.attach(elem)
 			}
