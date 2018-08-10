@@ -141,12 +141,16 @@ class XMLTweakApplier {
 				var deepestlevel = info["deepestlevel"]
 				var search_elements = search_node.element_children
 				var failed_node = search_elements[deepestlevel]
-				var last_found_node = search_elements[deepestlevel - 1]
+				var last_found_node = (deepestlevel >= 1) ? search_elements[deepestlevel - 1] : null
 				Logger.log("  Failure details:")
 				// Using .name instead of .string because the latter is unstable and has a high
 				// chance of crashing out
 				Logger.log("    Failed to find node: #%(deepestlevel + 1) <%(failed_node.name) />")
-				Logger.log("    Last found node: #%(deepestlevel) <%(last_found_node.name) />")
+				if(last_found_node != null) {
+					Logger.log("    Last found node: #%(deepestlevel) <%(last_found_node.name) />")
+				} else {
+					Logger.log("    Last found node: (none)")
+				}
 				Logger.log("  You may inadvertently have specified an intermediate node that doesn't have any child nodes, such as <else />")
 				Logger.log("  Alternatively, you may have missed out an intermediate node that subsequent search nodes are child nodes of")
 				Logger.log("  Please verify your list of search nodes against an up-to-date, pristine copy of the game's XML file")
