@@ -80,24 +80,10 @@ function BLTUpdate:clbk_got_update_data( clbk, json_data, http_id )
 			log(string.format("[Updates] Received update data for '%s'", data.ident))
 			if data.ident == self:GetId() then
 				self._update_data = data
-
-				local check_hash = function(local_hash)
-					self._requesting_updates = false
-
-					log(string.format("[Updates] Comparing hash data for %s:\nServer: %s\n Local: %s", data.ident, data.hash, local_hash))
-					if data.hash then
-						if data.hash ~= local_hash then
-							return self:_run_update_callback( clbk, true )
-						else
-							return self:_run_update_callback( clbk, false )
-						end
-					else
-						return self:_run_update_callback( clbk, false )
-					end
-				end
-
 				self._server_hash = data.hash
-				local hash_result = self:GetHash(check_hash)
+
+				local dat = {data, clbk}
+				local hash_result = self:GetHash(callback(self, self, "_check_hash", dat))
 
 				-- Nil indicates the file to hash was missing
 				-- True indicates our callback will be run at a later date
@@ -110,7 +96,7 @@ function BLTUpdate:clbk_got_update_data( clbk, json_data, http_id )
 				elseif hash_result ~= true then
 					-- Manually check the hash, since we're running on an old
 					-- version of the DLL that doesn't support the callbacks
-					return check_hash(hash_result)
+					return self:_check_hash(dat, hash_result)
 				else
 					-- At this point we've started the hash callback
 					-- Keep 'Checking for Updates' until the hash is complete
@@ -127,6 +113,23 @@ function BLTUpdate:clbk_got_update_data( clbk, json_data, http_id )
 	log("[Updates] Invalid or corrupt update data for mod " .. self:GetId())
 	return self:_run_update_callback( clbk, false, self._error )
 
+end
+
+function BLTUpdate:_check_hash(dat, local_hash)
+	local data, clbk = unpack(dat)
+
+	self._requesting_updates = false
+
+	log(string.format("[Updates] Comparing hash data for %s:\nServer: %s\n Local: %s", data.ident, data.hash, local_hash))
+	if data.hash then
+		if data.hash ~= local_hash then
+			return self:_run_update_callback( clbk, true )
+		else
+			return self:_run_update_callback( clbk, false )
+		end
+	else
+		return self:_run_update_callback( clbk, false )
+	end
 end
 
 function BLTUpdate:_run_update_callback( clbk, requires_update, error_reason )
