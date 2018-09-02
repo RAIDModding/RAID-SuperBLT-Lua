@@ -121,15 +121,16 @@ function BLTUpdate:_check_hash(dat, local_hash)
 	self._requesting_updates = false
 
 	log(string.format("[Updates] Comparing hash data for %s:\nServer: %s\n Local: %s", data.ident, data.hash, local_hash))
-	if data.hash then
-		if data.hash ~= local_hash then
-			return self:_run_update_callback( clbk, true )
-		else
-			return self:_run_update_callback( clbk, false )
-		end
-	else
+	if not data.hash then
+		log(string.format("[Updates] [WARN] Missing server hash for mod %s", data.ident))
 		return self:_run_update_callback( clbk, false )
 	end
+
+	if data.hash == local_hash then
+		return self:_run_update_callback( clbk, false )
+	end
+
+	return self:_run_update_callback( clbk, true )
 end
 
 function BLTUpdate:_run_update_callback( clbk, requires_update, error_reason )
