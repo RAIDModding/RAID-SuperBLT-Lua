@@ -92,6 +92,8 @@ function BLTSuperMod:_add_hook(tag, scope, data_key, destination)
 end
 
 function BLTSuperMod:_run_entry_script(tag, scope, data_key, destination)
+	if not self._mod:IsEnabled() then return end
+
 	BLT:RunHookFile(scope.script_path, {
 		mod = self._mod,
 		script = scope.script_path
