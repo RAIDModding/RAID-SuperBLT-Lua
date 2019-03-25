@@ -55,6 +55,7 @@ BLT:Require("req/BLTLocalization")
 BLT:Require("req/BLTNotificationsManager")
 BLT:Require("req/BLTPersistScripts")
 BLT:Require("req/BLTKeybindsManager")
+BLT:Require("req/BLTAssetManager")
 BLT:Require("req/xaudio/XAudio")
 
 -- BLT base functions
@@ -86,6 +87,7 @@ function BLT:Setup()
 	self.PersistScripts = BLTPersistScripts:new()
 	self.Localization = BLTLocalization:new()
 	self.Notifications = BLTNotificationsManager:new()
+	self.AssetManager = BLTAssetManager:new()
 
 	-- Create the required base directories, if necessary
 	self:CheckDirectory(BLTModManager.Constants:DownloadsDirectory())

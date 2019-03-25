@@ -216,7 +216,7 @@ _flush_assets = function(dres)
 
 		if not asset._entry_created then
 			blt.ignoretweak(dbpath, ext)
-			DB:create_entry(ext, dbpath, path)
+			BLT.AssetManager:CreateEntry(dbpath, ext, path)
 			asset._entry_created = true
 		end
 
