@@ -24,6 +24,7 @@ end
 function A:CreateEntry(path, ext, file, options)
 	if not blt.db_create_entry then
 		DB:create_entry(ext, path, file)
+		return
 	end
 
 	self:_check_defaults()
