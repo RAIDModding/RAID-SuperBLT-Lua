@@ -8,7 +8,7 @@ function LocalizationManager.init( self )
 	Hooks:Call( "LocalizationManagerPostInit", self )
 end
 
-function LocalizationManager.exists( self, str )
+function LocalizationManager:exists( str )
 
 	if self._custom_localizations[str] then
 		return true
@@ -18,7 +18,7 @@ function LocalizationManager.exists( self, str )
 
 end
 
-function LocalizationManager.text( self, str, macros )
+function LocalizationManager:text( str, macros )
 
 	if self._custom_localizations[str] then
 
@@ -28,6 +28,12 @@ function LocalizationManager.text( self, str, macros )
 				return_str = return_str:gsub( "$" .. k, v )
 			end
 		end
+
+		-- Handle default macros. Trailing semicolon is optional.
+		if self._default_macros ~= nil then
+			return_str = string.gsub( return_str, "$([^%s;]+);?", self._default_macros )
+		end
+
 		return return_str
 
 	end
@@ -44,7 +50,7 @@ function LocalizationManager:add_localized_strings( string_table, overwrite )
 
 	if type(string_table) == "table" then
 		for k, v in pairs( string_table ) do
-			if not self._custom_localizations[k] or (self._custom_localizations[k] and overwrite) then
+			if overwrite or not self._custom_localizations[k] then
 				self._custom_localizations[k] = v
 			end
 		end
