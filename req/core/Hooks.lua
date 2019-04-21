@@ -157,11 +157,15 @@ function Hooks:PreHook( object, func, id, pre_call )
 		return
 	end
 
-	if object and self._prehooks[object] == nil then
+	if type( pre_call ) ~= "function" then
+		return
+	end
+
+	if self._prehooks[object] == nil then
 		self._prehooks[object] = {}
 	end
 
-	if object and self._prehooks[object][func] == nil then
+	if self._prehooks[object][func] == nil then
 
 		self._prehooks[object][func] = {
 			original = object[func],
@@ -173,10 +177,8 @@ function Hooks:PreHook( object, func, id, pre_call )
 			local hooked_func = self._prehooks[object][func]
 			local r, _r
 
-			for k, v in ipairs(hooked_func.overrides) do
-				if v.func then
-					_r = v.func(...)
-				end
+			for k, v in ipairs( hooked_func.overrides ) do
+				_r = v.func( ... )
 				if _r then
 					r = _r
 				end
@@ -191,12 +193,14 @@ function Hooks:PreHook( object, func, id, pre_call )
 
 		end
 
-	end
+	else
 
-	for k, v in pairs( self._prehooks[object][func].overrides ) do
-		if v.id == id then
-			return
+		for k, v in pairs( self._prehooks[object][func].overrides ) do
+			if v.id == id then
+				return
+			end
 		end
+
 	end
 
 	local func_tbl = {
@@ -217,7 +221,7 @@ function Hooks:RemovePreHook( id )
 	for object_i, object in pairs( self._prehooks ) do
 		for func_i, func in pairs( object ) do
 			for override_i, override in ipairs( func.overrides ) do
-				if override and override.id == id then
+				if override.id == id then
 					table.remove( func.overrides, override_i )
 				end
 			end
@@ -241,11 +245,15 @@ function Hooks:PostHook( object, func, id, post_call )
 		return
 	end
 
-	if object and self._posthooks[object] == nil then
+	if type( post_call ) ~= "function" then
+		return
+	end
+
+	if self._posthooks[object] == nil then
 		self._posthooks[object] = {}
 	end
 
-	if object and self._posthooks[object][func] == nil then
+	if self._posthooks[object][func] == nil then
 
 		self._posthooks[object][func] = {
 			original = object[func],
@@ -262,10 +270,8 @@ function Hooks:PostHook( object, func, id, post_call )
 				r = _r
 			end
 
-			for k, v in ipairs(hooked_func.overrides) do
-				if v.func then
-					_r = v.func(...)
-				end
+			for k, v in ipairs( hooked_func.overrides ) do
+				_r = v.func( ... )
 				if _r then
 					r = _r
 				end
@@ -275,12 +281,14 @@ function Hooks:PostHook( object, func, id, post_call )
 
 		end
 
-	end
+	else
 
-	for k, v in pairs( self._posthooks[object][func].overrides ) do
-		if v.id == id then
-			return
+		for k, v in pairs( self._posthooks[object][func].overrides ) do
+			if v.id == id then
+				return
+			end
 		end
+
 	end
 
 	local func_tbl = {
@@ -301,7 +309,7 @@ function Hooks:RemovePostHook( id )
 	for object_i, object in pairs( self._posthooks ) do
 		for func_i, func in pairs( object ) do
 			for override_i, override in ipairs( func.overrides ) do
-				if override and override.id == id then
+				if override.id == id then
 					table.remove( func.overrides, override_i )
 				end
 			end
