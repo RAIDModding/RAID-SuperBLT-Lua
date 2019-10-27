@@ -1,4 +1,3 @@
-
 -- BLT Mod
 BLTMod = blt_class()
 BLTMod.enabled = true
@@ -73,12 +72,6 @@ end
 function BLTMod:Setup()
 
 	print("[BLT] Setting up mod: ", self:GetId())
-
-	-- Check mod is compatible with this version of the BLT
-	if self:GetBLTVersion() ~= BLT:GetVersion() then
-		self._outdated = true
-		table.insert( self._errors, "blt_mod_outdated" )
-	end
 
 	-- Check dependencies are installed for this mod
 	if not self:AreDependenciesInstalled() then
