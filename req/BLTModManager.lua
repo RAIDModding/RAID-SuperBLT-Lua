@@ -154,11 +154,6 @@ end
 
 function BLTModManager:Load()
 
-	-- If we have old save files, then load their data
-	if self:HasOldSaveFiles() then
-		self:ConvertOldSaveFiles()
-	end
-
 	-- Load data
 	local saved_data = io.load_as_json( BLTModManager.Constants:ModManagerSaveFile() ) or {}
 
@@ -198,44 +193,6 @@ function BLTModManager:Load()
 	
 	-- Stash it for use later
 	self._saved_data = saved_data
-
-end
-
-function BLTModManager:HasOldSaveFiles()
-	return io.file_is_readable( BLTModManager.Constants:OldModManagerSaveFile() ) or
-			io.file_is_readable( BLTModManager.Constants:OldModManagerKeybindsFile() ) or
-			io.file_is_readable( BLTModManager.Constants:OldModManagerUpdatesFile() )
-end
-
-function BLTModManager:ConvertOldSaveFiles()
-
-	print("[BLT] Converting old save data files to new format...")
-
-	-- Load old files
-	local enabled_mods = io.load_as_json( BLTModManager.Constants:OldModManagerSaveFile() )
-	if enabled_mods == nil or type(enabled_mods) ~= "table" then
-		enabled_mods = {}
-	end
-
-	-- Convert enabled mods data
-	for mod_id, enabled in pairs( enabled_mods ) do
-		for index, mod in ipairs( self.mods ) do
-			if mod_id == mod:GetId() then
-				mod:SetEnabled( enabled )
-				break
-			end
-		end
-	end
-
-	-- Only remove old files if we sucessfully save the new data
-	if self:Save() then
-		os.remove( BLTModManager.Constants:OldModManagerSaveFile() )
-		os.remove( BLTModManager.Constants:OldModManagerKeybindsFile() )
-		os.remove( BLTModManager.Constants:OldModManagerUpdatesFile() )
-		print("[BLT] ...Success!")
-	else
-		print("[BLT] ...Failed! Will try again at a later time!")
-	end
 
 end
 
@@ -321,18 +278,6 @@ end
 
 function BLTModManager.Constants:ModManagerSaveFile()
 	return self:SavesDirectory() .. "blt_data.txt"
-end
-
-function BLTModManager.Constants:OldModManagerSaveFile()
-	return self:SavesDirectory() .. "mod_manager.txt"
-end
-
-function BLTModManager.Constants:OldModManagerKeybindsFile()
-	return self:SavesDirectory() .. "mod_keybinds.txt"
-end
-
-function BLTModManager.Constants:OldModManagerUpdatesFile()
-	return self:SavesDirectory() .. "mod_updates.txt"
 end
 
 function BLTModManager.Constants:LuaModsMenuID()
