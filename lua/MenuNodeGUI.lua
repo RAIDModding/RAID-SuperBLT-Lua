@@ -1,4 +1,3 @@
-
 CloneClass( MenuNodeGui )
 
 Hooks:RegisterHook("CustomizeControllerOnKeySet")
@@ -21,6 +20,8 @@ function MenuNodeGui._key_press(self, o, key, input_id, item, no_add)
 
 	local row_item = self:row_item(item)
 	if key == Idstring("esc") then
+		-- Fixes not being able to unbind keybinds by Offyerrocker
+		item:parameters().binding = nil
 		self:_end_customize_controller(o, item)
 		return
 	end
