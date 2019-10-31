@@ -152,12 +152,8 @@ end
 ]]
 function Hooks:PreHook( object, func, id, pre_call )
 
-	if not object then
-		self:_PrePostHookError(func)
-		return
-	end
-
-	if type( pre_call ) ~= "function" then
+	if not object or type(pre_call) ~= "function" then
+		self:_PrePostHookError(func, id)
 		return
 	end
 
@@ -240,12 +236,8 @@ end
 ]]
 function Hooks:PostHook( object, func, id, post_call )
 
-	if not object then
-		self:_PrePostHookError(func)
-		return
-	end
-
-	if type( post_call ) ~= "function" then
+	if not object or type(post_call) ~= "function" then
+		self:_PrePostHookError(func, id)
 		return
 	end
 
@@ -318,6 +310,6 @@ function Hooks:RemovePostHook( id )
 
 end
 
-function Hooks:_PrePostHookError( func )
-	log(string.format("[Hooks] Error: Could not hook function '%s'", tostring(func)))
+function Hooks:_PrePostHookError(func, id)
+	log(string.format("[Hooks] Error: Could not hook function '%s' (%s)", tostring(func), tostring(id)))
 end
