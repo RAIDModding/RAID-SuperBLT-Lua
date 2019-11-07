@@ -119,12 +119,15 @@ local function inject_menu_options( menu, node_name, injection_point, items )
 	for _, node in ipairs( menu ) do
 		if node.name == node_name then
 			for i, item in ipairs( node ) do
-				if item.name == injection_point then
+				-- If we get to the last node, inject it anyway - it's better for it to be in
+				-- the wrong place than missing.
+				if item.name == injection_point or i == #node then
 
 					for k = #items, 1, -1 do
 						table.insert( node, i + 1, items[k] )
 					end
 
+					return
 				end
 			end
 		end
