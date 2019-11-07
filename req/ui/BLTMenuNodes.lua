@@ -169,6 +169,8 @@ Hooks:Add("CoreMenuData.LoadDataMenu", "BLT.CoreMenuData.LoadDataMenu", function
 		next_node = "blt_keybinds",
 	}
 
+	local point = "user_interface"
+
 	-- Inject menu nodes and items
 	if menu_id == "start_menu" then
 
@@ -177,7 +179,7 @@ Hooks:Add("CoreMenuData.LoadDataMenu", "BLT.CoreMenuData.LoadDataMenu", function
 		Hooks:Call( "BLTOnBuildOptions", options_node ) -- All mods to hook into the options menu to add items
 		add_blt_keybinds_node( menu )
 		add_blt_downloads_node( menu )
-		inject_menu_options( menu, "options", "quickplay_settings", {
+		inject_menu_options( menu, "options", point, {
 			menu_item_divider,
 			menu_item_mods,
 			menu_item_options,
@@ -189,7 +191,7 @@ Hooks:Add("CoreMenuData.LoadDataMenu", "BLT.CoreMenuData.LoadDataMenu", function
 		local options_node = add_blt_options_node( menu )
 		Hooks:Call( "BLTOnBuildOptions", options_node ) -- All mods to hook into the options menu to add items
 		add_blt_keybinds_node( menu )
-		inject_menu_options( menu, "options", "ban_list", {
+		inject_menu_options( menu, "options", point, {
 			menu_item_divider,
 			menu_item_options,
 			menu_item_keybinds
