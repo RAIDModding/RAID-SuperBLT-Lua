@@ -4,6 +4,20 @@ This lists the changes between different versions of the SuperBLT basemod,
 which controls things like the mod update menu. Note this does not contain the
 changes for the DLL.
 
+## v1.1.6.0
+
+- Add Polish translation - Alister The Hedgehog
+- Fix the BLT menus not appearing after update 198 - Luffy - See !30
+- Add macro support for custom localisations - DorentuZ - See !23
+- Fixed not being able to unbind keybinds - Offyerrocker - See !28
+- Removed misleading blt_version check, with the intention of later adding a minimum version field - Luffy - See !27
+- Add an initial BLT asset manager, allowing the use of recoding Windows assets for Linux - ZNix
+- Fix entry scripts running when their mod is disabled - ZNix
+- Fix dependency checks for long chains - TdlQ
+- Fix the XML tweaker appending nodes in reverse order - Snh20 - See !19
+- Add error details to the XML tweaker - Snh20 - See !20 and !22
+- Don't load native modules for a disabled mod - ZNix
+
 ## v1.1.5.1
 
 - Improve formatting of the supermod.xml unknown tag name error
