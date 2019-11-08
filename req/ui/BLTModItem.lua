@@ -144,7 +144,7 @@ function BLTModItem:init( panel, index, mod, show_icon )
 			layer = 10,
 			blend_mode = "add",
 			color = tweak_data.screen_colors.title,
-			text = "No Image",
+			text = managers.localization:to_upper_text("blt_no_image"),
 			align = "center",
 			vertical = "center",
 			w = no_image_panel:w(),

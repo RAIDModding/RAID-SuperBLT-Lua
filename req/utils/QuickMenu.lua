@@ -24,7 +24,7 @@ function QuickMenu:init( title, text, options, show_immediately )
 	end
 	if add_default then
 		local tbl = {
-			text = "OK",
+			text = managers.localization:text("dialog_ok"),
 			is_cancel_button = true,
 		}
 		table.insert( options, tbl )

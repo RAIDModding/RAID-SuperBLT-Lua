@@ -6,6 +6,7 @@
 	"blt_options_menu_keybinds" : "Mod Keybinds",
 	"blt_options_menu_keybinds_desc" : "Set your keybinds for your BLT mods",
 
+	"blt_installed_mods" : "Installed Mods",
 	"blt_libraries" : "$count Libraries",
 	"blt_mod_icons" : "Mod Icons",
 

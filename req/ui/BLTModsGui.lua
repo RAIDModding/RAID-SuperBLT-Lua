@@ -117,7 +117,7 @@ function BLTModsGui:_setup()
 		layer = 10,
 		blend_mode = "add",
 		color = tweak_data.screen_colors.title,
-		text = "Installed Mods",
+		text = managers.localization:text("blt_installed_mods"),
 		align = "left",
 		vertical = "top",
 	})
