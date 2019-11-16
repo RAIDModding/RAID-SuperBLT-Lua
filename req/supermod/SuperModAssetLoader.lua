@@ -1,4 +1,3 @@
-
 local c = blt_class()
 BLTSuperMod.AssetLoader = c
 
@@ -246,7 +245,7 @@ _flush_assets = function(dres)
 log("[BLT] No asset has been loaded in the last 15 seconds, and these assets have not yet loaded.")
 log("[BLT] This suggests they may be corrupt, and could prevent the game from exiting the current level:")
 					for spec, info in pairs(_currently_loading_assets) do
-						log("\t" .. spec.dbpath .. "." .. spec.extension .. " (" .. path .. ")")
+						log("\t" .. spec.dbpath .. "." .. spec.extension .. " (" .. spec.file .. ")")
 					end
 				end
 			end)
