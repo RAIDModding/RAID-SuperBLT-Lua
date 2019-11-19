@@ -22,6 +22,7 @@ function MenuNodeGui._key_press(self, o, key, input_id, item, no_add)
 	if key == Idstring("esc") then
 		-- Fixes not being able to unbind keybinds by Offyerrocker
 		item:parameters().binding = nil
+		Hooks:Call( "CustomizeControllerOnKeySet", item:parameters().connection_name, "" )
 		self:_end_customize_controller(o, item)
 		return
 	end
