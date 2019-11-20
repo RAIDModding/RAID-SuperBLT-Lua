@@ -30,7 +30,7 @@ function BLTLogs:CleanLogs( lifetime )
 
 	lifetime = lifetime or 1
 
-	print(string.format("[BLT] Cleaning logs folder, lifetime %i day(s)", lifetime))
+	BLT:Log(LogLevel.INFO, string.format("[BLT] Cleaning logs folder, lifetime %i day(s)", lifetime))
 
 	local current_time = os.time()
 	local files = file.GetFiles( self.logs_location )
@@ -39,7 +39,7 @@ function BLTLogs:CleanLogs( lifetime )
 
 			local file_date = self:LogNameToNumber(file_name)
 			if file_date > 0 and file_date < current_time - (lifetime * self.day_length) then
-				print("[BLT] Removing log:", file_name)
+				BLT:Log(LogLevel.INFO, string.format("[BLT] Removing log: %s", file_name))
 				os.remove( string.format("%s%s", self.logs_location, file_name) )
 			end
 

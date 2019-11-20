@@ -111,7 +111,7 @@ function BLTLocalization:load_localization( loc_manager )
 
 	local localization_manager = loc_manager or managers.localization
 	if not localization_manager then
-		log("[Error] Can not load localization without a valid localization manager!")
+		BLT:Log(LogLevel.ERROR, "[Error] Can not load localization without a valid localization manager!")
 		return false
 	end
 
@@ -119,7 +119,7 @@ function BLTLocalization:load_localization( loc_manager )
 	if default_lang then
 		localization_manager:load_localization_file( default_lang.file )
 	else
-		log("[Error] Could not load localization file for language: " .. tostring(self.default_language_code))
+		BLT:Log(LogLevel.ERROR, "[Error] Could not load localization file for language: " .. tostring(self.default_language_code))
 	end
 
 	local lang = self:get_language()
@@ -128,7 +128,7 @@ function BLTLocalization:load_localization( loc_manager )
 			localization_manager:load_localization_file( lang.file )
 		end
 	else
-		log("[Error] Could not load localization file for language: " .. tostring(self._current))
+		BLT:Log(LogLevel.ERROR, "[Error] Could not load localization file for language: " .. tostring(self._current))
 	end
 
 end

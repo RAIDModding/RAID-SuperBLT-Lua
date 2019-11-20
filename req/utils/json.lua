@@ -10,7 +10,7 @@ function json.decode( data )
 	end)
 	if not passed then
 		-- If it fails, then try using the old json module to load malformatted json files
-		log(string.format("Found a json error, attempting to use old json loader!"))
+		BLT:Log(LogLevel.WARN, string.format("Found a json error, attempting to use old json loader!"))
 		value = json09.decode( data )
 	end
 

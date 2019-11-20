@@ -15,8 +15,17 @@ local _G = _G
 local io = io
 local file = file
 
+-- Log levels
+_G.LogLevel = {
+	NONE = 0,
+	ERROR = 1,
+	WARN = 2,
+	INFO = 3,
+	ALL = 4
+}
+
 -- BLT Global table
-_G.BLT = { version = 2.0, DEBUG_MODE = DEBUG_MODE }
+_G.BLT = { version = 2.0, DEBUG_MODE = DEBUG_MODE, LOG_LEVEL = LogLevel.ALL }
 _G.BLT.Base = {}
 
 _G.print = function(...)
@@ -58,6 +67,13 @@ BLT:Require("req/BLTKeybindsManager")
 BLT:Require("req/BLTAssetManager")
 BLT:Require("req/xaudio/XAudio")
 
+function BLT:Log(level, ...)
+	if level > self.LOG_LEVEL then
+		return
+	end
+	log(...)
+end
+
 -- BLT base functions
 function BLT:Initialize()
 
@@ -77,7 +93,7 @@ end
 
 function BLT:Setup()
 
-	log("[BLT] Setup...")
+	self:Log(LogLevel.INFO, "[BLT] Setup...")
 
 	-- Setup modules
 	self.Logs = BLTLogs:new()
@@ -165,7 +181,7 @@ end
 
 function BLT:FindMods()
 
-	log("[BLT] Loading mods for state: " .. tostring(_G))
+	self:Log(LogLevel.INFO, "[BLT] Loading mods for state: " .. tostring(_G))
 
 	-- Get all folders in mods directory
 	local mods_list = {}
@@ -181,7 +197,7 @@ function BLT:FindMods()
 		-- Check if this directory is excluded from being checked for mods (logs, saves, etc.)
 		if not self.Mods:IsExcludedDirectory( directory ) then
 
-			log("[BLT] Loading mod: " .. tostring(directory))
+			self:Log(LogLevel.INFO, "[BLT] Loading mod: " .. tostring(directory))
 
 			local mod_path = "mods/" .. directory .. "/"
 			local mod_defintion = mod_path .. "mod.txt"
@@ -205,11 +221,11 @@ function BLT:FindMods()
 					local new_mod = BLTMod:new( directory, mod_content )
 					table.insert( mods_list, new_mod )
 				else
-					log("[BLT] An error occured while loading mod.txt from: " .. tostring(mod_path))
+					self:Log(LogLevel.ERROR, "[BLT] An error occured while loading mod.txt from: " .. tostring(mod_path))
 				end
 
 			else
-				log("[BLT] Could not read or find mod.txt in " .. tostring(directory))
+				self:Log(LogLevel.WARN, "[BLT] Could not read or find mod.txt in " .. tostring(directory))
 			end
 
 		end
@@ -234,7 +250,7 @@ end
 function BLT:CheckDirectory(path)
 	path = path:sub(1, #path - 1)
 	if not file.DirectoryExists(path) then
-		log("[BLT] Creating missing directory " .. path)
+		self:Log(LogLevel.INFO, "[BLT] Creating missing directory " .. path)
 		file.CreateDirectory(path)
 	end
 end

@@ -61,7 +61,7 @@ end
 function BLTUpdate:clbk_got_update_data( clbk, json_data, http_id )
 
 	if json_data:is_nil_or_empty() then
-		log("[Error] Could not connect to the download server!")
+		BLT:Log(LogLevel.ERROR, "[Error] Could not connect to the download server!")
 		self._error = "Could not connect to the download server."
 		return self:_run_update_callback( clbk, false, self._error )
 	end
@@ -73,7 +73,7 @@ function BLTUpdate:clbk_got_update_data( clbk, json_data, http_id )
 	if server_data then
 
 		for _, data in pairs( server_data ) do
-			log(string.format("[Updates] Received update data for '%s'", data.ident))
+			BLT:Log(LogLevel.INFO, string.format("[Updates] Received update data for '%s'", data.ident))
 			if data.ident == self:GetId() then
 				self._update_data = data
 				if data.hash then -- Use hash to check
@@ -94,7 +94,7 @@ function BLTUpdate:clbk_got_update_data( clbk, json_data, http_id )
 				if not hash_result then
 					-- Errored, file does not exist
 					self._error = "File to be version checked was missing on local machine"
-					log("[Updates] " .. self._error .. " mod " .. self:GetId())
+					BLT:Log(LogLevel.ERROR, "[Updates] " .. self._error .. " mod " .. self:GetId())
 					return self:_run_update_callback( clbk, false, self._error )
 				elseif hash_result ~= true then
 					-- Manually check the hash, since we're running on an old
@@ -113,7 +113,7 @@ function BLTUpdate:clbk_got_update_data( clbk, json_data, http_id )
 	end
 
 	self._error = "No valid mod ID was returned by the server."
-	log("[Updates] Invalid or corrupt update data for mod " .. self:GetId())
+	BLT:Log(LogLevel.ERROR, "[Updates] Invalid or corrupt update data for mod " .. self:GetId())
 	return self:_run_update_callback( clbk, false, self._error )
 
 end
@@ -123,9 +123,9 @@ function BLTUpdate:_check_hash(dat, local_hash)
 
 	self._requesting_updates = false
 
-	log(string.format("[Updates] Comparing hash data for %s:\nServer: %s\n Local: %s", data.ident, data.hash, local_hash))
+	BLT:Log(LogLevel.INFO, string.format("[Updates] Comparing hash data for %s:\nServer: %s\n Local: %s", data.ident, data.hash, local_hash))
 	if not data.hash then
-		log(string.format("[Updates] [WARN] Missing server hash for mod %s", data.ident))
+		BLT:Log(LogLevel.WARN, string.format("[Updates] [WARN] Missing server hash for mod %s", data.ident))
 		return self:_run_update_callback( clbk, false )
 	end
 

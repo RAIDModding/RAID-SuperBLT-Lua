@@ -140,7 +140,7 @@ Hooks:Add("ChatManagerOnReceiveMessage", "ChatManagerOnReceiveMessage_Network", 
 	name = name:gsub( "%%", "%%%%" )
 	message = message:gsub( "%%", "%%%%" )
 	local s = string.format("[%s] %s: %s", channel_id, name, message)
-	log(s)
+	BLT:Log(LogLevel.INFO, s)
 
 	local senderID = nil
 	if LuaNetworking:IsMultiplayer() then

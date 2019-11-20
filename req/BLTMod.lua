@@ -84,7 +84,7 @@ end
 
 function BLTMod:Setup()
 
-	print("[BLT] Setting up mod: ", self:GetId())
+	BLT:Log(LogLevel.INFO, "[BLT] Setting up mod: ", self:GetId())
 
 	-- Check dependencies are installed for this mod
 	if not self:AreDependenciesInstalled() then
@@ -315,7 +315,7 @@ function BLTMod:GetModImage()
 		return texture_id
 
 	else
-		log("[Error] Mod image at path does not exist! " .. tostring(self:GetModImagePath()))
+		BLT:Log(LogLevel.ERROR, "[Error] Mod image at path does not exist! " .. tostring(self:GetModImagePath()))
 		return nil
 	end
 

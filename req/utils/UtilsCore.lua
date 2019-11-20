@@ -39,10 +39,10 @@ function _G.PrintTable( tbl, cmp )
 		for k, v in pairs (tbl) do
 			if type(v) == "table" and not cmp[v] then
 				cmp[v] = true
-				log( string.format("[\"%s\"] = table", tostring(k)) );
+				log(string.format("[\"%s\"] = table", tostring(k)));
 				-- PrintTable (v, cmp)
 			else
-				log( string.format("\"%s\" = %s", tostring(k), tostring(v)) )
+				log(string.format("\"%s\" = %s", tostring(k), tostring(v)))
 			end
 		end
 	else

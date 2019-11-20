@@ -41,7 +41,7 @@ function BLTDownloadManager:add_pending_download( update )
 	-- Check if the download already exists
 	for _, download in ipairs( self._pending_downloads ) do
 		if download.update:GetId() == update:GetId() then
-			log(string.format("[Downloads] Pending download already exists for %s (%s)", update:GetName(), update:GetParentMod():GetName()))
+			BLT:Log(LogLevel.INFO, string.format("[Downloads] Pending download already exists for %s (%s)", update:GetName(), update:GetParentMod():GetName()))
 			return false
 		end
 	end
@@ -51,7 +51,7 @@ function BLTDownloadManager:add_pending_download( update )
 		update = update,
 	}
 	table.insert( self._pending_downloads, download )
-	log(string.format("[Downloads] Added pending download for %s (%s)", update:GetName(), update:GetParentMod():GetName()))
+	BLT:Log(LogLevel.INFO, string.format("[Downloads] Added pending download for %s (%s)", update:GetName(), update:GetParentMod():GetName()))
 
 	return true
 
@@ -93,7 +93,7 @@ function BLTDownloadManager:start_download( update )
 
 	-- Check if the download already going
 	if self:get_download( update ) then
-		log(string.format("[Downloads] Download already exists for %s (%s)", update:GetName(), update:GetParentMod():GetName()))
+		BLT:Log(LogLevel.INFO, string.format("[Downloads] Download already exists for %s (%s)", update:GetName(), update:GetParentMod():GetName()))
 		return false
 	end
 
@@ -135,7 +135,7 @@ end
 function BLTDownloadManager:clbk_download_finished( data, http_id )
 
 	local download = self:get_download_from_http_id( http_id )
-	log(string.format("[Downloads] Finished download of %s (%s)", download.update:GetName(), download.update:GetParentMod():GetName()))
+	BLT:Log(LogLevel.INFO, string.format("[Downloads] Finished download of %s (%s)", download.update:GetName(), download.update:GetParentMod():GetName()))
 
 	-- Holy shit this is hacky, but to make sure we can update the UI correctly to reflect whats going on, we run this in a coroutine
 	-- that we start through a UI animation
@@ -174,7 +174,7 @@ function BLTDownloadManager:clbk_download_finished( data, http_id )
 		cleanup()
 
 		-- Save download to disk
-		log("[Downloads] Saving to downloads...")
+		BLT:Log(LogLevel.INFO, "[Downloads] Saving to downloads...")
 		download.state = "saving"
 		wait()
 
@@ -186,7 +186,7 @@ function BLTDownloadManager:clbk_download_finished( data, http_id )
 		end
 
 		-- Start download extraction
-		log("[Downloads] Extracting...")
+		BLT:Log(LogLevel.INFO, "[Downloads] Extracting...")
 		download.state = "extracting"
 		wait()
 
@@ -200,7 +200,7 @@ function BLTDownloadManager:clbk_download_finished( data, http_id )
 		end
 
 		-- Verify content hash with the server hash
-		log("[Downloads] Verifying...")
+		BLT:Log(LogLevel.INFO, "[Downloads] Verifying...")
 		download.state = "verifying"
 		wait()
 
@@ -211,9 +211,9 @@ function BLTDownloadManager:clbk_download_finished( data, http_id )
 			if server_hash == local_hash then
 				passed_check = true
 			else
-				log("[Downloads] Failed to verify hashes!")
-				log("[Downloads] Server: ", server_hash)
-				log("[Downloads]  Local: ", local_hash)
+				BLT:Log(LogLevel.ERROR, "[Downloads] Failed to verify hashes!")
+				BLT:Log(LogLevel.ERROR, "[Downloads] Server: ", server_hash)
+				BLT:Log(LogLevel.ERROR, "[Downloads]  Local: ", local_hash)
 			end
 		else
 			local mod_txt = extract_path.."/mod.txt" -- Check the downloaded mod.txt (if it exists) to know we are downloading a valid mod with valid version.
@@ -226,16 +226,16 @@ function BLTDownloadManager:clbk_download_finished( data, http_id )
 					if server_version == version then
 						passed_check = true
 					else -- Versions don't match
-						log("[Downloads] Failed to verify versions!")
-						log("[Downloads] Server: ", server_version)
-						log("[Downloads]  Local: ", version)
+						BLT:Log(LogLevel.ERROR, "[Downloads] Failed to verify versions!")
+						BLT:Log(LogLevel.ERROR, "[Downloads] Server: ", server_version)
+						BLT:Log(LogLevel.ERROR, "[Downloads]  Local: ", version)
 					end
 				else
-					log("[Downloads] Could not read mod data of downloaded mod!")
+					BLT:Log(LogLevel.ERROR, "[Downloads] Could not read mod data of downloaded mod!")
 				end
 				file:close()
 			else
-				log("[Downloads] Downloaded mod is not a valid mod!")
+				BLT:Log(LogLevel.ERROR, "[Downloads] Downloaded mod is not a valid mod!")
 			end
 		end
 		if not passed_check then
@@ -249,16 +249,16 @@ function BLTDownloadManager:clbk_download_finished( data, http_id )
 			wait()
 			if SystemFS:exists(install_path) then
 				local old_install_path = install_path .. '_old'
-				log("[Downloads] Removing old installation...")
+				BLT:Log(LogLevel.INFO, "[Downloads] Removing old installation...")
 				if not file.MoveDirectory( install_path, old_install_path ) then
-					log("[Downloads] Failed to rename old installation!")
+					BLT:Log(LogLevel.ERROR, "[Downloads] Failed to rename old installation!")
 					download.state = "failed"
 					cleanup()
 					return
 				end
 
 				if not SystemFS:delete_file( old_install_path ) then
-					log("[Downloads] Failed to delete old installation!")
+					BLT:Log(LogLevel.ERROR, "[Downloads] Failed to delete old installation!")
 					download.state = "failed"
 					cleanup()
 					return
@@ -269,14 +269,14 @@ function BLTDownloadManager:clbk_download_finished( data, http_id )
 		-- Move the temporary installation
 		local move_success = file.MoveDirectory( extract_path, install_path )
 		if not move_success then
-			log("[Downloads] Failed to move installation directory!")
+			BLT:Log(LogLevel.ERROR, "[Downloads] Failed to move installation directory!")
 			download.state = "failed"
 			cleanup()
 			return
 		end
 
 		-- Mark download as complete
-		log("[Downloads] Complete!")
+		BLT:Log(LogLevel.INFO, "[Downloads] Complete!")
 		download.state = "complete"
 		cleanup()
 
@@ -295,7 +295,7 @@ end
 
 function BLTDownloadManager:flush_complete_downloads()
 
-	log("[Downloads] Flushing complete downloads...")
+	BLT:Log(LogLevel.INFO, "[Downloads] Flushing complete downloads...")
 
 	for i = #self._downloads, 0, -1 do
 		local download = self._downloads[i]

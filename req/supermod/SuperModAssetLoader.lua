@@ -1,3 +1,4 @@
+
 local c = blt_class()
 BLTSuperMod.AssetLoader = c
 
@@ -151,7 +152,7 @@ function c:FreeAssetGroup(group_name)
 end
 
 local function convert_xml_asset(params)
-	log("[BLT] Converting " .. tostring(params.path) .. " into " .. tostring(params.built_path))
+	BLT:Log(LogLevel.INFO, "[BLT] Converting " .. tostring(params.path) .. " into " .. tostring(params.built_path))
 	-- Read the source file
 	local input_str
 	do
@@ -231,21 +232,21 @@ _flush_assets = function(dres)
 				_currently_loading_assets[asset] = nil
 
 				if BLT.DEBUG_MODE then
-					log("[BLT] Assets remaining to load:")
+					BLT:Log(LogLevel.INFO, "[BLT] Assets remaining to load:")
 					for spec, info in pairs(_currently_loading_assets) do
-						log("\t" .. spec.dbpath)
+						BLT:Log(LogLevel.INFO, "\t" .. spec.dbpath)
 					end
-					log("\tEnd of asset list")
+					BLT:Log(LogLevel.INFO, "\tEnd of asset list")
 				end
 			end)
 
 			-- Warn the user if a file has not loaded in the last fifteen seconds
 			DelayedCalls:Add("SuperBLTAssetLoaderModelWatchdog", 15, function()
 				if next(_currently_loading_assets) then
-log("[BLT] No asset has been loaded in the last 15 seconds, and these assets have not yet loaded.")
-log("[BLT] This suggests they may be corrupt, and could prevent the game from exiting the current level:")
+					BLT:Log(LogLevel.WARN, "[BLT] No asset has been loaded in the last 15 seconds, and these assets have not yet loaded.")
+					BLT:Log(LogLevel.WARN, "[BLT] This suggests they may be corrupt, and could prevent the game from exiting the current level:")
 					for spec, info in pairs(_currently_loading_assets) do
-						log("\t" .. spec.dbpath .. "." .. spec.extension .. " (" .. spec.file .. ")")
+						BLT:Log(LogLevel.WARN, "\t" .. spec.dbpath .. "." .. spec.extension .. " (" .. spec.file .. ")")
 					end
 				end
 			end)
@@ -259,6 +260,6 @@ end
 Hooks:Add("DynamicResourceManagerCreated", "BLTAssets.DynamicResourceManagerCreated", function(...)
 	local success, err = pcall(_flush_assets, ...)
 	if not success then
-		log("[BLT] Error in asset loader: " .. tostring(err))
+		BLT:Log(LogLevel.ERROR, "[BLT] Error in asset loader: " .. tostring(err))
 	end
 end)

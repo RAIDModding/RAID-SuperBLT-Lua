@@ -437,7 +437,7 @@ local function load_data(cache)
 	if data then
 		BLTModsGui.show_libraries = data.show_libraries
 		BLTModsGui.show_mod_icons = data.show_mod_icons
-		log("Loading mod settings : " .. tostring(cache.show_libraries))
+		BLT:Log(LogLevel.INFO, "Loading mod settings : " .. tostring(cache.show_libraries))
 	end
 end
 Hooks:Add("BLTOnLoadData", "BLTOnLoadData.BLTModsGui", load_data)
