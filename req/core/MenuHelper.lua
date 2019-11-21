@@ -3,7 +3,7 @@ _G.MenuHelper = _G.MenuHelper or {}
 
 function MenuHelper:SetupMenu( menu, id )
 	if menu[id] == nil then
-		BLT:Log(LogLevel.ERROR, "[Error] Could not find '" .. id .. "' in menu!")
+		BLT:Log(LogLevel.ERROR, "Could not find '" .. id .. "' in menu!")
 		return
 	end
 	self.menu_to_clone = menu[id]
@@ -11,7 +11,7 @@ end
 
 function MenuHelper:SetupMenuButton( menu, id, button_name )
 	if menu[id] == nil then
-		BLT:Log(LogLevel.ERROR, "[Error] Could not find '" .. id .. "' in menu!")
+		BLT:Log(LogLevel.ERROR, "Could not find '" .. id .. "' in menu!")
 		return
 	end
 
@@ -43,7 +43,7 @@ end
 function MenuHelper:GetMenu( menu_id )
 	local menu = (self.menus or {})[menu_id]
 	if menu == nil then
-		BLT:Log(LogLevel.ERROR, "[Error] Could not find menu with id '" .. tostring(menu_id) .. "'!")
+		BLT:Log(LogLevel.ERROR, "Could not find menu with id '" .. tostring(menu_id) .. "'!")
 		BLT:Log(LogLevel.ERROR, debug.traceback())
 	end
 	return menu
@@ -303,7 +303,7 @@ function MenuHelper:BuildMenu( menu_id, data )
 	-- Check menu exists
 	local menu = self.menus[menu_id]
 	if menu == nil then
-		BLT:Log(LogLevel.ERROR, "[Error] Attempting to build menu '" .. menu_id .."' which doesn't exist!")
+		BLT:Log(LogLevel.ERROR, "Attempting to build menu '" .. menu_id .."' which doesn't exist!")
 		return
 	end
 
@@ -628,7 +628,7 @@ function MenuHelper:LoadFromJsonFile( file_path, parent_class, data_table )
 		end)
 
 	else
-		BLT:Log(LogLevel.ERROR, "[Error] Could not load file: " .. file_path)
+		BLT:Log(LogLevel.ERROR, "Could not load file: " .. file_path)
 	end
 
 end

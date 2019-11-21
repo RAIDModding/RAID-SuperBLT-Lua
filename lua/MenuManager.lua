@@ -71,7 +71,7 @@ Hooks:Add( "MenuManagerPostInitialize", "MenuManagerPostInitialize_Base", functi
 
 	end)
 	if not success then
-		BLT:Log(LogLevel.ERROR, "[Error] " .. tostring(err))
+		BLT:Log(LogLevel.ERROR, tostring(err))
 	end
 
 end )

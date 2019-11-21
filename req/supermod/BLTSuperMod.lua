@@ -117,7 +117,7 @@ function BLTSuperMod:_add_native_module(tag, scope)
 	end
 
 	BLT:Log(LogLevel.INFO, "[BLT] Loading native module for " .. self._mod:GetId())
-	blt.load_native(self._mod:GetPath() .. scope.filename)
+	blt.load_native(self._mod:GetPath() .. scope.filename, BLT.LogLevels.INFO)
 end
 
 function BLTSuperMod:_replace_includes(xml)

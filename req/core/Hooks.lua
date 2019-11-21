@@ -313,5 +313,5 @@ function Hooks:RemovePostHook( id )
 end
 
 function Hooks:_PrePostHookError(func, id)
-	BLT:Log(LogLevel.ERROR, string.format("[Hooks] Error: Could not hook function '%s' (%s)", tostring(func), tostring(id)))
+	BLT:Log(LogLevel.ERROR, string.format("[Hooks] Could not hook function '%s' (%s)", tostring(func), tostring(id)))
 end

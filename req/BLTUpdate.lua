@@ -61,7 +61,7 @@ end
 function BLTUpdate:clbk_got_update_data( clbk, json_data, http_id )
 
 	if json_data:is_nil_or_empty() then
-		BLT:Log(LogLevel.ERROR, "[Error] Could not connect to the download server!")
+		BLT:Log(LogLevel.ERROR, "Could not connect to the download server!")
 		self._error = "Could not connect to the download server."
 		return self:_run_update_callback( clbk, false, self._error )
 	end

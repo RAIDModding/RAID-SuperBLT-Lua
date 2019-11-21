@@ -24,6 +24,12 @@ _G.LogLevel = {
 	ALL = 4
 }
 
+_G.LogLevelPrefix = {
+	[LogLevel.ERROR] = "[ERROR] ",
+	[LogLevel.WARN] = "[WARNING] ",
+	[LogLevel.INFO] = "[INFO] "
+}
+
 -- BLT Global table
 _G.BLT = { version = 2.0, DEBUG_MODE = DEBUG_MODE, LOG_LEVEL = LogLevel.ALL }
 _G.BLT.Base = {}
@@ -71,7 +77,11 @@ function BLT:Log(level, ...)
 	if level > self.LOG_LEVEL then
 		return
 	end
-	log(...)
+	local s = LogLevelPrefix[level] or ""
+	for _, v in pairs({ ... }) do
+		s = s .. tostring(v) .. " "
+	end
+	log(s)
 end
 
 -- BLT base functions

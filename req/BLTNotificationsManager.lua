@@ -124,17 +124,17 @@ function NotificationsManager:NotificationExists( id )
 end
 
 function NotificationsManager:ShowNextNotification( suppress_sound )
-	BLT:Log(LogLevel.ERROR, "[Error] NotificationsManager.ShowNextNotification is no longer supported.")
+	BLT:Log(LogLevel.ERROR, "NotificationsManager.ShowNextNotification is no longer supported.")
 end
 
 function NotificationsManager:ShowPreviousNotification( suppress_sound )
-	BLT:Log(LogLevel.ERROR, "[Error] NotificationsManager.ShowPreviousNotification is no longer supported.")
+	BLT:Log(LogLevel.ERROR, "NotificationsManager.ShowPreviousNotification is no longer supported.")
 end
 
 function NotificationsManager:ClickNotification( suppress_sound )
-	BLT:Log(LogLevel.ERROR, "[Error] NotificationsManager.ClickNotification is no longer supported.")
+	BLT:Log(LogLevel.ERROR, "NotificationsManager.ClickNotification is no longer supported.")
 end
 
 function NotificationsManager:MarkNotificationAsRead( id )
-	BLT:Log(LogLevel.ERROR, "[Error] NotificationsManager.MarkNotificationAsRead is no longer supported.")
+	BLT:Log(LogLevel.ERROR, "NotificationsManager.MarkNotificationAsRead is no longer supported.")
 end
