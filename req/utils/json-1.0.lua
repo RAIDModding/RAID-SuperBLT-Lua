@@ -20,18 +20,24 @@
 -- CHANGELOG
 --   0.9.20 Introduction of local Lua functions for private functions (removed _ function prefix). 
 --          Fixed Lua 5.1 compatibility issues.
---   		Introduced json.null to have null values in associative arrays.
+--          Introduced json.null to have null values in associative arrays.
 --          json.encode() performance improvement (more than 50%) through table.concat rather than ..
 --          Introduced decode ability to ignore /**/ comments in the JSON string.
 --   0.9.10 Fix to array encoding / decoding to correctly manage nil/null values in arrays.
+--
+-- MODIFICATIONS:
+--   2019-12-23, dorentuz:
+--     Fixed and improved comment decoding; both single and multi-line comments are allowed.
+--     Arrays and objects may have a single trailing comma.
+--     Added missing object var.
 -----------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------
 -- Imports and dependencies
 -----------------------------------------------------------------------------
 local math = require('math')
-local string = require("string")
-local table = require("table")
+local string = require('string')
+local table = require('table')
 
 -----------------------------------------------------------------------------
 -- Module declaration
@@ -45,6 +51,7 @@ _G.json10 = json            -- Global namespace
 -- Private functions
 local decode_scanArray
 local decode_scanComment
+local decode_scanCommentWhitespace
 local decode_scanConstant
 local decode_scanNumber
 local decode_scanObject
@@ -118,7 +125,7 @@ end
 -- the scanned JSON object.
 function json.decode(s, startPos)
   startPos = startPos and startPos or 1
-  startPos = decode_scanWhitespace(s,startPos)
+  startPos = decode_scanCommentWhitespace(s,startPos)
   assert(startPos<=string.len(s), 'Unterminated JSON encoded object found at position in [' .. s .. ']')
   local curChar = string.sub(s,startPos,startPos)
   -- Object
@@ -136,9 +143,6 @@ function json.decode(s, startPos)
   -- String
   if curChar==[["]] or curChar==[[']] then
     return decode_scanString(s,startPos)
-  end
-  if string.sub(s,startPos,startPos+1)=='/*' then
-    return decode(s, decode_scanComment(s,startPos))
   end
   -- Otherwise, it must be a constant
   return decode_scanConstant(s,startPos)
@@ -162,20 +166,24 @@ end
 -- @param startPos The starting position for the scan.
 -- @return table, int The scanned array as a table, and the position of the next character to scan.
 function decode_scanArray(s,startPos)
-  local array = {}	-- The return value
+  local array, object = {}	-- The return value
   local stringLen = string.len(s)
   assert(string.sub(s,startPos,startPos)=='[','decode_scanArray called but array does not start at position ' .. startPos .. ' in string:\n'..s )
   startPos = startPos + 1
   -- Infinite loop for array elements
   repeat
-    startPos = decode_scanWhitespace(s,startPos)
+    startPos = decode_scanCommentWhitespace(s,startPos)
     assert(startPos<=stringLen,'JSON String ended unexpectedly scanning array.')
     local curChar = string.sub(s,startPos,startPos)
     if (curChar==']') then
-      return array, startPos+1
-    end
-    if (curChar==',') then
-      startPos = decode_scanWhitespace(s,startPos+1)
+      return array, startPos + 1
+    elseif (curChar==',') then
+      startPos = decode_scanCommentWhitespace(s,startPos+1)
+      -- Ignore trailing comma
+      local nextChar = string.sub(s,startPos,startPos)
+      if (nextChar==']') then
+        return array, startPos + 1
+      end
     end
     assert(startPos<=stringLen, 'JSON String ended unexpectedly scanning array.')
     object, startPos = json.decode(s,startPos)
@@ -188,10 +196,29 @@ end
 -- @param string s The JSON string to scan.
 -- @param int startPos The starting position of the comment
 function decode_scanComment(s, startPos)
-  assert( string.sub(s,startPos,startPos+1)=='/*', "decode_scanComment called but comment does not start at position " .. startPos)
-  local endPos = string.find(s,'*/',startPos+2)
-  assert(endPos~=nil, "Unterminated comment in string at " .. startPos)
-  return endPos+2  
+  local nextChars=string.sub(s,startPos,startPos+1)
+  if (nextChars=='/*') then
+    local endPos = string.find(s,'*/',startPos+2)
+    assert(endPos~=nil, "Unterminated comment in string at " .. startPos)
+    return endPos+2
+  elseif (nextChars=='//') then
+    local endPos = string.find(s,'\n',startPos+2)
+    return endPos and endPos+1 or string.len(s)
+  end
+  return startPos
+end
+
+--- Scans comment and whitespaces and discards these.
+-- Returns the position of the next character following the ignored sequence.
+-- @param string s The JSON string to scan.
+-- @param int startPos The starting position of the sequence to scan.
+function decode_scanCommentWhitespace(s, startPos)
+  startPos = decode_scanWhitespace(s, startPos)
+  local newPos = decode_scanComment(s, startPos)
+  if newPos>startPos then
+    startPos = decode_scanWhitespace(s, newPos)
+  end
+  return startPos
 end
 
 --- Scans for given constants: true, false or null
@@ -204,7 +231,7 @@ function decode_scanConstant(s, startPos)
   local consts = { ["true"] = true, ["false"] = false, ["null"] = nil }
   local constNames = {"true","false","null"}
 
-  for i,k in pairs(constNames) do
+  for _,k in pairs(constNames) do
     if string.sub(s,startPos, startPos + string.len(k) -1 )==k then
       return consts[k], startPos + string.len(k)
     end
@@ -248,23 +275,27 @@ function decode_scanObject(s,startPos)
   assert(string.sub(s,startPos,startPos)=='{','decode_scanObject called but object does not start at position ' .. startPos .. ' in string:\n' .. s)
   startPos = startPos + 1
   repeat
-    startPos = decode_scanWhitespace(s,startPos)
+    startPos = decode_scanCommentWhitespace(s,startPos)
     assert(startPos<=stringLen, 'JSON string ended unexpectedly while scanning object.')
     local curChar = string.sub(s,startPos,startPos)
     if (curChar=='}') then
-      return object,startPos+1
-    end
-    if (curChar==',') then
-      startPos = decode_scanWhitespace(s,startPos+1)
+      return object, startPos + 1
+    elseif (curChar==',') then
+      startPos = decode_scanCommentWhitespace(s,startPos+1)
+      -- Ignore trailing comma
+      local nextChar = string.sub(s,startPos,startPos)
+      if (nextChar=='}') then
+        return object, startPos + 1
+      end
     end
     assert(startPos<=stringLen, 'JSON string ended unexpectedly scanning object.')
     -- Scan the key
     key, startPos = json.decode(s,startPos)
     assert(startPos<=stringLen, 'JSON string ended unexpectedly searching for value of key ' .. key)
-    startPos = decode_scanWhitespace(s,startPos)
+    startPos = decode_scanCommentWhitespace(s,startPos)
     assert(startPos<=stringLen, 'JSON string ended unexpectedly searching for value of key ' .. key)
     assert(string.sub(s,startPos,startPos)==':','JSON object key-value assignment mal-formed at ' .. startPos)
-    startPos = decode_scanWhitespace(s,startPos+1)
+    startPos = decode_scanCommentWhitespace(s,startPos+1)
     assert(startPos<=stringLen, 'JSON string ended unexpectedly searching for value of key ' .. key)
     value, startPos = json.decode(s,startPos)
     object[key]=value
@@ -296,7 +327,7 @@ end})
 -- @param startPos The starting position of the scan.
 -- @return string, int The extracted string as a Lua string, and the next character to parse.
 function decode_scanString(s,startPos)
-  assert(startPos, 'decode_scanString(..) called without start position')
+  --assert(startPos, 'decode_scanString(..) called without start position')
   local startChar = string.sub(s,startPos,startPos)
   -- START SoniEx2
   -- PS: I don't think single quotes are valid JSON
