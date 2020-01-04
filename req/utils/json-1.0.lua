@@ -124,9 +124,12 @@ end
 -- and the position of the first character after
 -- the scanned JSON object.
 function json.decode(s, startPos)
-  startPos = startPos and startPos or 1
-  startPos = decode_scanCommentWhitespace(s,startPos)
-  assert(startPos<=string.len(s), 'Unterminated JSON encoded object found at position in [' .. s .. ']')
+  if s == nil or s == "" then
+    return
+  end
+  assert(type(s) == "string", 'decode attempt on unsupported type ' .. type(s))
+  startPos = decode_scanCommentWhitespace(s,startPos or 1)
+  assert(startPos<=string.len(s), 'Unterminated JSON encoded object found at position ' .. startPos .. ' in string:\n'..s)
   local curChar = string.sub(s,startPos,startPos)
   -- Object
   if curChar=='{' then
