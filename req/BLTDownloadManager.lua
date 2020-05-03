@@ -198,12 +198,41 @@ function BLTDownloadManager:clbk_download_finished( data, http_id )
 		download.state = "verifying"
 		wait()
 
-		local local_hash = file.DirectoryHash( Application:nice_path( extract_path, true ) )
-		local verified_ok = download.update:GetServerHash() == local_hash
-		if not verified_ok then
-			log("[Downloads] Failed to verify hashes!")
-			log("[Downloads] Server: ", download.update:GetServerHash())
-			log("[Downloads]  Local: ", local_hash)
+		local passed_check = false
+		if download.update:UsesHash() then
+			local local_hash = file.DirectoryHash( Application:nice_path( extract_path, true ) )
+			local server_hash = download.update:GetServerHash()
+			if server_hash == local_hash then
+				passed_check = true
+			else
+				log("[Downloads] Failed to verify hashes!")
+				log("[Downloads] Server: ", server_hash)
+				log("[Downloads]  Local: ", local_hash)
+			end
+		else
+			local mod_txt = extract_path.."/mod.txt" -- Check the downloaded mod.txt (if it exists) to know we are downloading a valid mod with valid version.
+			if SystemFS:exists(mod_txt) then
+				local file = io.open(mod_txt, 'r')
+				local mod_data = json.decode(file:read("*all"))
+				if mod_data then -- Is the data valid json?
+					local version = mod_data.version
+					local server_version = download.update:GetServerVersion()
+					if server_version == version then
+						passed_check = true
+					else -- Versions don't match
+						log("[Downloads] Failed to verify versions!")
+						log("[Downloads] Server: ", server_version)
+						log("[Downloads]  Local: ", version)
+					end
+				else
+					log("[Downloads] Could not read mod data of downloaded mod!")
+				end
+				file:close()
+			else
+				log("[Downloads] Downloaded mod is not a valid mod!")
+			end
+		end
+		if not passed_check then
 			download.state = "failed"
 			cleanup()
 			return

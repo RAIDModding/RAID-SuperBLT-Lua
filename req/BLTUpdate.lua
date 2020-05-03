@@ -80,7 +80,14 @@ function BLTUpdate:clbk_got_update_data( clbk, json_data, http_id )
 			log(string.format("[Updates] Received update data for '%s'", data.ident))
 			if data.ident == self:GetId() then
 				self._update_data = data
-				self._server_hash = data.hash
+				if data.hash then -- Use hash to check
+					self._server_hash = data.hash
+					self._uses_hash = true
+				elseif data.version then -- Use version
+					self._server_version = data.version
+					self._uses_hash = false
+					return self:_run_update_callback(clbk, self.parent_mod.version ~= data.version) -- Request an update if the versions don't equal.
+				end
 
 				local dat = {data, clbk}
 				local hash_result = self:GetHash(callback(self, self, "_check_hash", dat))
@@ -166,6 +173,14 @@ end
 
 function BLTUpdate:GetServerHash()
 	return self._server_hash
+end
+
+function BLTUpdate:GetServerVersion()
+	return self._server_version
+end
+
+function BLTUpdate:UsesHash()
+	return self._uses_hash
 end
 
 function BLTUpdate:GetInstallDirectory()
