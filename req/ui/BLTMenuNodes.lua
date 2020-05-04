@@ -27,10 +27,9 @@ local function add_blt_options_node( menu )
 	local new_node = {
 		_meta = "node",
 		name = "blt_options",
-		modifier = "BLTModOptionsInitiator",
 		refresh = "BLTModOptionsInitiator",
 		back_callback = "perform_blt_save",
-		modifier = "BLTOptionsMenuCreator",
+		modifier = "BLTModOptionsInitiator",
 		[1] = {
 			_meta = "legend",
 			name = "menu_legend_select"
@@ -179,7 +178,7 @@ Hooks:Add("CoreMenuData.LoadDataMenu", "BLT.CoreMenuData.LoadDataMenu", function
 
 		add_blt_mods_node( menu )
 		local options_node = add_blt_options_node( menu )
-		Hooks:Call( "BLTOnBuildOptions", options_node ) -- All mods to hook into the options menu to add items
+		Hooks:Call( "BLTOnBuildOptions", options_node, menu_id ) -- All mods to hook into the options menu to add items
 		add_blt_keybinds_node( menu )
 		add_blt_downloads_node( menu )
 		inject_menu_options( menu, "options", point, {
@@ -192,7 +191,7 @@ Hooks:Add("CoreMenuData.LoadDataMenu", "BLT.CoreMenuData.LoadDataMenu", function
 	elseif menu_id == "pause_menu" then
 
 		local options_node = add_blt_options_node( menu )
-		Hooks:Call( "BLTOnBuildOptions", options_node ) -- All mods to hook into the options menu to add items
+		Hooks:Call( "BLTOnBuildOptions", options_node, menu_id ) -- All mods to hook into the options menu to add items
 		add_blt_keybinds_node( menu )
 		inject_menu_options( menu, "options", point, {
 			menu_item_divider,
@@ -204,10 +203,9 @@ Hooks:Add("CoreMenuData.LoadDataMenu", "BLT.CoreMenuData.LoadDataMenu", function
 
 end)
 
---------------------------------------------------------------------------------
-
-BLTOptionsMenuCreator = BLTOptionsMenuCreator or class()
-function BLTOptionsMenuCreator:modify_node( node )
+-- Menu Initiator for the Mod Options
+BLTModOptionsInitiator = BLTModOptionsInitiator or class(MenuInitiatorBase)
+function BLTModOptionsInitiator:modify_node( node )
 	local old_items = node:items()
 
 	local blt_languages
@@ -222,6 +220,9 @@ function BLTOptionsMenuCreator:modify_node( node )
 
 	if blt_languages then
 		node:add_item(blt_languages)
+		if BLT.Localization then
+			blt_languages:set_value(tostring(BLT.Localization:get_language().language))
+		end
 	end
 
 	table.sort(old_items, function(a, b)
@@ -235,4 +236,8 @@ function BLTOptionsMenuCreator:modify_node( node )
 	end
 
 	return node
+end
+
+function BLTModOptionsInitiator:refresh_node( node )
+	self:modify_node(node)
 end
