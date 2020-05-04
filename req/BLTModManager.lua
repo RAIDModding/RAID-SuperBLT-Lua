@@ -15,6 +15,14 @@ function BLTModManager:Mods()
 	return self.mods
 end
 
+function BLTModManager:GetModByName(name)
+	for _, mod in pairs( self:Mods() ) do
+		if mod:GetName() == name then
+			return mod
+		end
+	end
+end
+
 function BLTModManager:GetMod( id )
 	for _, mod in ipairs( self:Mods() ) do
 		if mod:GetId() == id then
