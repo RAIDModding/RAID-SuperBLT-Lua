@@ -60,10 +60,16 @@ function BLTMod:init( ident, data )
 
 	-- Updates data
 	self.updates = {}
-	for i, update_data in ipairs( self.json_data["updates"] or {} ) do
-		local new_update = BLTUpdate:new( self, update_data )
-		if new_update:IsPresent() then
-			table.insert( self.updates, new_update )
+
+	local updates = self.json_data["updates"]
+	if updates then
+		for i, update_data in ipairs( updates ) do
+			if update_data.host then
+				local new_update = BLTUpdate:new( self, update_data )
+				if new_update:IsPresent() then
+					table.insert( self.updates, new_update )
+				end
+			end
 		end
 	end
 
@@ -76,7 +82,7 @@ function BLTMod:Setup()
 	-- Check dependencies are installed for this mod
 	if not self:AreDependenciesInstalled() then
 		table.insert( self._errors, "blt_mod_missing_dependencies" )
-		self:RetrieveDependencies()
+		--self:RetrieveDependencies() -- At the moment, there's no location we can check to get dependencies.
 		self:SetEnabled( false, true )
 		return
 	end

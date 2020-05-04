@@ -22,11 +22,7 @@ function BLTUpdate:init( parent_mod, data )
 	self.disallow_update = data["disallow_update"] or false
 	self.hash_file = data["hash_file"] or false
 	self.critical = data["critical"] or false
-	self.host = data["host"] or {
-		meta = "http://api.paydaymods.com/updates/retrieve/?mod[0]=" .. self:GetId(),
-		download = "http://download.paydaymods.com/download/latest/" .. self:GetId(),
-		patchnotes = "http://download.paydaymods.com/download/patchnotes/" .. self:GetId()
-	}
+	self.host = data["host"]
 	self.present_func = data["present_func"]
 
 end
@@ -199,6 +195,10 @@ function BLTUpdate:GetDisallowCallback()
 	return self.disallow_update
 end
 
+function BLTUpdate:GetPatchNotes()
+	return (self._update_data and self._update_data.patchnotes_url) or self.host.patchnotes
+end
+
 function BLTUpdate:IsCritical()
 	return self.critical
 end
@@ -206,7 +206,7 @@ end
 function BLTUpdate:ViewPatchNotes()
 	-- Use the URL returned in the update metadata if possible
 	-- this allows for easier migration of URLs
-	local url = (self._update_data and self._update_data.patchnotes_url) or self.host.patchnotes
+	local url = self:GetPatchNotes()
 
 	if Steam:overlay_enabled() then
 		Steam:overlay_activate( "url", url )

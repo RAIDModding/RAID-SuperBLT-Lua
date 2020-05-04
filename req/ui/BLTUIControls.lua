@@ -208,8 +208,10 @@ function BLTDownloadControl:init( panel, parameters )
 	})
 
 	-- Patch notes button panel
+	local has_patch_notes = parameters.update:GetPatchNotes() ~= nil
 	self._patch_panel = self._panel:panel({
-		w = math.min( self._panel:w() * 0.25, self._panel:h() ),
+		w = has_patch_notes and math.min( self._panel:w() * 0.25, self._panel:h() ) or 0,
+		visible = has_patch_notes,
 		layer = 10
 	})
 	self._patch_panel:set_right( self._download_panel:x() - padding )
