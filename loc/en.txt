@@ -95,6 +95,7 @@
 	"blt_language_zh-cn" : "Chinese",
 	"blt_language_pl" : "Polish",
 	"blt_language_nl" : "Dutch",
+	"blt_language_pt-br" : "Brazilian Portuguese",
 
 	"blt_no_image" : "No Image",
 	"blt_no_name" : "No Name",
