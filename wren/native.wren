@@ -43,7 +43,7 @@ foreign class XML {
 
 	// Helpers
 	is_element {
-		return this.name[0..2] != "!--"
+		return !this.name.startsWith("!--")
 	}
 
 	next_element {
