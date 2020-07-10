@@ -171,21 +171,21 @@ function Hooks:PreHook( object, func, id, pre_call )
 		object[func] = function(...)
 
 			local hooked_func = self._prehooks[object][func]
-			local r, _r
+			local r, _r = {}
 
 			for k, v in ipairs( hooked_func.overrides ) do
-				_r = v.func( ... )
-				if _r then
+				_r = { v.func( ... ) }
+				if _r[1] then
 					r = _r
 				end
 			end
 
-			_r = hooked_func.original(...)
-			if _r then
+			_r = { hooked_func.original(...) }
+			if _r[1] then
 				r = _r
 			end
 
-			return r
+			return unpack(r)
 
 		end
 
@@ -255,21 +255,21 @@ function Hooks:PostHook( object, func, id, post_call )
 		object[func] = function(...)
 
 			local hooked_func = self._posthooks[object][func]
-			local r, _r
+			local r, _r = {}
 
-			_r = hooked_func.original(...)
-			if _r then
+			_r = { hooked_func.original(...) }
+			if _r[1] then
 				r = _r
 			end
 
 			for k, v in ipairs( hooked_func.overrides ) do
-				_r = v.func( ... )
-				if _r then
+				_r = { v.func( ... ) }
+				if _r[1] then
 					r = _r
 				end
 			end
 
-			return r
+			return unpack(r)
 
 		end
 
