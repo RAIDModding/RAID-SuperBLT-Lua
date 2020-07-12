@@ -142,6 +142,11 @@ function Hooks:ReturnCall( key, ... )
 
 end
 
+-- A helper function for pre- and post-hook to determine if the result of the hook indicates an override
+local function is_override(first, ...)
+	return first ~= nil or select("#", ...) ~= 0
+end
+
 --[[
 	Hooks:PreHook( object, func, id, pre_call )
 		Automatically hooks a function to be called before the specified function on a specified object
@@ -175,13 +180,13 @@ function Hooks:PreHook( object, func, id, pre_call )
 
 			for k, v in ipairs( hooked_func.overrides ) do
 				_r = { v.func( ... ) }
-				if _r[1] then
+				if is_override(unpack(_r)) then
 					r = _r
 				end
 			end
 
 			_r = { hooked_func.original(...) }
-			if _r[1] then
+			if is_override(unpack(_r)) then
 				r = _r
 			end
 
@@ -255,16 +260,13 @@ function Hooks:PostHook( object, func, id, post_call )
 		object[func] = function(...)
 
 			local hooked_func = self._posthooks[object][func]
-			local r, _r = {}
+			local r, _r
 
-			_r = { hooked_func.original(...) }
-			if _r[1] then
-				r = _r
-			end
+			r = { hooked_func.original(...) }
 
 			for k, v in ipairs( hooked_func.overrides ) do
 				_r = { v.func( ... ) }
-				if _r[1] then
+				if is_override(unpack(_r)) then
 					r = _r
 				end
 			end
