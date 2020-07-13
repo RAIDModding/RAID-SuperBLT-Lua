@@ -18,6 +18,7 @@ function BLTMod:init( ident, data )
 	assert( data, "BLTMods can not be created without json data!" )
 
 	self._errors = {}
+	self._legacy_updates = {}
 
 	-- Mod information
 	self.json_data = data
@@ -64,7 +65,13 @@ function BLTMod:init( ident, data )
 	local updates = self.json_data["updates"]
 	if updates then
 		for i, update_data in ipairs( updates ) do
-			if update_data.host then
+			if not update_data.host then
+				-- Old PaydayMods update, server is gone so don't update those
+				-- Do keep track of what we have installed though, for dependencies
+				if update_data.identifier then -- sanity check
+					self._legacy_updates[update_data.identifier] = true
+				end
+			else
 				local new_update = BLTUpdate:new( self, update_data )
 				if new_update:IsPresent() then
 					table.insert( self.updates, new_update )
@@ -330,6 +337,10 @@ function BLTMod:GetUpdate( id )
 	end
 end
 
+function BLTMod:HasLegacyUpdate(id)
+	return self._legacy_updates[id]
+end
+
 function BLTMod:AreUpdatesEnabled()
 	for _, update in ipairs( self:GetUpdates() ) do
 		if not update:IsEnabled() then
@@ -451,6 +462,10 @@ function BLTMod:AreDependenciesInstalled()
 
 		local found = false
 		for _, mod in ipairs( BLT.Mods:Mods() ) do
+			if mod:HasLegacyUpdate(id) then
+				found = true
+			end
+
 			for _, update in ipairs( mod:GetUpdates() ) do
 				if update:GetId() == id then
 					found = true
