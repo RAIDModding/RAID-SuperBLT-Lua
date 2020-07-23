@@ -87,7 +87,7 @@
 	"blt_language_tr" : "Turco",
 	"blt_language_id" : "Indonesio",
 	"blt_language_it" : "Italiano",
-	"blt_language_zh-cn" : "Chino"
+	"blt_language_chs" : "Chino"
 
 	"blt_no_image" : "Sin Imagen",
 	"blt_no_name" : "Sin Nombre",

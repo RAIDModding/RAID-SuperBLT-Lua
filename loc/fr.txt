@@ -92,7 +92,7 @@
 	"blt_language_tr" : "Turc",
 	"blt_language_id" : "Indonésien",
 	"blt_language_it" : "Italien",
-	"blt_language_zh-cn" : "Chinois",
+	"blt_language_chs" : "Chinois",
 	"blt_language_pl" : "Polonais",
 	"blt_language_nl" : "Néerlandais",
 
