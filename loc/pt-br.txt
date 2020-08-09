@@ -42,7 +42,7 @@
 	"blt_mod_updates_disabled" : "Atualizações Automáticas:\nDesativado",
 	"blt_mod_updates_disabled_help" : "Esse mod não vai ser checado por novas versões.",
 
-	"blt_mod_check_for_updates" : "Cehcar pro atualizações",
+	"blt_mod_check_for_updates" : "Cheque pro atualizações",
 	"blt_mod_check_for_updates_desc" : "Cheque por atualizações agora mesmo.",
 
 	"blt_mod_toggle_dev" : "Mostrar as informações de desenvolvedor",
