@@ -1,4 +1,3 @@
-
 BLTDownloadManager = BLTDownloadManager or blt_class( BLTModule )
 BLTDownloadManager.__type = "BLTDownloadManager"
 
@@ -192,6 +191,13 @@ function BLTDownloadManager:clbk_download_finished( data, http_id )
 		wait()
 
 		unzip( file_path, temp_install_dir )
+
+		-- Update extract_path, in case user renamed mod's folder
+		local folders = SystemFS:list(temp_install_dir, true)
+		local extracted_folder_name = folders and #folders == 1 and folders[1]
+		if extracted_folder_name and extracted_folder_name ~= download.update:GetInstallFolder() then
+			extract_path = Application:nice_path( temp_install_dir .. "/" .. extracted_folder_name )
+		end
 
 		-- Verify content hash with the server hash
 		log("[Downloads] Verifying...")
