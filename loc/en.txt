@@ -92,6 +92,7 @@
 	"blt_language_tr" : "Turkish",
 	"blt_language_id" : "Indonesian",
 	"blt_language_it" : "Italian",
+	"blt_language_ja" : "Japanese",
 	"blt_language_zh-cn" : "Chinese",
 	"blt_language_pl" : "Polish",
 	"blt_language_nl" : "Dutch",
