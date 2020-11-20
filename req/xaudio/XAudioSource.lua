@@ -141,9 +141,9 @@ end
 
 function C:set_volume(gain)
 	if gain > 1 then
-		error("Cannot set gain to more than 1")
+		log("Cannot set gain to more than 1")
 	elseif gain < 0 then
-		error("Cannot set gain to less than 0")
+		log("Cannot set gain to less than 0")
 	end
 
 	self._gain = gain
