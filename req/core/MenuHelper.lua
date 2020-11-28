@@ -83,6 +83,8 @@ function MenuHelper:AddButton( button_data )
 	menu._items_list = menu._items_list or {}
 	table.insert( menu._items_list, item )
 
+	return item
+
 end
 
 function MenuHelper:AddDivider( divider_data )
@@ -102,6 +104,8 @@ function MenuHelper:AddDivider( divider_data )
 	item._priority = divider_data.priority or 0
 	menu._items_list = menu._items_list or {}
 	table.insert( menu._items_list, item )
+
+	return item
 
 end
 
@@ -162,6 +166,8 @@ function MenuHelper:AddToggle( toggle_data )
 	menu._items_list = menu._items_list or {}
 	table.insert( menu._items_list, item )
 
+	return item
+
 end
 
 function MenuHelper:AddSlider( slider_data )
@@ -194,6 +200,8 @@ function MenuHelper:AddSlider( slider_data )
 
 	menu._items_list = menu._items_list or {}
 	table.insert( menu._items_list, item )
+
+	return item
 
 end
 
@@ -228,6 +236,8 @@ function MenuHelper:AddMultipleChoice( multi_data )
 	menu._items_list = menu._items_list or {}
 	table.insert( menu._items_list, item )
 
+	return item
+
 end
 
 function MenuHelper:AddKeybinding( bind_data )
@@ -256,6 +266,8 @@ function MenuHelper:AddKeybinding( bind_data )
 	menu._items_list = menu._items_list or {}
 	table.insert( menu._items_list, item )
 
+	return item
+
 end
 
 function MenuHelper:AddInput( input_data )
@@ -280,6 +292,9 @@ function MenuHelper:AddInput( input_data )
 
 	menu._items_list = menu._items_list or {}
 	table.insert( menu._items_list, item )
+
+	return item
+
 end
 
 
@@ -426,6 +441,8 @@ function MenuHelper:AddMenuItem( parent_menu, child_menu, name, desc, menu_posit
 	button._parameters.help_id = desc
 	button._parameters.next_node = child_menu
 	table.insert( parent_menu._items, menu_position, button )
+
+	return button
 
 end
 
