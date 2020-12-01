@@ -42,7 +42,7 @@
 	"blt_mod_updates_disabled" : "Atualizações Automáticas:\nDesativado",
 	"blt_mod_updates_disabled_help" : "Esse mod não vai ser checado por novas versões.",
 
-	"blt_mod_check_for_updates" : "Cheque pro atualizações",
+	"blt_mod_check_for_updates" : "Cheque por atualizações",
 	"blt_mod_check_for_updates_desc" : "Cheque por atualizações agora mesmo.",
 
 	"blt_mod_toggle_dev" : "Mostrar as informações de desenvolvedor",
@@ -54,8 +54,8 @@
 	"blt_update_mod_available" : "Uma atualização para $name está disponível! Foi adicionado ao Gerenciador de Download!",
 	"blt_update_mod_goto_manager" : "Vá para o Gerenciador de Download",
 
-	"blt_update_dll_title" : "Atualização Obrigatória",
-	"blt_update_dll_text" : "Uma atualização está disponível para o DLL do BLT, você vai precisar atualizar isso manualmente, baixando e instalando pelo site.\n\nPor favor atualiza assim que possível, isso é uma atualização obrigatória que pode consertar crashes do seu jogo.",
+	"blt_update_dll_title" : "Atualização Crítica",
+	"blt_update_dll_text" : "Uma atualização está disponível para o DLL do BLT, você vai precisar atualizar isso manualmente, baixando e instalando pelo site.\n\nPor favor, atualiza assim que possível, isso é uma atualização obrigatória que pode consertar crashes do seu jogo.",
 	"blt_update_dll_goto_website" : "Vá para o site",
 	"blt_update_later" : "Atualize depois",
 	
@@ -72,8 +72,8 @@
 	"blt_download_dependency" : "$dependency é preciso pelo $mod",
 	"blt_download_all" : "Atualize todos",
 
-	"blt_checking_updates" : "Checando pelas atualizações",
-	"blt_checking_updates_help" : "Checando pelas atualizações para os seus mods, por favor espere...",
+	"blt_checking_updates" : "Checando por atualizações",
+	"blt_checking_updates_help" : "Checando por atualizações para os seus mods, por favor espere...",
 	"blt_checking_updates_required" : "Precisa Atualizar",
 	"blt_checking_updates_required_help" : "Atualizações estão disponíveis para os seus mods, visite o gerenciador de download para atualizar!",
 	"blt_view_patch_notes" : "Veja as Notas de Mudanças",
@@ -82,9 +82,23 @@
 
 	"blt_language_select" : "Idioma",
 	"blt_language_select_desc" : "Selecione o idioma para que o BLT seja mostrado",
+	"blt_language_en" : "Inglês (English)",
+	"blt_language_es" : "Espanhol (Spanish)",
+	"blt_language_sv" : "Suéco (Swedish)",
+	"blt_language_cht" : "Chinês (Tradicional) (Chinese (Traditional))",
+	"blt_language_de" : "Alemão (German)",
+	"blt_language_fr" : "Francês (French)",
+	"blt_language_ru" : "Russo (Russian)",
+	"blt_language_tr" : "Turco (Turkish)",
+	"blt_language_id" : "Indonesia (Indonesian)",
+	"blt_language_it" : "Itália (Italian)",
+	"blt_language_ja" : "Japônes (Japanese)",
+	"blt_language_chs" : "Chinês (Simplificado) (Chinese (Simplified))",
+	"blt_language_pl" : "Polonês (Polish)",
+	"blt_language_nl" : "Holandês (Dutch)",
+	"blt_language_pt-br" : "Português Brasileiro (Brazilian Portuguese)",
 
 	"blt_no_image" : "Sem Imagem",
 	"blt_no_name" : "Sem Nome",
 	"blt_no_desc" : "Sem Descrição"
-
 }
