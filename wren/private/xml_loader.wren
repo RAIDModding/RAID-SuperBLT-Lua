@@ -279,30 +279,49 @@ var Tweaker = XMLTweakApplier.new()
 
 class XMLLoader {
 	static init() {
-		for (mod in IO.listDirectory("mods", true)) {
-			var path = "mods/%(mod)/supermod.xml"
-			if (IO.info(path) == "file") {
-				var data = IO.read(path)
-				var xml = XML.new(data)
-				for (elem in xml.first_child.element_children) { // <?xml?> -> <mod> -> first elem
-					var name = elem.name
-					if(name == ":include") {
-						// TODO include logic
-					} else if(name == "wren") {
-						handle_wren_tag(mod, elem)
-					} else if(name == "tweak") {
-						handle_tweak_file(mod, elem["definition"])
-					} else if(name == "native_module") {
-						handle_native_module(mod, elem)
-					} else {
-						// Since this XML file is also used by Lua, don't do anything
-						// Fiber.abort("Unknown element type in %(path): %(name)")
-					}
-				}
-				xml.delete()
-			}
+		// "path" : { forbidden_elements }
+		var mod_folder_paths = {
+			"mods" : {},
+			"assets/mod_overrides" : { "wren" : true, "native_module" : true }
 		}
 
+		for (mod_folder_path in mod_folder_paths.keys) {
+			if (IO.info(mod_folder_path) == "dir") {
+				var forbidden_elements = mod_folder_paths[mod_folder_path]
+
+				for (mod in IO.listDirectory(mod_folder_path, true)) {
+					var path = "%(mod_folder_path)/%(mod)/supermod.xml"
+					if (IO.info(path) == "file") {
+						var mod_path = "%(mod_folder_path)/%(mod)"
+
+						var data = IO.read(path)
+						var xml = XML.new(data)
+						for (elem in xml.first_child.element_children) { // <?xml?> -> <mod> -> first elem
+							var name = elem.name
+							var forbidden = forbidden_elements[name]
+
+							if (forbidden) {
+								Fiber.abort("Forbidden element type in %(mod_path):<wren>: %(name)")
+							} else {
+								if(name == ":include") {
+									// TODO include logic
+								} else if(name == "wren") {
+									handle_wren_tag(mod_path, elem)
+								} else if(name == "tweak") {
+									handle_tweak_file(mod_path, elem["definition"])
+								} else if(name == "native_module") {
+									handle_native_module(mod_path, elem)
+								} else {
+									// Since this XML file is also potentially used by Lua, don't do anything
+									// Fiber.abort("Unknown element type in %(path): %(name)")
+								}
+							}
+						}
+						xml.delete()
+					}
+				}
+			}
+		}
 		for (file in ExecTodo) {
 			Logger.log("Loading module %(file)")
 			IO.dynamic_import(file)
@@ -323,7 +342,7 @@ class XMLLoader {
 	}
 
 	static handle_tweak_file(mod, filename) {
-		var path = "mods/%(mod)/%(filename)"
+		var path = "%(mod)/%(filename)"
 		var data = IO.read(path)
 		var xml = XML.new(data)
 		var root = xml.first_child // <?xml?> -> <tweak/tweaks>
@@ -349,7 +368,7 @@ class XMLLoader {
 		// Lua handles everything except "preload" DLLs
 		if(elem["loading_vector"] != "preload") return
 
-		var path = "mods/%(mod)/%(elem["filename"])"
+		var path = "%(mod)/%(elem["filename"])"
 
 		// TODO check platform/architecture
 
