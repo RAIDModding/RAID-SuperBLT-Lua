@@ -1,5 +1,4 @@
 import "base/native" for Logger, IO, XML
-import "base/base" for TweakRegistry
 
 /**
  * XML Tweak Applier
@@ -393,7 +392,5 @@ class XMLLoader {
 		IO.load_plugin(path)
 	}
 }
-
-TweakRegistry.RegisterXMLTweaker(Tweaker)
 
 XMLLoader.init()
