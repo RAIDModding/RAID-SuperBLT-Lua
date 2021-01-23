@@ -187,15 +187,15 @@ class XMLTweakApplier {
 
 						if(!mult) return false
 					} else {
-						var continue = dive_tweak_elem(elem.first_child, root_search_node, next_search_node, target_node, info)
-						if(!continue) {
+						var continue_search = dive_tweak_elem(elem.first_child, root_search_node, next_search_node, target_node, info)
+						if(!continue_search) {
 							return false
-						} else {
-							if(info["level"] > info["deepestlevel"]) {
-								info["deepestlevel"] = info["level"]
-							}
-							info["level"] = info["level"] - 1
 						}
+						
+						if(info["level"] > info["deepestlevel"]) {
+							info["deepestlevel"] = info["level"]
+						}
+						info["level"] = info["level"] - 1
 					}
 				}
 			}
