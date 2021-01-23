@@ -290,14 +290,15 @@ class XMLLoader {
 		if (IO.info(disabled_mods_path) == "file") {
 			var data = IO.read(disabled_mods_path)
 			for (line in data.split("\n")) {
-				line = line.trim()
+				// Unfortunately the trim() function isn't present in older versions of Wren, but there
+				// should never be any trailing or leading whitespace anyway.
 				if (line != "") disabled_mods.add(line)
 			}
 		}
 		
 		for (mod in IO.listDirectory("mods", true)) {
 			// Skip over disabled mods
-			if (disabled_mods.indexOf("mods/%(mod)/supermod.xml") == -1) {
+			if (!disabled_mods.contains("mods/%(mod)/supermod.xml")) {
 				load_supermod_file("mods/%(mod)", false)
 			}
 		}
@@ -404,6 +405,11 @@ XMLLoader.init()
 // Also note this will use the list of installed tweaks, so this must be called after XMLLoader.init or
 // some tweaks won't be applied.
 var db_err = (Fiber.new {
+	// Since the old (and very against-wren-docs) dynamic_import method crashes the game if there's an
+	// error loading the script, call a method that we know doesn't exist previously to force the fibre
+	// to stop here.
+	IO.has_native_module("")
+
 	IO.dynamic_import("base/private/asset_loader_tweaks")
 }).try()
 
