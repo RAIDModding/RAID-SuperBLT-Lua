@@ -1,3 +1,7 @@
+// NOTE: This code is no longer used on newer versions of the SuperBLT DLL, instead being
+// overridden by a copy embedded into the DLL to paper over some lack of foresight about
+// backwards compatiblity.
+// The current version can be found at: https://gitlab.com/znixian/payday2-superblt/-/blob/master/wren/native.wren
 
 class Logger {
 	foreign static log(text)

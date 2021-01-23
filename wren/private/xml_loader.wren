@@ -43,6 +43,10 @@ class XMLTweakApplier {
 		tweaklist.add(path)
 	}
 
+	tweaked_files {
+		return _xml_tweaks.keys
+	}
+
 	// Returns whether or not the tweaker needs to tweak the bundled file <name>.<ext>
 	tweaks(name, ext) {
 		var full = "%(name).%(ext)"
@@ -394,3 +398,16 @@ class XMLLoader {
 }
 
 XMLLoader.init()
+
+// If we're running a version of the DLL that supports DB hooking, use that rather than the old
+// hooking system. If we're not, this will fail to handle the error accordingly.
+// Also note this will use the list of installed tweaks, so this must be called after XMLLoader.init or
+// some tweaks won't be applied.
+var db_err = (Fiber.new {
+	IO.dynamic_import("base/private/asset_loader_tweaks")
+}).try()
+
+if (db_err != null) {
+	Logger.log("Failed to load DB-hook based asset tweaker. Please update your DLL, as this fixes occasional crashes.")
+	Logger.log("Error for the above: %(db_err)")
+}
