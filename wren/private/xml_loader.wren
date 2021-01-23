@@ -279,53 +279,69 @@ var Tweaker = XMLTweakApplier.new()
 
 class XMLLoader {
 	static init() {
-		// "path" : { forbidden_elements }
-		var mod_folder_paths = {
-			"mods" : {},
-			"assets/mod_overrides" : { "wren" : true, "native_module" : true }
-		}
-
-		for (mod_folder_path in mod_folder_paths.keys) {
-			if (IO.info(mod_folder_path) == "dir") {
-				var forbidden_elements = mod_folder_paths[mod_folder_path]
-
-				for (mod in IO.listDirectory(mod_folder_path, true)) {
-					var path = "%(mod_folder_path)/%(mod)/supermod.xml"
-					if (IO.info(path) == "file") {
-						var mod_path = "%(mod_folder_path)/%(mod)"
-
-						var data = IO.read(path)
-						var xml = XML.new(data)
-						for (elem in xml.first_child.element_children) { // <?xml?> -> <mod> -> first elem
-							var name = elem.name
-							var forbidden = forbidden_elements[name]
-
-							if (forbidden) {
-								Fiber.abort("Forbidden element type in %(mod_path):<wren>: %(name)")
-							} else {
-								if(name == ":include") {
-									// TODO include logic
-								} else if(name == "wren") {
-									handle_wren_tag(mod_path, elem)
-								} else if(name == "tweak") {
-									handle_tweak_file(mod_path, elem["definition"])
-								} else if(name == "native_module") {
-									handle_native_module(mod_path, elem)
-								} else {
-									// Since this XML file is also potentially used by Lua, don't do anything
-									// Fiber.abort("Unknown element type in %(path): %(name)")
-								}
-							}
-						}
-						xml.delete()
-					}
-				}
+		// Load the list of disabled mods that BLT writes for us
+		// (note it would be really nice to use the 'continue' keyword here, but older
+		//  versions of the DLL might not have it yet)
+		var disabled_mods_path = "mods/saves/blt_wren_disabled_mods.txt"
+		var disabled_mods = []
+		if (IO.info(disabled_mods_path) == "file") {
+			var data = IO.read(disabled_mods_path)
+			for (line in data.split("\n")) {
+				line = line.trim()
+				if (line != "") disabled_mods.add(line)
 			}
 		}
+		
+		for (mod in IO.listDirectory("mods", true)) {
+			// Skip over disabled mods
+			if (disabled_mods.indexOf("mods/%(mod)/supermod.xml") == -1) {
+				load_supermod_file("mods/%(mod)", false)
+			}
+		}
+
+		if (IO.info("assets/mod_overrides") == "dir") {
+			for (mod in IO.listDirectory("assets/mod_overrides", true)) {
+				load_supermod_file("assets/mod_overrides/%(mod)", true)
+			}
+		}
+		
 		for (file in ExecTodo) {
 			Logger.log("Loading module %(file)")
 			IO.dynamic_import(file)
 		}
+	}
+	
+	static load_supermod_file(mod_path, tweak_only) {
+		var path = "%(mod_path)/supermod.xml"
+
+		if (IO.info(path) != "file") {
+			return
+		}
+	
+		var data = IO.read(path)
+		var xml = XML.new(data)
+		for (elem in xml.first_child.element_children) { // <?xml?> -> <mod> -> first elem
+			var name = elem.name
+
+			// Only allow tweaks in mod_overrides
+			if (tweak_only && name != "tweak") {
+				Fiber.abort("Non-tweak element in mod_overrides mod in %(mod_path):<wren>: %(name)")
+			}
+
+			if(name == ":include") {
+				// TODO include logic
+			} else if(name == "wren") {
+				handle_wren_tag(mod_path, elem)
+			} else if(name == "tweak") {
+				handle_tweak_file(mod_path, elem["definition"])
+			} else if(name == "native_module") {
+				handle_native_module(mod_path, elem)
+			} else {
+				// Since this XML file is also potentially used by Lua, don't do anything
+				// Fiber.abort("Unknown element type in %(path): %(name)")
+			}
+		}
+		xml.delete()
 	}
 
 	static handle_wren_tag(mod, tag) {

@@ -235,6 +235,20 @@ function BLTModManager:Save()
 
 	local success = io.save_as_json( save_data, BLTModManager.Constants:ModManagerSaveFile() )
 	log("[BLT] Save complete? " .. tostring(success))
+	
+	-- Save a Wren-readable list of disabled mods - it doesn't have a JSON parser so it
+	-- can't load our normal file, and it needs to know what's enabled before any Lua code runs.
+	local wren_file = io.open(BLTModManager.Constants:ModManagerWrenDisabledModsFile(), "wb")
+	for _, mod in ipairs(self.mods) do
+		-- Write the item even if the mod doesn't have a supermod file - maybe it will after an update, and there's
+		-- no harm in writing extra items here.
+		if not mod:IsEnabled() then
+			local supermod_path = mod.path .. "supermod.xml"
+			wren_file:write(supermod_path .. "\n")
+		end
+	end
+	wren_file:close()
+
 	return success
 
 end
@@ -286,6 +300,10 @@ end
 
 function BLTModManager.Constants:ModManagerSaveFile()
 	return self:SavesDirectory() .. "blt_data.txt"
+end
+
+function BLTModManager.Constants:ModManagerWrenDisabledModsFile()
+	return self:SavesDirectory() .. "blt_wren_disabled_mods.txt"
 end
 
 function BLTModManager.Constants:LuaModsMenuID()
