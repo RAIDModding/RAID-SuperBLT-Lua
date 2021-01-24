@@ -311,7 +311,7 @@ class XMLLoader {
 		
 		for (file in ExecTodo) {
 			Logger.log("Loading module %(file)")
-			IO.dynamic_import(file)
+			IO.dynamic_import("__raw_force_load/" + file)
 		}
 	}
 	
@@ -355,7 +355,8 @@ class XMLLoader {
 				// TODO set base path
 			} else if(name == "init") {
 				var mod_name = mod.replace("mods/", "")
-				ExecTodo.add("__raw_force_load/%(mod_name)/%(elem["file"])")
+				var file_name = elem["file"]
+				ExecTodo.add("%(mod_name)/%(file_name)")
 			} else {
 				Fiber.abort("Unknown element type in %(mod):<wren>: %(name)")
 			}
