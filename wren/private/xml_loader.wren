@@ -354,7 +354,8 @@ class XMLLoader {
 			if(name == "base-path") {
 				// TODO set base path
 			} else if(name == "init") {
-				ExecTodo.add(elem["file"])
+				var mod_name = mod.replace("mods/", "")
+				ExecTodo.add("__raw_force_load/%(mod_name)/%(elem["file"])")
 			} else {
 				Fiber.abort("Unknown element type in %(mod):<wren>: %(name)")
 			}
