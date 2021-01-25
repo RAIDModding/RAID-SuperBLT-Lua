@@ -349,6 +349,19 @@ class XMLLoader {
 	}
 
 	static handle_wren_tag(mod, tag) {
+		// Awful hack:
+		// Old versions of SuperBLT didn't load Wren files properly, and required the path to be baked in. Because
+		// of my (ZNix's) bad idea of making everything throw errors rather than logging warnings (which was and
+		// still is great for making people comply with the specifications) it has become impossible to use the init
+		// tag to load a file on a mod that needs backwards compatibility with older versions of SuperBLT.
+		// As a result, I'm pretty much forced at this point to let you specify the file to load via an attribute
+		// on the wren tag, to allow for this kind of backwards-compatiblity.
+		if (tag["init-file"] != null) {
+			var mod_name = mod.replace("mods/", "")
+			var file_name = tag["init-file"]
+			ExecTodo.add("%(mod_name)/%(file_name)")
+		}
+
 		for (elem in tag.element_children) {
 			var name = elem.name
 			if(name == "base-path") {
