@@ -255,7 +255,7 @@ class XMLTweakApplier {
 		} else if(root.name == "tweak") {
 			if(handle_tweak_element(name, ext, root, tweaks)) tweaked = true
 		} else {
-			Fiber.abort("Unknown tweak root type in %(path): %(root.name)")
+			Logger.log("[WARN] Unknown tweak root type in %(path): %(root.name)")
 		}
 		if(!tweaked) xml.delete()
 	}
@@ -358,7 +358,7 @@ class XMLLoader {
 				var file_name = elem["file"]
 				ExecTodo.add("%(mod_name)/%(file_name)")
 			} else {
-				Fiber.abort("Unknown element type in %(mod):<wren>: %(name)")
+				Logger.log("[WARN] Unknown element type in %(mod):<wren>: %(name)")
 			}
 		}
 	}
@@ -375,7 +375,7 @@ class XMLLoader {
 		} else if(root.name == "tweak") {
 			handle_tweak_element(mod, path, root)
 		} else {
-			Fiber.abort("Unknown tweak root type in %(path): %(root.name)")
+			Logger.log("[WARN] Unknown tweak root type in %(path): %(root.name)")
 		}
 		xml.delete()
 	}
