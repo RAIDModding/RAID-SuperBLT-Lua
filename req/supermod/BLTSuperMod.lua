@@ -76,7 +76,7 @@ function BLTSuperMod:_add_hooks(xml, parent_scope)
 			self:_run_entry_script(tag, scope, "hooks", "post")
 		end,
 		wildcard = function(tag, scope)
-			error("TODO implement wildcard")
+			BLT:Log(LogLevel.WARN, "TODO implement wildcard")
 		end,
 	})
 end
@@ -173,7 +173,7 @@ function BLTSuperMod._recurse_xml(xml, parent_scope, callbacks)
 			if name:sub(1,1) == ":" then
 				name = name:sub(2)
 				if not scope[name] then
-					error("Trying to append to missing parameter '" .. name
+					BLT:Log(LogLevel.WARN, "Trying to append to missing parameter '" .. name
 							.. "' in " .. tag._doc.filename)
 				end
 				scope[name] = scope[name] .. val
@@ -187,7 +187,7 @@ function BLTSuperMod._recurse_xml(xml, parent_scope, callbacks)
 		elseif callbacks[tag.name] then
 			callbacks[tag.name](tag, scope, callbacks)
 		else
-			error("Unknown tag name '" .. tag.name .. "' in: " .. tag._doc.filename)
+			BLT:Log(LogLevel.WARN, "Unknown tag name '" .. tag.name .. "' in: " .. tag._doc.filename)
 		end
 	end
 end
