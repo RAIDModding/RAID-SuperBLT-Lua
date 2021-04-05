@@ -4,6 +4,26 @@ This lists the changes between different versions of the SuperBLT basemod,
 which controls things like the mod update menu. Note this does not contain the
 changes for the DLL.
 
+## v1.2.0
+
+Note that I forgot to update the version number for this one, so it looked like you were on v1.1.6.0 from the mods menu.
+
+- Fix Hooks:PreHook and Hooks:PostHook discarding multiple returns - Hoppip and ZNix
+- Fix JSON files that decode to `null` or `""` crashing the game - DorentuZ
+- Make the JSON parser accept some JSON5-like extensions, such as trailing commas and comments - DorentuZ
+- wren: Fix `XML.is_element` crashing if the node's name is two characters or less - ZNix
+- French translations update - Brskt
+- Added a Brazilian Portuguese translation - Gabriel F
+- Fix the language selector switching back to English - Luffyyy
+- Removed support for paydaymods.com updates, since the site is gone - Luffyyy
+- Fix removing keybinds not being saved - steam-test1
+- Fix crash-causing bugs in Hooks:PreHook and Hooks:PostHook - DorentuZ
+- Add BLTModManager:GetModByName - Luffy
+- Add mod.txt version number checking to the autoupdater, in addition to hash-based checking - Luffyyy
+- Fix the debug information from supermod.xml assets showing the wrong path - Hoppip
+- Disable converting old (pre-LuaJIT update) BLT savefiles - steam-test1
+- Added a Dutch translation - DorentuZ
+
 ## v1.1.6.0
 
 - Add Polish translation - Alister The Hedgehog
