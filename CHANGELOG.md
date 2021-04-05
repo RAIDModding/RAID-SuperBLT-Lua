@@ -4,6 +4,23 @@ This lists the changes between different versions of the SuperBLT basemod,
 which controls things like the mod update menu. Note this does not contain the
 changes for the DLL.
 
+## v1.3.0
+
+- Fix BLT:GetOS() returning "linux" on Windows under specific conditions - ZNix
+- Make the parsing code for `supermod.xml` more tolerant of malformed input, so future tags won't crash older versions - Campbell Suter
+- Add BLT:Log function, supporting logging levels - Hoppip
+- Update the Wren system to use the new features added in the DLL - ZNix
+- Get rid of the wren TweakRegistry - so far as I can tell it was never used in any mods (this does not affect normal XML tweaks) - ZNix
+- Disable Wren-related functionality for disabled mods - ZNix
+- Return created menu items from MenuHelper - Hoppip
+- Update the Brazilian Portuguese translation - Gabriel F
+- Load XML tweaks from `mod_overrides` mods, to store animations there - Cpone
+- Fix calls with invalid values crashing `XAudio.Source:set_volume` - Hoppip
+- Update the Chinese translation - SummonHIM
+- Add a Japanese translation - Takuya Namba
+- Add autoupdate support for renamed mod folders - TdlQ
+- Fix mods with dependencies on other mods using the paydaymods.com update system being disabled due to missing dependencies - ZNix
+
 ## v1.2.0
 
 Note that I forgot to update the version number for this one, so it looked like you were on v1.1.6.0 from the mods menu.
@@ -30,7 +47,7 @@ Note that I forgot to update the version number for this one, so it looked like 
 - Fix the BLT menus not appearing after update 198 - Luffy - See !30
 - Add macro support for custom localisations - DorentuZ - See !23
 - Fixed not being able to unbind keybinds - Offyerrocker - See !28
-- Removed misleading blt_version check, with the intention of later adding a minimum version field - Luffy - See !27
+- Removed misleading `blt_version` check, with the intention of later adding a minimum version field - Luffy - See !27
 - Add an initial BLT asset manager, allowing the use of recoding Windows assets for Linux - ZNix
 - Fix entry scripts running when their mod is disabled - ZNix
 - Fix dependency checks for long chains - TdlQ
