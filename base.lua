@@ -139,7 +139,9 @@ function BLT:GetVersion()
 end
 
 function BLT:GetOS()
-	return os.getenv("HOME") == nil and "windows" or "linux"
+	local info = blt.blt_info()
+	if not info then return "windows" end
+	return info.platform == "mswindows" and "windows" or "linux"
 end
 
 function BLT:RunHookTable( hooks_table, path )
