@@ -1,7 +1,7 @@
 // This import will cause an error on older versions of the DLL
 import "base/native/DB_001" for DBManager, DBForeignFile
 import "base/native/internal_001" for Internal
-import "base/private/xml_loader" for Tweaker
+import "base/private/xml_loader" for Tweaker, ModErrorHandler
 import "base/native" for Logger, XML
 
 // Disable the old tweaking system so we don't double-up on tweaks
@@ -35,4 +35,18 @@ for (tweak in Tweaker.tweaked_files) {
 
 	var hook = DBManager.register_asset_hook("@" + name, "@" + ext)
 	hook.wren_loader = loader
+}
+
+// Try using the hook's mod warning to show a popup (on Windows at least), and if that
+// fails fall back to the previous handler
+var prev_err_handler = ModErrorHandler.func
+ModErrorHandler.func = Fn.new { | file_name, err |
+	var err2 = (Fiber.new {
+		Internal.warn_bad_mod(file_name, err)
+	}).try()
+
+	// Basemod doesn't support it?
+	if (err2 != null) {
+		prev_err_handler.call(file_name, err)
+	}
 }

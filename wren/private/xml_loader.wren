@@ -277,8 +277,21 @@ class XMLTweakApplier {
 	}
 }
 
+class ModErrorHandlerImpl {
+	construct new() {
+		// This will be overridden by asset_loader_tweaks if the basemod supports it
+		_func = Fn.new { | file, err |
+			Fiber.abort("Wren run error for %(file): %(err)")
+		}
+	}
+
+	func { _func }
+	func=(v) { _func = v }
+}
+
 var ExecTodo = []
 var Tweaker = XMLTweakApplier.new()
+var ModErrorHandler = ModErrorHandlerImpl.new()
 
 class XMLLoader {
 	static init() {
@@ -308,10 +321,17 @@ class XMLLoader {
 				load_supermod_file("assets/mod_overrides/%(mod)", true)
 			}
 		}
-		
+	}
+
+	static exec_wren_scripts() {
 		for (file in ExecTodo) {
 			Logger.log("Loading module %(file)")
-			IO.dynamic_import("__raw_force_load/" + file)
+			var err = (Fiber.new {
+				IO.dynamic_import("__raw_force_load/" + file)
+			}).try()
+			if (err != null) {
+				ModErrorHandler.func.call(file, err)
+			}
 		}
 	}
 	
@@ -432,3 +452,5 @@ if (db_err != null) {
 	Logger.log("Failed to load DB-hook based asset tweaker. Please update your DLL, as this fixes occasional crashes.")
 	Logger.log("Error for the above: %(db_err)")
 }
+
+XMLLoader.exec_wren_scripts()
