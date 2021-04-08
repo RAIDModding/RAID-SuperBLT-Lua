@@ -50,3 +50,15 @@ ModErrorHandler.func = Fn.new { | file_name, err |
 		prev_err_handler.call(file_name, err)
 	}
 }
+
+// Set a mod-loading error handler, and load all the mod metadata into the runtime
+var load_mod_meta_err = (Fiber.new {
+	for (mod in Tweaker.mods_data.values) {
+		Internal.register_mod_v1(mod.name, mod.scripts_root)
+	}
+}).try()
+
+if (load_mod_meta_err != null) {
+	Logger.log("Failed to mod metadata. This should only occur on some pre-release builds of the DLL. Please update your DLL.")
+	Logger.log("Error for the above: %(load_mod_meta_err)")
+}

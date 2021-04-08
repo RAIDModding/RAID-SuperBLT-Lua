@@ -25,6 +25,11 @@ class XMLTweakApplier {
 		 * 2: 'replace' and 'append' modes now insert nodes in the expected order (see !19)
 		 */
 		_current_version = 2
+
+		/**
+		* A table of mods and metadata about them
+		*/
+		_mods = {}
 	}
 
 	// Mark that an XML file <path> tweaks the bundled file <name>.<ext>
@@ -45,6 +50,10 @@ class XMLTweakApplier {
 
 	tweaked_files {
 		return _xml_tweaks.keys
+	}
+
+	mods_data {
+		return _mods
 	}
 
 	// Returns whether or not the tweaker needs to tweak the bundled file <name>.<ext>
@@ -312,13 +321,16 @@ class XMLLoader {
 		for (mod in IO.listDirectory("mods", true)) {
 			// Skip over disabled mods
 			if (!disabled_mods.contains("mods/%(mod)/supermod.xml")) {
-				load_supermod_file("mods/%(mod)", false)
+				var mod_data = ModData.new(mod)
+				Tweaker.mods_data[mod] = mod_data
+
+				load_supermod_file("mods/%(mod)", mod_data, false)
 			}
 		}
 
 		if (IO.info("assets/mod_overrides") == "dir") {
 			for (mod in IO.listDirectory("assets/mod_overrides", true)) {
-				load_supermod_file("assets/mod_overrides/%(mod)", true)
+				load_supermod_file("assets/mod_overrides/%(mod)", null, true)
 			}
 		}
 	}
@@ -335,7 +347,7 @@ class XMLLoader {
 		}
 	}
 	
-	static load_supermod_file(mod_path, tweak_only) {
+	static load_supermod_file(mod_path, mod_data, tweak_only) {
 		var path = "%(mod_path)/supermod.xml"
 
 		if (IO.info(path) != "file") {
@@ -355,7 +367,7 @@ class XMLLoader {
 			if(name == ":include") {
 				// TODO include logic
 			} else if(name == "wren") {
-				handle_wren_tag(mod_path, elem)
+				handle_wren_tag(mod_path, elem, mod_data)
 			} else if(name == "tweak") {
 				handle_tweak_file(mod_path, elem["definition"])
 			} else if(name == "native_module") {
@@ -368,7 +380,7 @@ class XMLLoader {
 		xml.delete()
 	}
 
-	static handle_wren_tag(mod, tag) {
+	static handle_wren_tag(mod, tag, mod_data) {
 		// Awful hack:
 		// Old versions of SuperBLT didn't load Wren files properly, and required the path to be baked in. Because
 		// of my (ZNix's) bad idea of making everything throw errors rather than logging warnings (which was and
@@ -380,6 +392,11 @@ class XMLLoader {
 			var mod_name = mod.replace("mods/", "")
 			var file_name = tag["init-file"]
 			ExecTodo.add("%(mod_name)/%(file_name)")
+		}
+
+		// Let the mod change the directory that all Wren scripts are relative to - by default this is 'wren'
+		if (tag["scripts-root"] != null) {
+			mod_data.scripts_root = tag["scripts-root"]
 		}
 
 		for (elem in tag.element_children) {
@@ -431,6 +448,17 @@ class XMLLoader {
 
 		IO.load_plugin(path)
 	}
+}
+
+class ModData {
+	construct new(name) {
+		_name = name
+		_scripts_root = "wren"
+	}
+
+	name { _name }
+	scripts_root { _scripts_root }
+	scripts_root=(v) { _scripts_root = v }
 }
 
 XMLLoader.init()
