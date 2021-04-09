@@ -25,7 +25,7 @@ function DelayedCalls:Update( time, deltaTime )
 				end
 				v = nil
 			else
-				table.insert(t, v)
+				t[k] = v
 			end
 
 		end
