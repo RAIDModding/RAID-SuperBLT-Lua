@@ -30,6 +30,11 @@ class XMLTweakApplier {
 		* A table of mods and metadata about them
 		*/
 		_mods = {}
+
+		/**
+		 * A list of the state of all the control keys
+		 */
+		_control_keys = {}
 	}
 
 	// Mark that an XML file <path> tweaks the bundled file <name>.<ext>
@@ -75,6 +80,13 @@ class XMLTweakApplier {
 	}
 
 	/**
+	 * Enable or disable all the tweaks keyed to a given control key.
+	 */
+	set_control_key(mod, key, state) {
+		_control_keys["%(mod)::%(key)"] = state
+	}
+
+	/**
 	 * Apply a tweak file to a bundled file
 	 *
 	 * @param name The (hashed) name of the bundle file
@@ -85,7 +97,7 @@ class XMLTweakApplier {
 	apply_tweak(name, ext, xml, tweak_path) {
 		// Find all the relevant tweaks
 		var tweaks = [] // List of XML elements representing `<tweak>` tags
-		XMLTweakApplier.find_tweaks(tweak_path, name, ext, tweaks)
+		find_tweaks(tweak_path, name, ext, tweaks)
 
 		// As with pairs() in Lua, Wren makes no guarantees about the iteration order of maps
 		// (see http://wren.io/maps.html#iterating-over-the-contents). Fortunately, tweaks is a
@@ -252,26 +264,37 @@ class XMLTweakApplier {
 		if(mode == "replace") previous_child.detach().delete()
 	}
 
-	static find_tweaks(path, name, ext, tweaks) {
+	find_tweaks(path, name, ext, tweaks) {
 		var data = IO.read(path)
 		var xml = XML.new(data)
 		var root = xml.first_child // <?xml?> -> <tweak/tweaks>
 		var tweaked = false
 		if(root.name == "tweaks") {
 			for (elem in root.element_children) {
-				if(handle_tweak_element(name, ext, elem, tweaks)) tweaked = true
+				if(handle_tweak_element(path, name, ext, elem, tweaks)) tweaked = true
 			}
 		} else if(root.name == "tweak") {
-			if(handle_tweak_element(name, ext, root, tweaks)) tweaked = true
+			if(handle_tweak_element(path, name, ext, root, tweaks)) tweaked = true
 		} else {
 			Logger.log("[WARN] Unknown tweak root type in %(path): %(root.name)")
 		}
 		if(!tweaked) xml.delete()
 	}
 
-	static handle_tweak_element(name, ext, elem, tweaks) {
-		if(name != handle_idstring(elem["name"])) return false
-		if(ext != handle_idstring(elem["extension"])) return false
+	handle_tweak_element(path, name, ext, elem, tweaks) {
+		if(name != XMLTweakApplier.handle_idstring(elem["name"])) return false
+		if(ext != XMLTweakApplier.handle_idstring(elem["extension"])) return false
+
+		// The control-key attribute lets the mod enable and disable this tweak at runtime
+		var control_key = elem["control-key"]
+		if (control_key != null) {
+			// Hacky stuff to get the mod path prefix for the control key
+			var path_parts = path.split("/")
+			var full_key = "mods/%(path_parts[1])::%(control_key)"
+
+			Logger.log("keys: %(_control_keys) vs %(full_key)")
+			if (control_key && _control_keys[full_key] != true) return false
+		}
 
 		tweaks.add(elem)
 		return true
