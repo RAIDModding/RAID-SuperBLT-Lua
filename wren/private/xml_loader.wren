@@ -497,11 +497,12 @@ var db_err = (Fiber.new {
 	IO.has_native_module("")
 
 	IO.dynamic_import("base/private/asset_loader_tweaks")
+
+	// Only run other mod's scripts if the basemod supports doing so
+	XMLLoader.exec_wren_scripts()
 }).try()
 
 if (db_err != null) {
 	Logger.log("Failed to load DB-hook based asset tweaker. Please update your DLL, as this fixes occasional crashes.")
 	Logger.log("Error for the above: %(db_err)")
 }
-
-XMLLoader.exec_wren_scripts()
