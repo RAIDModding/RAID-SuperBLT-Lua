@@ -4,7 +4,17 @@ This lists the changes between different versions of the SuperBLT basemod,
 which controls things like the mod update menu. Note this does not contain the
 changes for the DLL.
 
+## v1.3.1
+
+- Add the XMl tweaker control keys system - ZNix
+- Add the Wren AssetUtil API class for asset overriding with better cross-mod compatibility - ZNix
+- Fix delayed calls losing their ids on update - Hoppip
+- Allow mods to alter their Wren 'base' directory - ZNix
+- Implement better Wren error handling, showing a popup rather than crashing if a mod failed to load - ZNix
+
 ## v1.3.0
+
+(Note: this version never ended up shipping and was incorporated into v1.3.1.
 
 - Fix BLT:GetOS() returning "linux" on Windows under specific conditions - ZNix
 - Make the parsing code for `supermod.xml` more tolerant of malformed input, so future tags won't crash older versions - Campbell Suter
