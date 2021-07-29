@@ -187,6 +187,7 @@ function MenuHelper:AddSlider( slider_data )
 		callback = slider_data.callback,
 		disabled_color = slider_data.disabled_color or Color( 0.25, 1, 1, 1 ),
 		localize = slider_data.localized,
+		localize_help = slider_data.localized,
 	}
 
 	local menu = self:GetMenu( slider_data.menu_id )
