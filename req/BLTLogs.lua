@@ -19,11 +19,11 @@ function BLTLogs:init()
 end
 
 function BLTLogs:LogNameToNumber( name )
-	local strs = string.blt_split(name, "_")
-	if #strs < 3 then
+	local year, month, day = name:match("^([0-9]+)_([0-9]+)_([0-9]+)_log.txt$")
+	if not year or not month or not day then
 		return -1
 	end
-	return Utils:TimestampToEpoch( tonumber(strs[1]), tonumber(strs[2]), tonumber(strs[3]) )
+	return Utils:TimestampToEpoch( year, month, day )
 end
 
 function BLTLogs:CleanLogs( lifetime )
