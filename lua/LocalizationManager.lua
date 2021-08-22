@@ -24,8 +24,20 @@ function LocalizationManager:text( str, macros )
 
 		local return_str = self._custom_localizations[str]
 		if macros and type(macros) == "table" then
-			for k, v in pairs( macros ) do
-				return_str = return_str:gsub( "$" .. k, v )
+			-- Create a list of macro keys sorted by length
+			local vars = {}
+			for k in pairs(macros) do
+				-- skip over unused numeric keys to avoid invalid type comparisons
+				if type(k) == "string" then
+					table.insert(vars, k)
+				end
+			end
+			table.sort(vars)
+
+			-- Loop in reverse order to replace longest vars first
+			for i = #vars, 1, -1 do
+				local k = vars[i]
+				return_str = return_str:gsub( "$" .. k .. ";?", macros[k] )
 			end
 		end
 
