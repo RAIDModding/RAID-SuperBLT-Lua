@@ -1,8 +1,7 @@
 
 _G.Hooks = Hooks or {}
 Hooks._registered_hooks = Hooks._registered_hooks or {}
-Hooks._prehooks = Hooks._prehooks or {}
-Hooks._posthooks = Hooks._posthooks or {}
+Hooks._function_hooks = Hooks._function_hooks or {}
 
 --[[
 	Hooks:Register( key )
@@ -129,22 +128,14 @@ function Hooks:ReturnCall( key, ... )
 	for k, v in pairs(self._registered_hooks[key]) do
 		if v then
 			if type(v.func) == "function" then
-
-				-- Holy hell would you look at this shit
-				local r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20, r21, r22, r23, r24, r25, r26, r27, r28, r29, r30, r31, r32 = v.func( ... )
-				if r1 ~= nil then
-					return r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20, r21, r22, r23, r24, r25, r26, r27, r28, r29, r30, r31, r32
+				local r = { v.func( ... ) }
+				if next(r) == 1 then
+					return unpack(r)
 				end
-
 			end
 		end
 	end
 
-end
-
--- A helper function for pre- and post-hook to determine if the result of the hook indicates an override
-local function is_override(first, ...)
-	return first ~= nil or select("#", ...) ~= 0
 end
 
 --[[
@@ -162,41 +153,9 @@ function Hooks:PreHook( object, func, id, pre_call )
 		return
 	end
 
-	if self._prehooks[object] == nil then
-		self._prehooks[object] = {}
-	end
+	if not self:_ChkCreateTableStructure(object, func) then
 
-	if self._prehooks[object][func] == nil then
-
-		self._prehooks[object][func] = {
-			original = object[func],
-			overrides = {}
-		}
-
-		object[func] = function(...)
-
-			local hooked_func = self._prehooks[object][func]
-			local r, _r = {}
-
-			for k, v in ipairs( hooked_func.overrides ) do
-				_r = { v.func( ... ) }
-				if is_override(unpack(_r)) then
-					r = _r
-				end
-			end
-
-			_r = { hooked_func.original(...) }
-			if is_override(unpack(_r)) then
-				r = _r
-			end
-
-			return unpack(r)
-
-		end
-
-	else
-
-		for k, v in pairs( self._prehooks[object][func].overrides ) do
+		for k, v in pairs( self._function_hooks[object][func].overrides.pre ) do
 			if v.id == id then
 				return
 			end
@@ -208,7 +167,7 @@ function Hooks:PreHook( object, func, id, pre_call )
 		id = id,
 		func = pre_call,
 	}
-	table.insert( self._prehooks[object][func].overrides, func_tbl )
+	table.insert( self._function_hooks[object][func].overrides.pre, func_tbl )
 
 end
 
@@ -219,11 +178,11 @@ end
 ]]
 function Hooks:RemovePreHook( id )
 
-	for object_i, object in pairs( self._prehooks ) do
+	for object_i, object in pairs( self._function_hooks ) do
 		for func_i, func in pairs( object ) do
-			for override_i, override in ipairs( func.overrides ) do
+			for override_i, override in ipairs( func.overrides.pre ) do
 				if override.id == id then
-					table.remove( func.overrides, override_i )
+					table.remove( func.overrides.pre, override_i )
 				end
 			end
 		end
@@ -246,38 +205,9 @@ function Hooks:PostHook( object, func, id, post_call )
 		return
 	end
 
-	if self._posthooks[object] == nil then
-		self._posthooks[object] = {}
-	end
+	if not self:_ChkCreateTableStructure(object, func) then
 
-	if self._posthooks[object][func] == nil then
-
-		self._posthooks[object][func] = {
-			original = object[func],
-			overrides = {}
-		}
-
-		object[func] = function(...)
-
-			local hooked_func = self._posthooks[object][func]
-			local r, _r
-
-			r = { hooked_func.original(...) }
-
-			for k, v in ipairs( hooked_func.overrides ) do
-				_r = { v.func( ... ) }
-				if is_override(unpack(_r)) then
-					r = _r
-				end
-			end
-
-			return unpack(r)
-
-		end
-
-	else
-
-		for k, v in pairs( self._posthooks[object][func].overrides ) do
+		for k, v in pairs( self._function_hooks[object][func].overrides.post ) do
 			if v.id == id then
 				return
 			end
@@ -289,7 +219,7 @@ function Hooks:PostHook( object, func, id, post_call )
 		id = id,
 		func = post_call,
 	}
-	table.insert( self._posthooks[object][func].overrides, func_tbl )
+	table.insert( self._function_hooks[object][func].overrides.post, func_tbl )
 
 end
 
@@ -300,11 +230,11 @@ end
 ]]
 function Hooks:RemovePostHook( id )
 
-	for object_i, object in pairs( self._posthooks ) do
+	for object_i, object in pairs( self._function_hooks ) do
 		for func_i, func in pairs( object ) do
-			for override_i, override in ipairs( func.overrides ) do
+			for override_i, override in ipairs( func.overrides.post ) do
 				if override.id == id then
-					table.remove( func.overrides, override_i )
+					table.remove( func.overrides.post, override_i )
 				end
 			end
 		end
@@ -312,6 +242,88 @@ function Hooks:RemovePostHook( id )
 
 end
 
+--[[
+	Hooks:OverrideFunction( object, func )
+		Overrides a function completely while keeping existing hooks to it alive
+	object, 	The object of the function to override
+	func, 		The name of the function (as a string) on the object to override
+	override,	The new function
+]]
+function Hooks:OverrideFunction( object, func, override )
+
+	if not self._function_hooks[object] or not self._function_hooks[object][func] then
+		object[func] = override
+	else
+		self._function_hooks[object][func].original = override
+	end
+
+end
+
+--[[
+	Hooks:GetFunction( object, func )
+		Returns the current original function of this object
+	object, 	The object of the function
+	func, 		The name of the function (as a string) on the object
+]]
+function Hooks:GetFunction( object, func )
+
+	if not self._function_hooks[object] or not self._function_hooks[object][func] then
+		return object[func]
+	else
+		return self._function_hooks[object][func].original
+	end
+
+end
+
 function Hooks:_PrePostHookError(func, id)
 	BLT:Log(LogLevel.ERROR, string.format("[Hooks] Could not hook function '%s' (%s)", tostring(func), tostring(id)))
+end
+
+-- Helper to create the hooks table structure and function override
+function Hooks:_ChkCreateTableStructure(object, func)
+	if self._function_hooks[object] == nil then
+		self._function_hooks[object] = {}
+	end
+
+	if self._function_hooks[object][func] then
+		return
+	end
+
+	self._function_hooks[object][func] = {
+		original = object[func],
+		overrides = {
+			pre = {},
+			post = {}
+		}
+	}
+
+	object[func] = function(...)
+
+		local hooked_func = self._function_hooks[object][func]
+		local r, _r = {}
+
+		for k, v in ipairs( hooked_func.overrides.pre ) do
+			_r = { v.func( ... ) }
+			if next(_r) then
+				r = _r
+			end
+		end
+
+		_r = { hooked_func.original(...) }
+		if next(_r) then
+			r = _r
+		end
+
+		for k, v in ipairs( hooked_func.overrides.post ) do
+			_r = { v.func( ... ) }
+			if next(_r) then
+				r = _r
+			end
+		end
+
+		return unpack(r)
+
+	end
+
+	return true
 end
