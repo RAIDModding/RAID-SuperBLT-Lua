@@ -20,33 +20,14 @@ end
 
 function LocalizationManager:text( str, macros )
 
-	if self._custom_localizations[str] then
+	local custom_loc = self._custom_localizations[str]
+	if custom_loc then
 
-		local return_str = self._custom_localizations[str]
-		if macros and type(macros) == "table" then
-			-- Create a list of macro keys sorted by length
-			local vars = {}
-			for k in pairs(macros) do
-				-- skip over unused numeric keys to avoid invalid type comparisons
-				if type(k) == "string" then
-					table.insert(vars, k)
-				end
-			end
-			table.sort(vars)
+		macros = type(macros) == "table" and macros or {}
 
-			-- Loop in reverse order to replace longest vars first
-			for i = #vars, 1, -1 do
-				local k = vars[i]
-				return_str = return_str:gsub( "$" .. k .. ";?", macros[k] )
-			end
-		end
-
-		-- Handle default macros. Trailing semicolon is optional.
-		if self._default_macros ~= nil then
-			return_str = string.gsub( return_str, "$([^%s;]+);?", self._default_macros )
-		end
-
-		return return_str
+		return custom_loc:gsub("($([^%s;#]+);?)", function (full_match, macro_name)
+			return macros[macro_name] or self._default_macros[macro_name] or full_match
+		end)
 
 	end
 	return self.orig.text(self, str, macros)
