@@ -25,9 +25,10 @@ function LocalizationManager:text( str, macros )
 
 		macros = type(macros) == "table" and macros or {}
 
-		return custom_loc:gsub("($([^%s;#]+);?)", function (full_match, macro_name)
+		local str = custom_loc:gsub("($([%w_-]+);?)", function (full_match, macro_name)
 			return macros[macro_name] or self._default_macros[macro_name] or full_match
 		end)
+		return str
 
 	end
 	return self.orig.text(self, str, macros)
