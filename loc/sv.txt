@@ -88,7 +88,7 @@
 	"blt_language_tr" : "Turkiska",
 	"blt_language_id" : "Indonesiska",
 	"blt_language_it" : "Italienska",
-	"blt_language_chs" : "Kinesiska"
+	"blt_language_chs" : "Kinesiska",
 
 	"blt_no_image" : "Ingen bild",
 	"blt_no_name" : "Inget namn",
