@@ -1,18 +1,14 @@
-
-function io.file_is_readable( fname )
-
-	local file = io.open(fname, "r" )
+function io.file_is_readable(fname)
+	local file = io.open(fname, "r")
 	if file ~= nil then
 		io.close(file)
 		return true
 	end
 
 	return false
-
 end
 
-function io.remove_directory_and_files( path, verbose )
-
+function io.remove_directory_and_files(path, verbose)
 	vlog = function(str)
 		if verbose then
 			BLT:Log(LogLevel.INFO, str)
@@ -24,18 +20,18 @@ function io.remove_directory_and_files( path, verbose )
 		return false
 	end
 
-	if not file.DirectoryExists( path ) then
+	if not file.DirectoryExists(path) then
 		BLT:Log(LogLevel.ERROR, "Directory does not exist: " .. path)
 		return false
 	end
 
-	local dirs = file.GetDirectories( path )
+	local dirs = file.GetDirectories(path)
 	if dirs then
-		for k, v in pairs( dirs ) do
+		for k, v in pairs(dirs) do
 			local child_path = path .. v .. "/"
 			vlog("Removing directory: " .. child_path)
-			io.remove_directory_and_files( child_path, verbose )
-			local r = file.RemoveDirectory( child_path )
+			io.remove_directory_and_files(child_path, verbose)
+			local r = file.RemoveDirectory(child_path)
 			if not r then
 				BLT:Log(LogLevel.ERROR, "Could not remove directory: " .. child_path)
 				return false
@@ -43,12 +39,12 @@ function io.remove_directory_and_files( path, verbose )
 		end
 	end
 
-	local files = file.GetFiles( path )
+	local files = file.GetFiles(path)
 	if files then
-		for k, v in pairs( files ) do
+		for k, v in pairs(files) do
 			local file_path = path .. v
 			vlog("Removing files: " .. file_path)
-			local r, error_str = os.remove( file_path )
+			local r, error_str = os.remove(file_path)
 			if not r then
 				BLT:Log(LogLevel.ERROR, "Could not remove file: " .. file_path .. ", " .. error_str)
 				return false
@@ -57,45 +53,39 @@ function io.remove_directory_and_files( path, verbose )
 	end
 
 	vlog("Removing directory: " .. path)
-	local r = file.RemoveDirectory( path )
+	local r = file.RemoveDirectory(path)
 	if not r then
 		BLT:Log(LogLevel.ERROR, "Could not remove directory: " .. path)
 		return false
 	end
 
 	return true
-
 end
 
-function io.save_as_json( data, path )
-
+function io.save_as_json(data, path)
 	local count = 0
-	for k, v in pairs( data ) do
+	for k, v in pairs(data) do
 		count = count + 1
 	end
 
 	if data and count > 0 then
-
 		local file = io.open(path, "w+")
 		if file then
-			file:write( json.encode( data ) )
+			file:write(json.encode(data))
 			file:close()
 			return true
 		else
 			BLT:Log(LogLevel.ERROR, string.format("Could not save to file '%s', data may be lost!", path))
 			return false
 		end
-
 	else
 		BLT:Log(LogLevel.WARN, string.format("Attempting to save empty data table to '%s', skipping...", path))
 		return true
 	end
-
 end
 
-function io.load_as_json( path )
-
-	local file = io.open( path, "r" )
+function io.load_as_json(path)
+	local file = io.open(path, "r")
 	if file then
 		local file_contents = file:read("*all")
 		file:close()
@@ -104,5 +94,4 @@ function io.load_as_json( path )
 		BLT:Log(LogLevel.ERROR, string.format("Could not load file '%s', no data loaded...", path))
 		return nil
 	end
-
 end

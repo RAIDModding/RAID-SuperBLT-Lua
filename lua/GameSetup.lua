@@ -1,5 +1,4 @@
-
-CloneClass( GameSetup )
+CloneClass(GameSetup)
 
 Hooks:RegisterHook("GameSetupUpdate")
 function GameSetup.update(this, t, dt)

@@ -1,4 +1,4 @@
-CloneClass( MenuSetup )
+CloneClass(MenuSetup)
 
 Hooks:RegisterHook("MenuUpdate")
 function MenuSetup.update(self, t, dt)

@@ -1,11 +1,8 @@
-
 BLTNotificationsManager = BLTNotificationsManager or blt_class()
 
 function BLTNotificationsManager:init()
-
 	self._notifications = {}
 	self._uid = 1000
-
 end
 
 function BLTNotificationsManager:_get_uid()
@@ -14,8 +11,8 @@ function BLTNotificationsManager:_get_uid()
 	return uid
 end
 
-function BLTNotificationsManager:_get_notification( uid )
-	for i, data in ipairs( self._notifications ) do
+function BLTNotificationsManager:_get_notification(uid)
+	for i, data in ipairs(self._notifications) do
 		if data.id == uid then
 			return self._notifications[i], i
 		end
@@ -27,8 +24,7 @@ function BLTNotificationsManager:get_notifications()
 	return self._notifications
 end
 
-function BLTNotificationsManager:add_notification( parameters )
-
+function BLTNotificationsManager:add_notification(parameters)
 	-- Create and store the notification
 	local data = {
 		id = self:_get_uid(),
@@ -37,36 +33,31 @@ function BLTNotificationsManager:add_notification( parameters )
 		icon = parameters.icon,
 		icon_texture_rect = parameters.icon_texture_rect,
 		color = parameters.color,
-		priority = parameters.priority or (id * -1),
+		priority = parameters.priority or (id * -1)
 	}
-	table.insert( self._notifications, data )
+	table.insert(self._notifications, data)
 
 	-- Add the notification immediately if the gui is visible
 	local notifications = managers.menu_component:blt_notifications_gui()
 	if notifications then
-		notifications:add_notification( data )
+		notifications:add_notification(data)
 	end
 
 	return data.id
-
 end
 
-function BLTNotificationsManager:remove_notification( uid )
-
+function BLTNotificationsManager:remove_notification(uid)
 	-- Remove the notification
-	local _, idx = self:_get_notification( uid )
+	local _, idx = self:_get_notification(uid)
 	if idx > 0 then
-
-		table.remove( self._notifications, idx )
+		table.remove(self._notifications, idx)
 
 		-- Update the ui
 		local notifications = managers.menu_component:blt_notifications_gui()
 		if notifications then
-			notifications:remove_notification( uid )
+			notifications:remove_notification(uid)
 		end
-
 	end
-
 end
 
 --------------------------------------------------------------------------------
@@ -87,54 +78,54 @@ function NotificationsManager:GetCurrentNotificationIndex()
 	return 1
 end
 
-function NotificationsManager:AddNotification( id, title, message, priority, callback )
+function NotificationsManager:AddNotification(id, title, message, priority, callback)
 	self._legacy_ids = self._legacy_ids or {}
-	local new_id = BLT.Notifications:add_notification( {
+	local new_id = BLT.Notifications:add_notification({
 		title = title,
 		text = message,
 		priority = priority
-	} )
+	})
 	self._legacy_ids[id] = new_id
 end
 
-function NotificationsManager:UpdateNotification( id, new_title, new_message, new_priority, new_callback )
+function NotificationsManager:UpdateNotification(id, new_title, new_message, new_priority, new_callback)
 	self._legacy_ids = self._legacy_ids or {}
-	self:RemoveNotification( id )
-	self:AddNotification( id, new_title, new_message, new_priority, new_callback )
+	self:RemoveNotification(id)
+	self:AddNotification(id, new_title, new_message, new_priority, new_callback)
 end
 
-function NotificationsManager:RemoveNotification( id )
+function NotificationsManager:RemoveNotification(id)
 	self._legacy_ids = self._legacy_ids or {}
 	if self._legacy_ids[id] then
-		BLT.Notifications:remove_notification( self._legacy_ids[id] )
+		BLT.Notifications:remove_notification(self._legacy_ids[id])
 		self._legacy_ids[id] = nil
 	end
 end
 
 function NotificationsManager:ClearNotifications()
 	self._legacy_ids = self._legacy_ids or {}
-	for id, new_id in pairs( self._legacy_ids ) do
-		BLT.Notifications:remove_notification( new_id )
+	for id, new_id in pairs(self._legacy_ids) do
+		BLT.Notifications:remove_notification(new_id)
 	end
 end
 
-function NotificationsManager:NotificationExists( id )
+function NotificationsManager:NotificationExists(id)
 	self._legacy_ids = self._legacy_ids or {}
 	return self._legacy_ids[id] ~= nil
 end
 
-function NotificationsManager:ShowNextNotification( suppress_sound )
+function NotificationsManager:ShowNextNotification(suppress_sound)
 	BLT:Log(LogLevel.ERROR, "NotificationsManager.ShowNextNotification is no longer supported.")
 end
 
-function NotificationsManager:ShowPreviousNotification( suppress_sound )
+function NotificationsManager:ShowPreviousNotification(suppress_sound)
 	BLT:Log(LogLevel.ERROR, "NotificationsManager.ShowPreviousNotification is no longer supported.")
 end
 
-function NotificationsManager:ClickNotification( suppress_sound )
+function NotificationsManager:ClickNotification(suppress_sound)
 	BLT:Log(LogLevel.ERROR, "NotificationsManager.ClickNotification is no longer supported.")
 end
 
-function NotificationsManager:MarkNotificationAsRead( id )
+function NotificationsManager:MarkNotificationAsRead(id)
 	BLT:Log(LogLevel.ERROR, "NotificationsManager.MarkNotificationAsRead is no longer supported.")
 end

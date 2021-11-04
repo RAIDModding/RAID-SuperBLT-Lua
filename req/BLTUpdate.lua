@@ -1,4 +1,3 @@
-
 -- BLT Update
 BLTUpdate = blt_class()
 BLTUpdate.enabled = true
@@ -9,10 +8,9 @@ BLTUpdate.revision = 1
 BLTUpdate.dir = "mods/"
 BLTUpdate.folder = ""
 
-function BLTUpdate:init( parent_mod, data )
-
-	assert( parent_mod, "BLTUpdates can not be created without a parent mod!" )
-	assert( data, "BLTUpdates can not be created without json update data!" )
+function BLTUpdate:init(parent_mod, data)
+	assert(parent_mod, "BLTUpdates can not be created without a parent mod!")
+	assert(data, "BLTUpdates can not be created without json update data!")
 
 	self.parent_mod = parent_mod
 	self.id = data["identifier"]
@@ -24,7 +22,6 @@ function BLTUpdate:init( parent_mod, data )
 	self.critical = data["critical"] or false
 	self.host = data["host"]
 	self.present_func = data["present_func"]
-
 end
 
 function BLTUpdate:__tostring()
@@ -35,7 +32,7 @@ function BLTUpdate:IsEnabled()
 	return self.enabled
 end
 
-function BLTUpdate:SetEnabled( enable )
+function BLTUpdate:SetEnabled(enable)
 	self.enabled = enable
 end
 
@@ -43,8 +40,7 @@ function BLTUpdate:RequiresUpdate()
 	return self._requires_update
 end
 
-function BLTUpdate:CheckForUpdates( clbk )
-
+function BLTUpdate:CheckForUpdates(clbk)
 	-- Flag this update as already requesting updates
 	self._requesting_updates = true
 
@@ -52,27 +48,24 @@ function BLTUpdate:CheckForUpdates( clbk )
 	local url = self.host.meta
 
 	-- Make the actual request
-	dohttpreq( url, function( json_data, http_id )
-		self:clbk_got_update_data( clbk, json_data, http_id )
+	dohttpreq(url, function(json_data, http_id)
+		self:clbk_got_update_data(clbk, json_data, http_id)
 	end)
-
 end
 
-function BLTUpdate:clbk_got_update_data( clbk, json_data, http_id )
-
+function BLTUpdate:clbk_got_update_data(clbk, json_data, http_id)
 	if json_data:is_nil_or_empty() then
 		BLT:Log(LogLevel.ERROR, "Could not connect to the download server!")
 		self._error = "Could not connect to the download server."
-		return self:_run_update_callback( clbk, false, self._error )
+		return self:_run_update_callback(clbk, false, self._error)
 	end
 
 	-- We're done checking for updates
 	self._requesting_updates = false
 
-	local server_data = json.decode( json_data )
+	local server_data = json.decode(json_data)
 	if server_data then
-
-		for _, data in pairs( server_data ) do
+		for _, data in pairs(server_data) do
 			BLT:Log(LogLevel.INFO, string.format("[Updates] Received update data for '%s'", data.ident))
 			if data.ident == self:GetId() then
 				self._update_data = data
@@ -95,7 +88,7 @@ function BLTUpdate:clbk_got_update_data( clbk, json_data, http_id )
 					-- Errored, file does not exist
 					self._error = "File to be version checked was missing on local machine"
 					BLT:Log(LogLevel.ERROR, "[Updates] " .. self._error .. " mod " .. self:GetId())
-					return self:_run_update_callback( clbk, false, self._error )
+					return self:_run_update_callback(clbk, false, self._error)
 				elseif hash_result ~= true then
 					-- Manually check the hash, since we're running on an old
 					-- version of the DLL that doesn't support the callbacks
@@ -109,13 +102,11 @@ function BLTUpdate:clbk_got_update_data( clbk, json_data, http_id )
 				end
 			end
 		end
-		
 	end
 
 	self._error = "No valid mod ID was returned by the server."
 	BLT:Log(LogLevel.ERROR, "[Updates] Invalid or corrupt update data for mod " .. self:GetId())
-	return self:_run_update_callback( clbk, false, self._error )
-
+	return self:_run_update_callback(clbk, false, self._error)
 end
 
 function BLTUpdate:_check_hash(dat, local_hash)
@@ -126,19 +117,19 @@ function BLTUpdate:_check_hash(dat, local_hash)
 	BLT:Log(LogLevel.INFO, string.format("[Updates] Comparing hash data for %s:\nServer: %s\n Local: %s", data.ident, data.hash, local_hash))
 	if not data.hash then
 		BLT:Log(LogLevel.WARN, string.format("[Updates] [WARN] Missing server hash for mod %s", data.ident))
-		return self:_run_update_callback( clbk, false )
+		return self:_run_update_callback(clbk, false)
 	end
 
 	if data.hash == local_hash then
-		return self:_run_update_callback( clbk, false )
+		return self:_run_update_callback(clbk, false)
 	end
 
-	return self:_run_update_callback( clbk, true )
+	return self:_run_update_callback(clbk, true)
 end
 
-function BLTUpdate:_run_update_callback( clbk, requires_update, error_reason )
+function BLTUpdate:_run_update_callback(clbk, requires_update, error_reason)
 	self._requires_update = requires_update
-	clbk( self, requires_update, error_reason )
+	clbk(self, requires_update, error_reason)
 	return requires_update
 end
 
@@ -162,7 +153,7 @@ function BLTUpdate:GetHash(callback)
 	if self.hash_file then
 		return SystemFS:exists(self.hash_file) and file.FileHash(self.hash_file, callback) or nil
 	else
-		local directory = Application:nice_path( self:GetInstallDirectory() .. "/" .. self:GetInstallFolder(), true )
+		local directory = Application:nice_path(self:GetInstallDirectory() .. "/" .. self:GetInstallFolder(), true)
 		return SystemFS:exists(directory) and file.DirectoryHash(directory, callback) or nil
 	end
 end
@@ -209,9 +200,9 @@ function BLTUpdate:ViewPatchNotes()
 	local url = self:GetPatchNotes()
 
 	if Steam:overlay_enabled() then
-		Steam:overlay_activate( "url", url )
+		Steam:overlay_activate("url", url)
 	else
-		os.execute( "cmd /c start " .. url )
+		os.execute("cmd /c start " .. url)
 	end
 end
 
@@ -226,7 +217,9 @@ function BLTUpdate:GetDownloadURL()
 end
 
 function BLTUpdate:GetUpdateMiscData()
-	if not self._update_data then return nil end
+	if not self._update_data then
+		return nil
+	end
 
 	return self._update_data.misc_data
 end

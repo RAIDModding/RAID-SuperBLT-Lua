@@ -1,8 +1,7 @@
-CloneClass( MenuNodeGui )
+CloneClass(MenuNodeGui)
 
 Hooks:RegisterHook("CustomizeControllerOnKeySet")
 function MenuNodeGui._key_press(self, o, key, input_id, item, no_add)
-
 	if managers.system_menu:is_active() then
 		return
 	end
@@ -22,7 +21,7 @@ function MenuNodeGui._key_press(self, o, key, input_id, item, no_add)
 	if key == Idstring("esc") then
 		-- Fixes not being able to unbind keybinds by Offyerrocker
 		item:parameters().binding = nil
-		Hooks:Call( "CustomizeControllerOnKeySet", item:parameters().connection_name, "" )
+		Hooks:Call("CustomizeControllerOnKeySet", item:parameters().connection_name, "")
 		self:_end_customize_controller(o, item)
 		return
 	end
@@ -108,7 +107,6 @@ function MenuNodeGui._key_press(self, o, key, input_id, item, no_add)
 
 	local connection = nil
 	if item:parameters().axis then
-		
 		connections[item:parameters().axis]._btn_connections[item:parameters().button].name = key_name
 		managers.controller:set_user_mod(item:parameters().connection_name, {
 			axis = item:parameters().axis,
@@ -117,11 +115,9 @@ function MenuNodeGui._key_press(self, o, key, input_id, item, no_add)
 		})
 		item:parameters().binding = key_name
 		connection = connections[item:parameters().axis]
-
 	else
-
 		if connections[item:parameters().button] == nil then
-			for k, v in pairs( connections ) do
+			for k, v in pairs(connections) do
 				connections[item:parameters().button] = clone(v)
 				break
 			end
@@ -137,15 +133,13 @@ function MenuNodeGui._key_press(self, o, key, input_id, item, no_add)
 		})
 		item:parameters().binding = key_name
 		connection = connections[item:parameters().button]
-
 	end
 
 	if connection then
 		local key_button = item:parameters().binding
-		Hooks:Call( "CustomizeControllerOnKeySet", item:parameters().connection_name, key_button )
+		Hooks:Call("CustomizeControllerOnKeySet", item:parameters().connection_name, key_button)
 	end
 
 	managers.controller:rebind_connections()
 	self:_end_customize_controller(o, item)
-
 end

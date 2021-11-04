@@ -1,4 +1,3 @@
-
 local padding = 10
 
 local massive_font = tweak_data.menu.pd2_massive_font
@@ -11,18 +10,17 @@ local large_font_size = tweak_data.menu.pd2_large_font_size
 local medium_font_size = tweak_data.menu.pd2_medium_font_size
 local small_font_size = tweak_data.menu.pd2_small_font_size
 
-local function make_fine_text( text )
-	local x,y,w,h = text:text_rect()
-	text:set_size( w, h )
-	text:set_position( math.round( text:x() ), math.round( text:y() ) )
+local function make_fine_text(text)
+	local x, y, w, h = text:text_rect()
+	text:set_size(w, h)
+	text:set_position(math.round(text:x()), math.round(text:y()))
 end
 
 --------------------------------------------------------------------------------
 
 BLTUIButton = BLTUIButton or blt_class()
 
-function BLTUIButton:init( panel, parameters )
-
+function BLTUIButton:init(panel, parameters)
 	self._parameters = parameters
 
 	-- Main panel
@@ -36,13 +34,13 @@ function BLTUIButton:init( panel, parameters )
 
 	-- Background
 	self._background = self._panel:rect({
-		color =	parameters.color or tweak_data.screen_colors.button_stage_3,
+		color = parameters.color or tweak_data.screen_colors.button_stage_3,
 		alpha = 0.4,
 		blend_mode = "add",
 		layer = -1
 	})
-	BoxGuiObject:new( self._panel, { sides = { 1, 1, 1, 1 } } )
-	
+	BoxGuiObject:new(self._panel, {sides = {1, 1, 1, 1}})
+
 	self._panel:bitmap({
 		texture = "guis/textures/test_blur_df",
 		w = self._panel:w(),
@@ -65,15 +63,15 @@ function BLTUIButton:init( panel, parameters )
 		vertical = "top",
 		wrap = true,
 		word_wrap = true,
-		w = self._panel:w() - padding * 2,
+		w = self._panel:w() - padding * 2
 	})
-	make_fine_text( title )
-	title:set_w( self._panel:w() )
-	title:set_center_x( self._panel:w() * 0.5 )
+	make_fine_text(title)
+	title:set_w(self._panel:w())
+	title:set_center_x(self._panel:w() * 0.5)
 	if parameters.image then
-		title:set_top( self._panel:h() * 0.5 )
+		title:set_top(self._panel:h() * 0.5)
 	else
-		title:set_bottom( self._panel:h() * 0.5 )
+		title:set_bottom(self._panel:h() * 0.5)
 	end
 
 	local desc = self._panel:text({
@@ -88,34 +86,31 @@ function BLTUIButton:init( panel, parameters )
 		vertical = "top",
 		wrap = true,
 		word_wrap = true,
-		w = self._panel:w() - padding * 2,
+		w = self._panel:w() - padding * 2
 	})
-	make_fine_text( desc )
-	desc:set_w( self._panel:w() )
-	desc:set_center_x( self._panel:w() * 0.5 )
-	desc:set_top( title:bottom() + 5 )
+	make_fine_text(desc)
+	desc:set_w(self._panel:w())
+	desc:set_center_x(self._panel:w() * 0.5)
+	desc:set_top(title:bottom() + 5)
 	if parameters.center_text then
-		desc:set_center_y( self._panel:h() * 0.5 )
+		desc:set_center_y(self._panel:h() * 0.5)
 	end
 
 	if parameters.image then
-
 		local image = self._panel:bitmap({
 			name = "image",
 			texture = parameters.image,
 			color = Color.white,
 			layer = 10,
 			w = parameters.image_size or 64,
-			h = parameters.image_size or 64,
+			h = parameters.image_size or 64
 		})
-		image:set_center_x( self._panel:w() * 0.5 )
-		image:set_top( padding )
+		image:set_center_x(self._panel:w() * 0.5)
+		image:set_top(padding)
 		if parameters.texture_rect then
-			image:set_texture_rect( unpack( parameters.texture_rect ) )
+			image:set_texture_rect(unpack(parameters.texture_rect))
 		end
-
 	end
-
 end
 
 function BLTUIButton:panel()
@@ -138,26 +133,25 @@ function BLTUIButton:parameters()
 	return self._parameters
 end
 
-function BLTUIButton:inside( x, y )
-	return self._panel:inside( x, y )
+function BLTUIButton:inside(x, y)
+	return self._panel:inside(x, y)
 end
 
-function BLTUIButton:set_highlight( enabled, no_sound )
+function BLTUIButton:set_highlight(enabled, no_sound)
 	if self._enabled ~= enabled then
 		self._enabled = enabled
-		self._background:set_color( enabled and tweak_data.screen_colors.button_stage_2 or (self:parameters().color or tweak_data.screen_colors.button_stage_3) )
+		self._background:set_color(enabled and tweak_data.screen_colors.button_stage_2 or (self:parameters().color or tweak_data.screen_colors.button_stage_3))
 		if enabled and not no_sound then
-			managers.menu_component:post_event( "highlight" )
+			managers.menu_component:post_event("highlight")
 		end
 	end
 end
 
 --------------------------------------------------------------------------------
 
-BLTDownloadControl = BLTDownloadControl or blt_class( BLTUIButton )
+BLTDownloadControl = BLTDownloadControl or blt_class(BLTUIButton)
 
-function BLTDownloadControl:init( panel, parameters )
-
+function BLTDownloadControl:init(panel, parameters)
 	self._parameters = parameters
 	local mod = parameters.update:GetParentMod()
 
@@ -172,17 +166,17 @@ function BLTDownloadControl:init( panel, parameters )
 
 	-- Download button panel
 	self._download_panel = self._panel:panel({
-		w = math.min( self._panel:w() * 0.25, self._panel:h() )
+		w = math.min(self._panel:w() * 0.25, self._panel:h())
 	})
-	self._download_panel:set_right( self._panel:w() )
+	self._download_panel:set_right(self._panel:w())
 
 	self._background = self._download_panel:rect({
-		color =	parameters.color or tweak_data.screen_colors.button_stage_3,
+		color = parameters.color or tweak_data.screen_colors.button_stage_3,
 		alpha = 0.4,
 		blend_mode = "add",
 		layer = -1
 	})
-	BoxGuiObject:new( self._download_panel, { sides = { 1, 1, 1, 1 } } )
+	BoxGuiObject:new(self._download_panel, {sides = {1, 1, 1, 1}})
 
 	self._download_panel:bitmap({
 		texture = "guis/textures/test_blur_df",
@@ -194,7 +188,7 @@ function BLTDownloadControl:init( panel, parameters )
 		valign = "scale"
 	})
 
-	local icon, rect = tweak_data.hud_icons:get_icon_data( "csb_pagers" )
+	local icon, rect = tweak_data.hud_icons:get_icon_data("csb_pagers")
 	local image = self._download_panel:bitmap({
 		name = "image",
 		texture = icon,
@@ -204,25 +198,25 @@ function BLTDownloadControl:init( panel, parameters )
 		x = padding,
 		y = padding,
 		w = self._download_panel:w() - padding * 2,
-		h = self._download_panel:w() - padding * 2,
+		h = self._download_panel:w() - padding * 2
 	})
 
 	-- Patch notes button panel
 	local has_patch_notes = parameters.update:GetPatchNotes() ~= nil
 	self._patch_panel = self._panel:panel({
-		w = has_patch_notes and math.min( self._panel:w() * 0.25, self._panel:h() ) or 0,
+		w = has_patch_notes and math.min(self._panel:w() * 0.25, self._panel:h()) or 0,
 		visible = has_patch_notes,
 		layer = 10
 	})
-	self._patch_panel:set_right( self._download_panel:x() - padding )
+	self._patch_panel:set_right(self._download_panel:x() - padding)
 
 	self._patch_background = self._patch_panel:rect({
-		color =	parameters.color or tweak_data.screen_colors.button_stage_3,
+		color = parameters.color or tweak_data.screen_colors.button_stage_3,
 		alpha = 0.4,
 		blend_mode = "add",
 		layer = -1
 	})
-	BoxGuiObject:new( self._patch_panel, { sides = { 1, 1, 1, 1 } } )
+	BoxGuiObject:new(self._patch_panel, {sides = {1, 1, 1, 1}})
 
 	self._patch_panel:text({
 		font_size = small_font_size,
@@ -241,7 +235,7 @@ function BLTDownloadControl:init( panel, parameters )
 
 	-- Info panel
 	self._info_panel = self._panel:panel({
-		w = self._panel:w() - self._download_panel:w() - self._patch_panel:w() - padding * 2,
+		w = self._panel:w() - self._download_panel:w() - self._patch_panel:w() - padding * 2
 	})
 
 	self._info_panel:bitmap({
@@ -253,7 +247,7 @@ function BLTDownloadControl:init( panel, parameters )
 		halign = "scale",
 		valign = "scale"
 	})
-	BoxGuiObject:new( self._info_panel, { sides = { 1, 1, 1, 1 } } )
+	BoxGuiObject:new(self._info_panel, {sides = {1, 1, 1, 1}})
 
 	local download_name = parameters.update:GetName() or "No Name"
 	if mod:GetName() ~= download_name then
@@ -276,10 +270,9 @@ function BLTDownloadControl:init( panel, parameters )
 			x = padding,
 			y = padding,
 			w = image_size,
-			h = image_size,
+			h = image_size
 		})
 	else
-
 		local no_image_panel = self._info_panel:panel({
 			x = padding,
 			y = padding,
@@ -287,7 +280,7 @@ function BLTDownloadControl:init( panel, parameters )
 			h = image_size,
 			layer = 10
 		})
-		BoxGuiObject:new( no_image_panel, { sides = { 1, 1, 1, 1 } } )
+		BoxGuiObject:new(no_image_panel, {sides = {1, 1, 1, 1}})
 
 		local no_image_text = no_image_panel:text({
 			name = "no_image_text",
@@ -302,7 +295,6 @@ function BLTDownloadControl:init( panel, parameters )
 			w = no_image_panel:w(),
 			h = no_image_panel:h()
 		})
-
 	end
 
 	-- Download info
@@ -319,7 +311,7 @@ function BLTDownloadControl:init( panel, parameters )
 		x = padding * 2 + image_size,
 		y = padding,
 		w = self._info_panel:w() - padding * 3 - image_size,
-		h = self._info_panel:h() - padding * 3,
+		h = self._info_panel:h() - padding * 3
 	})
 
 	local state = self._info_panel:text({
@@ -336,7 +328,7 @@ function BLTDownloadControl:init( panel, parameters )
 		x = padding * 2 + image_size,
 		y = padding,
 		w = self._info_panel:w() - padding * 3 - image_size,
-		h = self._info_panel:h() - padding * 3,
+		h = self._info_panel:h() - padding * 3
 	})
 	self._download_state = state
 
@@ -353,137 +345,128 @@ function BLTDownloadControl:init( panel, parameters )
 		x = padding * 2 + image_size,
 		y = padding,
 		w = self._info_panel:w() - padding * 4 - image_size,
-		h = self._info_panel:h() - padding * 2,
+		h = self._info_panel:h() - padding * 2
 	})
-	download_progress:set_visible( false )
+	download_progress:set_visible(false)
 	self._download_progress = download_progress
 
 	self._download_progress_bg = self._info_panel:rect({
-		color = tweak_data.screen_colors.button_stage_2,
-		alpha = 0.4,
-		blend_mode = "add",
-		layer = -1
-	})
-	self._download_progress_bg:set_w( 0 )
-	self._download_progress_bg:set_visible( false )
-
+			color = tweak_data.screen_colors.button_stage_2,
+			alpha = 0.4,
+			blend_mode = "add",
+			layer = -1
+		})
+	self._download_progress_bg:set_w(0)
+	self._download_progress_bg:set_visible(false)
 end
 
-function BLTDownloadControl:inside( x, y )
-	return self._download_panel:inside( x, y ) or self._patch_panel:inside( x, y )
+function BLTDownloadControl:inside(x, y)
+	return self._download_panel:inside(x, y) or self._patch_panel:inside(x, y)
 end
 
-function BLTDownloadControl:set_highlight( enabled, no_sound )
+function BLTDownloadControl:set_highlight(enabled, no_sound)
 end
 
-function BLTDownloadControl:mouse_moved( button, x, y )
-
-	local inside_download = self._download_panel:inside( x, y )
+function BLTDownloadControl:mouse_moved(button, x, y)
+	local inside_download = self._download_panel:inside(x, y)
 	if self._highlight_download ~= inside_download then
-		self._background:set_color( inside_download and tweak_data.screen_colors.button_stage_2 or (self:parameters().color or tweak_data.screen_colors.button_stage_3) )
+		self._background:set_color(inside_download and tweak_data.screen_colors.button_stage_2 or (self:parameters().color or tweak_data.screen_colors.button_stage_3))
 		if inside_download and not no_sound then
-			managers.menu_component:post_event( "highlight" )
+			managers.menu_component:post_event("highlight")
 		end
 		self._highlight_download = inside_download
 	end
 
-	local inside_patch = self._patch_panel:inside( x, y )
+	local inside_patch = self._patch_panel:inside(x, y)
 	if self._highlight_patch ~= inside_patch then
-		self._patch_background:set_color( inside_patch and tweak_data.screen_colors.button_stage_2 or (self:parameters().color or tweak_data.screen_colors.button_stage_3) )
+		self._patch_background:set_color(inside_patch and tweak_data.screen_colors.button_stage_2 or (self:parameters().color or tweak_data.screen_colors.button_stage_3))
 		if inside_patch and not no_sound then
-			managers.menu_component:post_event( "highlight" )
+			managers.menu_component:post_event("highlight")
 		end
 		self._highlight_patch = inside_patch
 	end
-
 end
 
-function BLTDownloadControl:mouse_pressed( button, x, y )
-
-	if button == Idstring( "0" ) then -- left click
-
-		if self._download_panel:inside( x, y ) then
-			if not BLT.Downloads:get_download( self._parameters.update ) then
-				BLT.Downloads:start_download( self._parameters.update )
+function BLTDownloadControl:mouse_pressed(button, x, y)
+	if button == Idstring("0") then -- left click
+		if self._download_panel:inside(x, y) then
+			if not BLT.Downloads:get_download(self._parameters.update) then
+				BLT.Downloads:start_download(self._parameters.update)
 				return true
 			end
 		end
 
-		if self._patch_panel:inside( x, y ) then
+		if self._patch_panel:inside(x, y) then
 			self._parameters.update:ViewPatchNotes()
 			return true
 		end
-
 	end
-
 end
 
-function BLTDownloadControl:update_download( download )
-
-	self._background:set_color( tweak_data.menu.default_disabled_text_color )
+function BLTDownloadControl:update_download(download)
+	self._background:set_color(tweak_data.menu.default_disabled_text_color)
 
 	local percent = (download.bytes or 0) / (download.total_bytes or 1)
 	if download.state == "complete" then
-		self:_update_complete( download, percent )
+		self:_update_complete(download, percent)
 	elseif download.state == "failed" then
-		self:_update_failed( download, percent )
+		self:_update_failed(download, percent)
 	elseif download.state == "verifying" then
-		self:_update_verifying( download, percent )
+		self:_update_verifying(download, percent)
 	elseif download.state == "extracting" then
-		self:_update_extracting( download, percent )
+		self:_update_extracting(download, percent)
 	elseif download.state == "saving" then
-		self:_update_saving( download, percent )
+		self:_update_saving(download, percent)
 	elseif download.state == "downloading" then
-		self:_update_download( download, percent )
+		self:_update_download(download, percent)
 	elseif download.state == "waiting" then
-		self:_update_waiting( download, percent )
+		self:_update_waiting(download, percent)
 	end
-
 end
 
-function BLTDownloadControl:_update_complete( download, percent )
-	self._download_state:set_text( managers.localization:text("blt_download_done") )
-	self._download_progress:set_text( "100%" )
-	self._download_progress_bg:set_visible( false )
+function BLTDownloadControl:_update_complete(download, percent)
+	self._download_state:set_text(managers.localization:text("blt_download_done"))
+	self._download_progress:set_text("100%")
+	self._download_progress_bg:set_visible(false)
 end
 
-function BLTDownloadControl:_update_failed( download, percent )
-	self._download_state:set_text( managers.localization:text("blt_download_failed") )
-	self._download_progress:set_text( "100%" )
-	self._download_progress_bg:set_visible( false )
+function BLTDownloadControl:_update_failed(download, percent)
+	self._download_state:set_text(managers.localization:text("blt_download_failed"))
+	self._download_progress:set_text("100%")
+	self._download_progress_bg:set_visible(false)
 end
 
-function BLTDownloadControl:_update_verifying( download, percent )
-	self._download_state:set_text( managers.localization:text("blt_download_verifying") )
-	self._download_progress:set_text( "100%" )
-	self._download_progress_bg:set_visible( false )
+function BLTDownloadControl:_update_verifying(download, percent)
+	self._download_state:set_text(managers.localization:text("blt_download_verifying"))
+	self._download_progress:set_text("100%")
+	self._download_progress_bg:set_visible(false)
 end
 
-function BLTDownloadControl:_update_extracting( download, percent )
-	self._download_state:set_text( managers.localization:text("blt_download_extracting") )
-	self._download_progress:set_text( "100%" )
-	self._download_progress_bg:set_visible( false )
-	self._download_progress_bg:set_w( self._info_panel:w() )
+function BLTDownloadControl:_update_extracting(download, percent)
+	self._download_state:set_text(managers.localization:text("blt_download_extracting"))
+	self._download_progress:set_text("100%")
+	self._download_progress_bg:set_visible(false)
+	self._download_progress_bg:set_w(self._info_panel:w())
 end
 
-function BLTDownloadControl:_update_saving( download, percent )
-	self._download_state:set_text( managers.localization:text("blt_download_saving") )
-	self._download_progress:set_text( "100%" )
-	self._download_progress_bg:set_w( self._info_panel:w() )
+function BLTDownloadControl:_update_saving(download, percent)
+	self._download_state:set_text(managers.localization:text("blt_download_saving"))
+	self._download_progress:set_text("100%")
+	self._download_progress_bg:set_w(self._info_panel:w())
 end
 
-function BLTDownloadControl:_update_download( download, percent )
+function BLTDownloadControl:_update_download(download, percent)
 	local macros = {
 		bytes = managers.experience:cash_string(download.bytes, ""),
 		total_bytes = managers.experience:cash_string(download.total_bytes, "")
 	}
-	self._download_state:set_text( managers.localization:text("blt_download_downloading", macros) )
-	self._download_progress:set_visible( true )
-	self._download_progress:set_text( tostring(math.floor(percent * 100)) .. "%" )
-	self._download_progress_bg:set_visible( true )
-	self._download_progress_bg:set_w( percent * self._info_panel:w() )
+	self._download_state:set_text(managers.localization:text("blt_download_downloading", macros))
+	self._download_progress:set_visible(true)
+	self._download_progress:set_text(tostring(math.floor(percent * 100)) .. "%")
+	self._download_progress_bg:set_visible(true)
+	self._download_progress_bg:set_w(percent * self._info_panel:w())
 end
 
-function BLTDownloadControl:_update_waiting( download, percent )
-	self._download_state:set_text( managers.localization:text("blt_download_waiting") )
+function BLTDownloadControl:_update_waiting(download, percent)
+	self._download_state:set_text(managers.localization:text("blt_download_waiting"))
 end

@@ -1,5 +1,4 @@
-
-BLTDownloadManagerGui = BLTDownloadManagerGui or blt_class( BLTCustomComponent )
+BLTDownloadManagerGui = BLTDownloadManagerGui or blt_class(BLTCustomComponent)
 
 -- Use the modified BLT back button
 BLTDownloadManagerGui._add_back_button = BLTDownloadManagerGui._add_custom_back_button
@@ -24,34 +23,32 @@ function BLTDownloadManagerGui:setup()
 
 	-- Add download items
 	local h = 80
-	for i, download in ipairs( BLT.Downloads:pending_downloads() ) do
-
+	for i, download in ipairs(BLT.Downloads:pending_downloads()) do
 		local data = {
 			y = (h + padding) * (i - 1),
 			w = self._scroll:canvas():w(),
 			h = h,
-			update = download.update,
+			update = download.update
 		}
-		local button = BLTDownloadControl:new( self._scroll:canvas(), data )
-		table.insert( self._buttons, button )
+		local button = BLTDownloadControl:new(self._scroll:canvas(), data)
+		table.insert(self._buttons, button)
 
-		self._downloads_map[ download.update:GetId() ] = button
-
+		self._downloads_map[download.update:GetId()] = button
 	end
 
-	local num_downloads = table.size( BLT.Downloads:pending_downloads() )
+	local num_downloads = table.size(BLT.Downloads:pending_downloads())
 	if num_downloads > 0 then
 		local w, h = 80, 80
-		local button = BLTUIButton:new( self._scroll:canvas(), {
+		local button = BLTUIButton:new(self._scroll:canvas(), {
 			x = self._scroll:canvas():w() - w,
 			y = (h + padding) * num_downloads,
 			w = w,
 			h = h,
 			text = managers.localization:text("blt_download_all"),
 			center_text = true,
-			callback = callback( self, self, "clbk_download_all" )
-		} )
-		table.insert( self._buttons, button )
+			callback = callback(self, self, "clbk_download_all")
+		})
+		table.insert(self._buttons, button)
 	end
 end
 
@@ -61,16 +58,14 @@ end
 
 --------------------------------------------------------------------------------
 
-function BLTDownloadManagerGui:update( t, dt )
-
-	for _, download in ipairs( BLT.Downloads:downloads() ) do
+function BLTDownloadManagerGui:update(t, dt)
+	for _, download in ipairs(BLT.Downloads:downloads()) do
 		local id = download.update:GetId()
-		local button = self._downloads_map[ id ]
+		local button = self._downloads_map[id]
 		if button then
-			button:update_download( download )
+			button:update_download(download)
 		end
 	end
-
 end
 
 function BLTDownloadManagerGui:on_close()

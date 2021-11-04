@@ -1,14 +1,11 @@
-
-BLTModManager = blt_class( BLTModule )
+BLTModManager = blt_class(BLTModule)
 BLTModManager.__type = "BLTModManager"
 
 function BLTModManager:init()
-
 	BLTModManager.super.init(self)
 
-	Hooks:Register( "BLTOnSaveData" )
-	Hooks:Register( "BLTOnLoadData" )
-
+	Hooks:Register("BLTOnSaveData")
+	Hooks:Register("BLTOnLoadData")
 end
 
 function BLTModManager:Mods()
@@ -16,40 +13,38 @@ function BLTModManager:Mods()
 end
 
 function BLTModManager:GetModByName(name)
-	for _, mod in pairs( self:Mods() ) do
+	for _, mod in pairs(self:Mods()) do
 		if mod:GetName() == name then
 			return mod
 		end
 	end
 end
 
-function BLTModManager:GetMod( id )
-	for _, mod in ipairs( self:Mods() ) do
+function BLTModManager:GetMod(id)
+	for _, mod in ipairs(self:Mods()) do
 		if mod:GetId() == id then
 			return mod
 		end
 	end
 end
 
-function BLTModManager:GetModOwnerOfFile( file )
-	for _, mod in pairs( self:Mods() ) do
-		if string.find( file, mod:GetPath() ) == 1 then
+function BLTModManager:GetModOwnerOfFile(file)
+	for _, mod in pairs(self:Mods()) do
+		if string.find(file, mod:GetPath()) == 1 then
 			return mod
 		end
 	end
 end
 
-function BLTModManager:SetModsList( mods_list )
-
+function BLTModManager:SetModsList(mods_list)
 	-- Set mods
 	self.mods = mods_list
 
 	-- Load data
 	self:Load()
-
 end
 
-function BLTModManager:IsExcludedDirectory( directory )
+function BLTModManager:IsExcludedDirectory(directory)
 	return BLTModManager.Constants.ExcludedModDirectories[directory]
 end
 
@@ -57,38 +52,35 @@ end
 -- Autoupdates
 
 function BLTModManager:RunAutoCheckForUpdates()
-
 	-- Don't run the autocheck twice
 	if self._has_checked_for_updates then
 		return
 	end
 	self._has_checked_for_updates = true
 
-	call_on_next_update( callback(self, self, "_RunAutoCheckForUpdates") )
-
+	call_on_next_update(callback(self, self, "_RunAutoCheckForUpdates"))
 end
 
 function BLTModManager:_RunAutoCheckForUpdates()
-
 	-- Place a notification that we're checking for autoupdates
-	if BLT.Notifications then 
+	if BLT.Notifications then
 		local icon, rect = tweak_data.hud_icons:get_icon_data("csb_pagers")
-		self._updates_notification = BLT.Notifications:add_notification( {
+		self._updates_notification = BLT.Notifications:add_notification({
 			title = managers.localization:text("blt_checking_updates"),
 			text = managers.localization:text("blt_checking_updates_help"),
 			icon = icon,
 			icon_texture_rect = rect,
 			color = Color.white,
-			priority = 1000,
-		} )
+			priority = 1000
+		})
 	end
 
 	-- Start checking all enabled mods for updates
 	local count = 0
-	for _, mod in ipairs( self:Mods() ) do
-		for _, update in ipairs( mod:GetUpdates() ) do
+	for _, mod in ipairs(self:Mods()) do
+		for _, update in ipairs(mod:GetUpdates()) do
 			if update:IsEnabled() then
-				update:CheckForUpdates( callback(self, self, "clbk_got_update") )
+				update:CheckForUpdates(callback(self, self, "clbk_got_update"))
 				count = count + 1
 			end
 		end
@@ -96,22 +88,20 @@ function BLTModManager:_RunAutoCheckForUpdates()
 
 	-- -- Remove notification if not getting updates
 	if count < 1 and self._updates_notification then
-		BLT.Notifications:remove_notification( self._updates_notification )
+		BLT.Notifications:remove_notification(self._updates_notification)
 		self._updates_notification = nil
 	end
-
 end
 
-function BLTModManager:clbk_got_update( update, required, reason )
-
+function BLTModManager:clbk_got_update(update, required, reason)
 	-- Add the pending download if required
 	if required then
-		BLT.Downloads:add_pending_download( update )
+		BLT.Downloads:add_pending_download(update)
 	end
 
 	-- Check if any mods are still updating
 	local still_checking = false
-	for _, mod in ipairs( self:Mods() ) do
+	for _, mod in ipairs(self:Mods()) do
 		if mod:IsCheckingForUpdates() then
 			still_checking = true
 			break
@@ -119,104 +109,89 @@ function BLTModManager:clbk_got_update( update, required, reason )
 	end
 
 	if not still_checking then
-
 		-- Remove the old notification
 		if self._updates_notification then
-			BLT.Notifications:remove_notification( self._updates_notification )
+			BLT.Notifications:remove_notification(self._updates_notification)
 			self._updates_notification = nil
 		end
 
 		-- Add notification if we need updates
-		if table.size( BLT.Downloads:pending_downloads() ) > 0 then
-
+		if table.size(BLT.Downloads:pending_downloads()) > 0 then
 			local icon, rect = tweak_data.hud_icons:get_icon_data("csb_pagers")
-			self._updates_notification = BLT.Notifications:add_notification( {
+			self._updates_notification = BLT.Notifications:add_notification({
 				title = managers.localization:text("blt_checking_updates_required"),
 				text = managers.localization:text("blt_checking_updates_required_help"),
 				icon = icon,
 				icon_texture_rect = rect,
 				color = Color.white,
-				priority = 1000,
-			} )
-
+				priority = 1000
+			})
 		else
-
 			local icon, rect = tweak_data.hud_icons:get_icon_data("csb_pagers")
-			self._updates_notification = BLT.Notifications:add_notification( {
+			self._updates_notification = BLT.Notifications:add_notification({
 				title = managers.localization:text("blt_checking_updates_none_required"),
 				text = managers.localization:text("blt_checking_updates_none_required_help"),
 				icon = icon,
 				icon_texture_rect = rect,
 				color = Color.white,
-				priority = 0,
-			} )
-
+				priority = 0
+			})
 		end
-
 	end
-
 end
 
 --------------------------------------------------------------------------------
 -- Saving and Loading
 
 function BLTModManager:Load()
-
 	-- Load data
-	local saved_data = io.load_as_json( BLTModManager.Constants:ModManagerSaveFile() ) or {}
+	local saved_data = io.load_as_json(BLTModManager.Constants:ModManagerSaveFile()) or {}
 
 	-- Process mods
 	if saved_data["mods"] then
-
-		for index, mod in ipairs( self.mods ) do
+		for index, mod in ipairs(self.mods) do
 			if saved_data["mods"][mod:GetId()] then
-
 				local data = saved_data["mods"][mod:GetId()]
 
-				mod:SetEnabled( data["enabled"], true )
-				mod:SetSafeModeEnabled( data["safe"] )
-				
+				mod:SetEnabled(data["enabled"], true)
+				mod:SetSafeModeEnabled(data["safe"])
+
 				local updates = data["updates"]
 				if updates then
-					for update_id, enabled in pairs( updates ) do
-						local update = mod:GetUpdate( update_id )
+					for update_id, enabled in pairs(updates) do
+						local update = mod:GetUpdate(update_id)
 						if update then
-							update:SetEnabled( enabled )
+							update:SetEnabled(enabled)
 						end
 					end
 				end
-
 			end
 		end
-
 	end
 
 	-- Setup mods
-	for index, mod in ipairs( self.mods ) do
+	for index, mod in ipairs(self.mods) do
 		mod:Setup()
 	end
 
 	-- Call load hook
 	Hooks:Call("BLTOnLoadData", saved_data)
-	
+
 	-- Stash it for use later
 	self._saved_data = saved_data
-
 end
 
 function BLTModManager:Save()
-
 	BLT:Log(LogLevel.INFO, "[BLT] Performing save...")
 
 	local save_data = {}
 
 	-- Write mod/updates data
 	save_data["mods"] = {}
-	for index, mod in ipairs( self.mods ) do
-
+	for index, mod in ipairs(self.mods) do
 		-- Save mod updates enabled data
 		local updates = {}
-		for index, update in ipairs( mod:GetUpdates() ) do
+		for index, update in ipairs(mod:GetUpdates()) do
 			updates[update:GetId()] = update:IsEnabled()
 		end
 
@@ -225,7 +200,6 @@ function BLTModManager:Save()
 			["safe"] = mod:IsSafeModeEnabled(),
 			["updates"] = updates
 		}
-
 	end
 
 	-- Hook to allow modules to save data
@@ -233,9 +207,9 @@ function BLTModManager:Save()
 
 	self._saved_data = save_data
 
-	local success = io.save_as_json( save_data, BLTModManager.Constants:ModManagerSaveFile() )
+	local success = io.save_as_json(save_data, BLTModManager.Constants:ModManagerSaveFile())
 	BLT:Log(LogLevel.INFO, "[BLT] Save complete? " .. tostring(success))
-	
+
 	-- Save a Wren-readable list of disabled mods - it doesn't have a JSON parser so it
 	-- can't load our normal file, and it needs to know what's enabled before any Lua code runs.
 	local wren_file = io.open(BLTModManager.Constants:ModManagerWrenDisabledModsFile(), "wb")
@@ -250,7 +224,6 @@ function BLTModManager:Save()
 	wren_file:close()
 
 	return success
-
 end
 
 --------------------------------------------------------------------------------
@@ -262,12 +235,12 @@ BLTModManager.Constants = BLTModManager.Constants or {
 	["lua_base_directory"] = "base/",
 	["downloads_directory"] = "downloads/",
 	["logs_directory"] = "logs/",
-	["saves_directory"] = "saves/",
+	["saves_directory"] = "saves/"
 }
 BLTModManager.Constants.ExcludedModDirectories = {
 	["logs"] = true,
 	["saves"] = true,
-	["downloads"] = true,
+	["downloads"] = true
 }
 BLTModManager.Constants.required_script_global = "RequiredScript"
 BLTModManager.Constants.mod_path_global = "ModPath"

@@ -3,7 +3,6 @@
 
 	This is a GUI component customized for common uses in BLT.
 ]]
-
 BLTCustomComponent = BLTCustomComponent or blt_class(MenuGuiComponentGeneric)
 
 local padding = 10
@@ -48,8 +47,8 @@ function BLTCustomComponent:setup() end
 	Trim the container so it perfectly fits the text?
 ]]
 function BLTCustomComponent:make_fine_text(text)
-	local x,y,w,h = text:text_rect()
-	text:set_shape(math.round(text:x()), math.round(text:y()), w,h)
+	local x, y, w, h = text:text_rect()
+	text:set_shape(math.round(text:x()), math.round(text:y()), w, h)
 end
 
 --[[
@@ -60,14 +59,14 @@ function BLTCustomComponent:make_into_listview(name, title, add_frame)
 	self:make_title(title, add_frame and -12 or nil)
 
 	local scroll_panel = self._panel:panel({
-		name = name.."_scroll_panel",
+		name = name .. "_scroll_panel",
 		h = self._panel:h() - large_font_size * 2 - padding * 2,
 		y = large_font_size,
 	})
 
 	if add_frame then
-		BoxGuiObject:new(scroll_panel:panel({layer=100}), {sides = {1, 1, 1, 1}})
-		BoxGuiObject:new(scroll_panel:panel({layer=100}), {sides = {1, 1, 2, 2}})
+		BoxGuiObject:new(scroll_panel:panel({layer = 100}), {sides = {1, 1, 1, 1}})
+		BoxGuiObject:new(scroll_panel:panel({layer = 100}), {sides = {1, 1, 2, 2}})
 	end
 
 	self._scroll = ScrollablePanel:new(scroll_panel, name, {})
@@ -101,7 +100,7 @@ function BLTCustomComponent:make_title(title, offset)
 		blend_mode = "add",
 		color = tweak_data.screen_colors.title,
 		text = title,
-		vertical = "top",
+		vertical = "top"
 	})
 	self:make_fine_text(title)
 	return title
@@ -128,15 +127,15 @@ function BLTCustomComponent:_add_custom_back_button()
 		layer = 40,
 		blend_mode = "add"
 	})
-	self:make_fine_text( back_button )
-	back_button:set_right( self._panel:w() - 10 )
-	back_button:set_bottom( self._panel:h() - 10 )
-	back_button:set_visible( managers.menu:is_pc_controller() )
+	self:make_fine_text(back_button)
+	back_button:set_right(self._panel:w() - 10)
+	back_button:set_bottom(self._panel:h() - 10)
+	back_button:set_visible(managers.menu:is_pc_controller())
 	self._back_button = back_button
 
 	local bg_back = self._fullscreen_panel:text({
 		name = "back_button",
-		text = utf8.to_upper( managers.localization:text("menu_back") ),
+		text = utf8.to_upper(managers.localization:text("menu_back")),
 		h = 90,
 		align = "right",
 		vertical = "bottom",
@@ -147,10 +146,10 @@ function BLTCustomComponent:_add_custom_back_button()
 		alpha = 0.4,
 		layer = 1
 	})
-	local x, y = managers.gui_data:safe_to_full_16_9( back_button:world_right(), back_button:world_center_y() )
-	bg_back:set_world_right( x )
-	bg_back:set_world_center_y( y )
-	bg_back:move( 13, -9 )
+	local x, y = managers.gui_data:safe_to_full_16_9(back_button:world_right(), back_button:world_center_y())
+	bg_back:set_world_right(x)
+	bg_back:set_world_center_y(y)
+	bg_back:move(13, -9)
 end
 
 --[[
@@ -264,17 +263,17 @@ function BLTCustomComponent:mouse_moved(o, x, y) --Don't run like an update func
 		x = o
 	end
 
-	local u,p = self._used, self._pointer -- if mouse didn't move, don't change pointer.
+	local u, p = self._used, self._pointer -- if mouse didn't move, don't change pointer.
 	if self._prev_x and self._prev_y then
 		if self._prev_x ~= x or self._prev_y ~= y then
-			u,p = self:mouse_move(o, x, y)
+			u, p = self:mouse_move(o, x, y)
 		end
 	end
 
 	self._used, self._pointer = u, p
 	self._prev_x = x
 	self._prev_y = y
-	return u,p
+	return u, p
 end
 
 --[[

@@ -35,14 +35,14 @@ local function update(t, dt, paused)
 	end
 end
 
-Hooks:Add("MenuUpdate", "Base_XAudio_MenuSetupUpdate", function( t, dt )
+Hooks:Add("MenuUpdate", "Base_XAudio_MenuSetupUpdate", function(t, dt)
 	update(t, dt, false)
 end)
 
-Hooks:Add("GameSetupUpdate", "Base_XAudio_GameSetupUpdate", function( t, dt )
+Hooks:Add("GameSetupUpdate", "Base_XAudio_GameSetupUpdate", function(t, dt)
 	update(t, dt, false)
 end)
 
-Hooks:Add("GameSetupPausedUpdate", "Base_XAudio_GameSetupPausedUpdate", function( t, dt )
+Hooks:Add("GameSetupPausedUpdate", "Base_XAudio_GameSetupPausedUpdate", function(t, dt)
 	update(t, dt, true)
 end)
