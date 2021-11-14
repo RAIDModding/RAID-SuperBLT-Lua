@@ -1,5 +1,6 @@
 DelayedCalls = DelayedCalls or {}
 DelayedCalls._calls = DelayedCalls._calls or {}
+DelayedCalls._remove_queue = DelayedCalls._remove_queue or {}
 
 Hooks:Add("MenuUpdate", "MenuUpdate_Queue", function(t, dt)
 	DelayedCalls:Update(t, dt)
@@ -10,23 +11,24 @@ Hooks:Add("GameSetupUpdate", "GameSetupUpdate_Queue", function(t, dt)
 end)
 
 function DelayedCalls:Update(time, deltaTime)
-	local t = {}
+	local calls = self._calls
+	self._calls = {}
 
-	for k, v in pairs(self._calls) do
-		if v ~= nil then
-			v.currentTime = v.currentTime + deltaTime
-			if v.currentTime > v.timeToWait then
-				if v.functionCall then
-					v.functionCall()
-				end
-				v = nil
-			else
-				t[k] = v
+	for k, v in pairs(calls) do
+		v.currentTime = v.currentTime + deltaTime
+		if self._remove_queue[k] then
+			-- Remove call if it has been queued for removal
+			self._remove_queue[k] = nil
+		elseif v.currentTime > v.timeToWait then
+			if v.functionCall then
+				v.functionCall()
 			end
+		else
+			-- If a call with that id already exists, it has been added during call iteration
+			-- If that is the case, prefer the existing one (new call overrides old)
+			self._calls[k] = self._calls[k] or v
 		end
 	end
-
-	self._calls = t
 end
 
 --[[
@@ -51,5 +53,5 @@ end
 	id, Unique identifier for the delayed call remove
 ]]
 function DelayedCalls:Remove(id)
-	self._calls[id] = nil
+	self._remove_queue[id] = true
 end
