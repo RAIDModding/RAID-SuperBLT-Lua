@@ -248,6 +248,7 @@ function BLTNotificationsGui:add_notification(parameters)
 	local data = {
 		id = self:_get_uid(),
 		priority = parameters.priority or 0,
+		callback = parameters.callback,
 		parameters = parameters,
 		panel = new_notif,
 		title = title,
@@ -468,7 +469,12 @@ function BLTNotificationsGui:mouse_pressed(button, x, y)
 	end
 
 	if alive(self._content_panel) and self._content_panel:inside(x, y) then
-		managers.menu:open_node("blt_mods")
+		local current = self._notifications[self._current]
+		if current and current.callback then
+			current.callback(current.id)
+		else
+			managers.menu:open_node("blt_mods")
+		end
 		return true
 	end
 

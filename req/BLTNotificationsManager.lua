@@ -26,19 +26,21 @@ end
 
 function BLTNotificationsManager:add_notification(parameters)
 	-- Create and store the notification
+	local id = self:_get_uid()
 	local data = {
-		id = self:_get_uid(),
+		id = id,
 		title = parameters.title or "No Title",
 		text = parameters.text or "",
 		icon = parameters.icon,
 		icon_texture_rect = parameters.icon_texture_rect,
 		color = parameters.color,
-		priority = parameters.priority or (id * -1)
+		priority = parameters.priority or (id * -1),
+		callback = parameters.callback
 	}
 	table.insert(self._notifications, data)
 
 	-- Add the notification immediately if the gui is visible
-	local notifications = managers.menu_component:blt_notifications_gui()
+	local notifications = managers.menu_component and managers.menu_component:blt_notifications_gui()
 	if notifications then
 		notifications:add_notification(data)
 	end
