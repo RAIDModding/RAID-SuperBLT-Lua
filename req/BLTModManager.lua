@@ -30,7 +30,7 @@ end
 
 function BLTModManager:GetModOwnerOfFile(file)
 	for _, mod in pairs(self:Mods()) do
-		if string.find(file, mod:GetPath()) == 1 then
+		if string.find(file, mod:GetPath(), 1, true) == 1 then
 			return mod
 		end
 	end
