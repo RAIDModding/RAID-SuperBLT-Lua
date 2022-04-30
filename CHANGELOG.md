@@ -4,6 +4,13 @@ This lists the changes between different versions of the SuperBLT basemod,
 which controls things like the mod update menu. Note this does not contain the
 changes for the DLL.
 
+## v1.3.4
+
+- Fix a potential issue in the GetModOwnerOfFile function - Dot Net
+- Optimize the XAudio update loop - Dom
+- Improve and fix crashes in BLTNotificationsManager - Hoppip
+- Add Korean localization - BrainInAVet
+
 ## v1.3.3
 
 - Fix undefined behavior with nested DelayedCalls - Hoppip
