@@ -13,23 +13,17 @@ if false then
 	end
 end
 
---[[
-	CloneClass(class)
-		Copies an existing class into an orig table, so that class functions can be overwritten and called again easily
-	class, The class table to clone
-]]
+---Copies an existing class into an orig table, so that class functions can be overwritten and called again easily
+---@param class table @The class table to clone
 function _G.CloneClass(class)
 	if not class.orig then
 		class.orig = clone(class)
 	end
 end
 
---[[
-	PrintTable(tbl)
-		Prints the contents of a table to your console
-		Warning, may cause game slowdown if the table is fairly large, only for debugging purposes
-	tbl, The table to print to console
-]]
+---Prints the contents of a table to your console  
+---May cause game slowdown if the table is fairly large, only for debugging purposes
+---@param tbl table @The table to print to console
 function _G.PrintTable(tbl, cmp)
 	cmp = cmp or {}
 	if type(tbl) == "table" then
@@ -47,12 +41,9 @@ function _G.PrintTable(tbl, cmp)
 	end
 end
 
---[[
-	SaveTable(tbl, file)
-		Saves the contents of a table to the specified file
-	tbl, 	The table to save to a file
-	file, 	The path (relative to payday2_win32_release.exe) and file name to save the table to
-]]
+---Saves the contents of a table to the specified file
+---@param tbl table @The table to save to a file
+---@param file string @The path (relative to payday2_win32_release.exe) and file name to save the table to
 function _G.SaveTable(tbl, file)
 	Utils.DoSaveTable(tbl, {}, file, nil, "")
 end
@@ -85,26 +76,21 @@ function Utils.DoSaveTable(tbl, cmp, fileName, fileIsOpen, preText)
 	end
 end
 
+---@class Vector3
 Vector3 = Vector3 or {}
 Vector3.StringFormat = "%08f,%08f,%08f"
 Vector3.MatchFormat = "([-0-9.]+),([-0-9.]+),([-0-9.]+)"
 
---[[
-	Vector3.ToString(v)
-		Converts a Vector3 to a string, useful in conjunction with Networking
-	v, 			The Vector3 to convert to a formatted string
-	return, 	A formatted string containing the data of the Vector3
-]]
+---Converts a Vector3 to a string, useful in conjunction with Networking
+---@param v Vector3 @The Vector3 to convert to a formatted string
+---@return string @A formatted string containing the data of the Vector3
 function Vector3.ToString(v)
 	return string.format(Vector3.StringFormat, v.x, v.y, v.z)
 end
 
---[[
-	string.ToVector3(string)
-		Converts a formatted string to a Vector3, useful in conjunction with Networking
-	string, 	The string to convert to a Vector3
-	return, 	A Vector3 of the converted string or nil if no conversion could be made
-]]
+---Converts a formatted string to a Vector3, useful in conjunction with Networking
+---@param string string @The string to convert to a Vector3
+---@return Vector3 @A Vector3 of the converted string or ``nil`` if no conversion could be made
 function string.ToVector3(string)
 	local x, y, z = string:match(Vector3.MatchFormat)
 	if x ~= nil and y ~= nil and z ~= nil then
@@ -113,33 +99,24 @@ function string.ToVector3(string)
 	return nil
 end
 
---[[
-	string.is_nil_or_empty(str)
-		Returns if a string exists or not
-	str, 		The string to check if it exists or is empty
-	return, 	Returns false if the string is empty ("") or nil, true otherwise
-]]
+---Returns if a string exists or not
+---@param str string @The string to check
+---@return boolean @``false`` if the string is ``""`` or ``nil``, ``true`` otherwise
 function string.is_nil_or_empty(str)
 	return str == "" or str == nil
 end
 
---[[
-	math.round_with_precision(num, idp)
-		Rounds a number to the specified precision (decimal places)
-	num, 		The number to round
-	idp, 		The number of decimal places to round to (0 default)
-	return, 	The input number rounded to the input precision (or floored integer)
-]]
+---Rounds a number to the specified precision (decimal places)
+---@param num number @The number to round
+---@param idp integer @The number of decimal places to round to (defaults to ``0``)
+---@return number @The input number rounded to the input precision
 function math.round_with_precision(num, idp)
 	local mult = 10 ^ (idp or 0)
 	return math.floor(num * mult + 0.5) / mult
 end
 
---[[
-	IsInGameState()
-		Returns true if you are in GameState (loadout, ingame, end screens like victory and defeat) and false 
-		if you are not.
-]]
+---Returns whether you are in GameState (loadout, ingame, end screens like victory and defeat) or not
+---@return boolean @``true`` if you are in GameState, ``false`` otherwise
 function Utils:IsInGameState()
 	if not game_state_machine then
 		return false
@@ -147,10 +124,8 @@ function Utils:IsInGameState()
 	return string.find(game_state_machine:current_state_name(), "game")
 end
 
---[[
-	IsInLoadingState()
-		Returns true if you are in a loading state, and false if you are not.
-]]
+---Returns wether you are currently in a loading state or not
+---@return boolean @``true`` if you are in a loading state, ``false`` otherwise
 function Utils:IsInLoadingState()
 	if not BaseNetworkHandler then
 		return false
@@ -158,11 +133,9 @@ function Utils:IsInLoadingState()
 	return BaseNetworkHandler._gamestate_filter.waiting_for_players[game_state_machine:last_queued_state_name()]
 end
 
---[[
-	IsInHeist()
-		Returns true if you are currently in game (you're able to use your weapons, spot, call teammates etc) and
-		false if you are not. Only returns true if currently ingame, does not check for GameState like IsInGameState().
-]]
+---Returns wether you are currently in game (you're able to use your weapons, spot, call teammates etc) or not  
+---Only returns true if currently ingame, does not check for GameState like ``Utils:IsInGameState()``
+---@return boolean @``true`` if you are in game, ``false`` otherwise
 function Utils:IsInHeist()
 	if not BaseNetworkHandler then
 		return false
@@ -170,10 +143,8 @@ function Utils:IsInHeist()
 	return BaseNetworkHandler._gamestate_filter.any_ingame_playing[game_state_machine:last_queued_state_name()]
 end
 
---[[
-	IsInCustody()
-		Returns true if the local player is in custody, and false if not.
-]]
+---Returns whether you are currently in custody or not
+---@return boolean @``true`` if you are in custody, ``false`` otherwise
 function Utils:IsInCustody()
 	local player = managers.player:local_player()
 	local in_custody = false
@@ -187,11 +158,9 @@ function Utils:IsInCustody()
 	return in_custody
 end
 
---[[
-	IsCurrentPrimaryOfCategory(type)
-		Checks current primary weapon's weapon class.
-	type, the weapon class to check for.  "assault_rifle", "snp", "shotgun"; refer to weapontweakdata
-]]
+---Checks current primary weapon's weapon category
+---@param type string @The weapon category to check for (refer to weapontweakdata.lua)
+---@return boolean @``true`` if the weapon has ``type`` as category, ``false`` otherwise
 function Utils:IsCurrentPrimaryOfCategory(type)
 	local primary = managers.blackmarket:equipped_primary()
 	if primary then
@@ -201,11 +170,9 @@ function Utils:IsCurrentPrimaryOfCategory(type)
 	return false
 end
 
---[[
-	IsCurrentSecondaryOfCategory(type)
-		Checks current secondary weapon's weapon class.
-	type, the weapon class to check for.  "pistol", "shotgun", "smg"; refer to weapontweakdata
-]]
+---Checks current secondary weapon's weapon category
+---@param type string @The weapon category to check for (refer to weapontweakdata.lua)
+---@return boolean @``true`` if the weapon has ``type`` as category, ``false`` otherwise
 function Utils:IsCurrentSecondaryOfCategory(type)
 	local secondary = managers.blackmarket:equipped_secondary()
 	if secondary then
@@ -215,11 +182,9 @@ function Utils:IsCurrentSecondaryOfCategory(type)
 	return false
 end
 
---[[
-	IsCurrentWeapon(type)
-		Checks current equipped weapon's name ID.
-	type, the weapon's ID.  "aug", "glock_18c", "new_m4", "colt_1911"; refer to weaponfactorytweakdata
-]]
+---Checks if a specific weapon is currently equipped
+---@param type string @The weapon's name ID (refer to weapontweakdata.lua)
+---@return boolean @``true`` if the currently equipped weapon matches ``type``, ``false`` otherwise
 function Utils:IsCurrentWeapon(type)
 	local weapon = managers.player:local_player():inventory():equipped_unit():base()._name_id
 	if weapon then
@@ -228,10 +193,8 @@ function Utils:IsCurrentWeapon(type)
 	return false
 end
 
---[[
-	IsCurrentWeaponPrimary()
-		Checks if current equipped weapon is your primary weapon.
-]]
+---Checks if the currently equipped weapon is your primary weapon
+---@return boolean @``true`` if the current weapon is a primary, ``false`` otherwise
 function Utils:IsCurrentWeaponPrimary()
 	local weapon = managers.player:local_player():inventory():equipped_unit():base():selection_index()
 	local curstate = managers.player._current_state
@@ -240,10 +203,8 @@ function Utils:IsCurrentWeaponPrimary()
 	end
 end
 
---[[
-	IsCurrentWeaponPrimary()
-		Checks if current equipped weapon is your secondary weapon.
-]]
+---Checks if the currently equipped weapon is your secondary weapon
+---@return boolean @``true`` if the current weapon is a secondary, ``false`` otherwise
 function Utils:IsCurrentWeaponSecondary()
 	local weapon = managers.player:local_player():inventory():equipped_unit():base():selection_index()
 	local curstate = managers.player._current_state
@@ -252,14 +213,10 @@ function Utils:IsCurrentWeaponSecondary()
 	end
 end
 
---[[
-	Utils:GetPlayerAimPos(player, maximum_range)
-		Gets the point in the world, as a Vector3, where the player is aiming at
-	player, 		The player to get the aiming position of
-	maximum_range, 	The maximum distance to check for a point (default 100000, 1km)
-	return, 		A Vector3 containing the location that the player is looking at, or false if the player was not looking at anything
-			or was looking at something past the maximum_range
-]]
+---Gets the point in the world where the player is aiming at as a Vector3
+---@param player table @The player to get the aiming position of
+---@param maximum_range number @The maximum distance to check for a point in cm (defaults to ``100000``)
+---@return Vector3|boolean @A Vector3 containing the location that the player is looking at, or ``false`` if the player was not looking at anything or was looking at something past the maximum_range
 function Utils:GetPlayerAimPos(player, maximum_range)
 	local ray = self:GetCrosshairRay(player:camera():position(), player:camera():position() + player:camera():forward() * (maximum_range or 100000))
 	if not ray then
@@ -268,14 +225,11 @@ function Utils:GetPlayerAimPos(player, maximum_range)
 	return ray.hit_position
 end
 
---[[
-	Utils:GetCrosshairRay(from, to, slot_mask)
-		Gets a ray between two points and checks for a collision with the slot_mask along the ray
-	from, 		The starting position of the ray, defaults to the player's head
-	to, 		The ending position of the ray, defaults to 1m in from of the player's head
-	slot_mask, 	The collision group to check against the ray, defaults to all objects the player can shoot
-	return, 	A table containing the ray information
-]]
+---Gets a ray between two points and checks for a collision with a slot mask along the ray
+---@param from Vector3 @The starting position of the ray (defaults to the player's head)
+---@param to Vector3 @The ending position of the ray (defaults to 1m in from of the player's head)
+---@param slot_mask userdata @The collision group to check against the ray (defaults to all objects the player can shoot)
+---@return table|boolean @A table containing the ray information or ``false`` if no viewport camera exists
 function Utils:GetCrosshairRay(from, to, slot_mask)
 	local viewport = managers.viewport
 	if not viewport:get_current_camera() then
@@ -299,22 +253,16 @@ function Utils:GetCrosshairRay(from, to, slot_mask)
 	return colRay
 end
 
---[[
-	Utils:ToggleItemToBoolean(item)
-		Gets the string value of a toggle item and converts it to a boolean value
-	item, 		The toggle menu item to get a boolean value from
-	return, 	True if the toggle item is on, false otherwise
-]]
+---Gets the string value of a toggle menu item and converts it to a boolean value
+---@param item table @The toggle menu item to get a boolean value from
+---@return boolean @``true`` if the toggle item is on, ``false`` otherwise
 function Utils:ToggleItemToBoolean(item)
 	return item:value() == "on" and true or false
 end
 
---[[
-	Utils:EscapeURL(item)
-		Escapes characters in a URL to turn it into a usable URL
-	input_url, 	The url to escape the characters of
-	return, 	A url string with escaped characters
-]]
+---Escapes special characters in a URL to turn it into a usable URL
+---@param input_url string @The url to escape the characters of
+---@return string @A url string with escaped characters
 function Utils:EscapeURL(input_url)
 	local url = input_url:gsub(" ", "%%20")
 	url = url:gsub("!", "%%21")
@@ -323,6 +271,11 @@ function Utils:EscapeURL(input_url)
 	return url
 end
 
+---Converts a date given by year, month and day into a timestamp
+---@param year integer @Year of the date
+---@param month integer @Month of the date
+---@param day integer @Day of the date
+---@return integer @Timestamp
 function Utils:TimestampToEpoch(year, month, day)
 	-- Adapted from http://stackoverflow.com/questions/4105012/convert-a-string-date-to-a-timestamp
 	local offset = os.time() - os.time(os.date("!*t"))
@@ -334,12 +287,17 @@ function Utils:TimestampToEpoch(year, month, day)
 	return (time or 0) + (offset or 0)
 end
 
-function string.blt_split(str, delim, maxNb)
+---Splits a string at every occurence of a delimiter up to an optional maximum number of times
+---@param str string @String to split
+---@param delim string @Substring at which to split ``str``
+---@param max_num integer @Maximum amount of splits (defaults to ``0``, which is no limit)
+---@return table @Table containing all split substrings
+function string.blt_split(str, delim, max_num)
 	-- Eliminate bad cases...
 	if string.find(str, delim) == nil then
 		return {str}
 	end
-	maxNb = maxNb or 0
+	max_num = max_num or 0
 
 	local result = {}
 	local pat = "(.-)" .. delim .. "()"
@@ -349,7 +307,7 @@ function string.blt_split(str, delim, maxNb)
 		nb = nb + 1
 		result[nb] = part
 		lastPos = pos
-		if nb == maxNb then
+		if nb == max_num then
 			break
 		end
 	end

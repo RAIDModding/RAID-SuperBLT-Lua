@@ -1,3 +1,5 @@
+---@class BLTNotificationsManager
+---@field new fun(self):BLTNotificationsManager
 BLTNotificationsManager = BLTNotificationsManager or blt_class()
 
 function BLTNotificationsManager:init()
@@ -20,10 +22,15 @@ function BLTNotificationsManager:_get_notification(uid)
 	return nil, -1
 end
 
+---Gets the ordered table of all notifications currently being displayed
+---@return table @Table containing notification data
 function BLTNotificationsManager:get_notifications()
 	return self._notifications
 end
 
+---Adds a notification to the manager, and shows it on the notifications UI
+---@param parameters table @Table containing data for the notification
+---@return number @ID of the added notification
 function BLTNotificationsManager:add_notification(parameters)
 	-- Create and store the notification
 	local id = self:_get_uid()
@@ -48,6 +55,8 @@ function BLTNotificationsManager:add_notification(parameters)
 	return data.id
 end
 
+---Removes the notification with the specified ID
+---@param uid number @ID of the notification that should be removed
 function BLTNotificationsManager:remove_notification(uid)
 	-- Remove the notification
 	local _, idx = self:_get_notification(uid)
@@ -62,10 +71,8 @@ function BLTNotificationsManager:remove_notification(uid)
 	end
 end
 
---------------------------------------------------------------------------------
--- BLT legacy support
--- Not complete support, replace if you use this in a mod
-
+---BLT legacy support, use ``BLT.Notifications`` instead
+---@deprecated
 NotificationsManager = NotificationsManager or {}
 
 function NotificationsManager:GetNotifications()

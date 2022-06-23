@@ -1,4 +1,5 @@
-
+---@class BLTSuperMod
+---@field new fun(self, mod: BLTMod, xml: table):BLTSuperMod
 BLTSuperMod = blt_class()
 
 BLT:Require("req/supermod/SuperModAssetLoader")

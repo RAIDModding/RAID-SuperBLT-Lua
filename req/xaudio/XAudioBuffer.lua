@@ -1,3 +1,5 @@
+---@class Buffer
+---@field new fun(self, input: string):Buffer
 local C = blt_class()
 XAudio.Buffer = C
 

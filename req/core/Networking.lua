@@ -8,6 +8,8 @@ LuaNetworking.ExceptPeer = "GNEP"
 LuaNetworking.ExceptPeerString = "{1}/{2}/{3}/{4}"
 LuaNetworking.Split = "[/]"
 
+---Checks if the game is in a multiplayer state, and has an active multiplayer session
+---@return boolean @The active multiplayer session, or `false`
 function LuaNetworking:IsMultiplayer()
 	if not managers.network then
 		return false
@@ -15,6 +17,9 @@ function LuaNetworking:IsMultiplayer()
 	return managers.network:session()
 end
 
+---Checks if the local player is the host of the multiplayer game session  
+---Functionally identical to `Network:is_server()`
+---@return boolean @`true` if a multiplayer session is running and the local player is the host of it, or `false`
 function LuaNetworking:IsHost()
 	if not Network then
 		return false
@@ -22,6 +27,9 @@ function LuaNetworking:IsHost()
 	return not Network:is_client()
 end
 
+---Checks if the local player is a client of the multiplayer game session  
+---Functionally identical to `Network:is_client()`
+---@return boolean @`true` if a multiplayer session is running and the local player is not the host of it, or `false`
 function LuaNetworking:IsClient()
 	if not Network then
 		return false
@@ -29,6 +37,8 @@ function LuaNetworking:IsClient()
 	return Network:is_client()
 end
 
+---Returns the peer ID of the local player
+---@return integer @Peer ID of the local player or `0` if no multiplayer session is active
 function LuaNetworking:LocalPeerID()
 	if managers.network == nil or managers.network:session() == nil or managers.network:session():local_peer() == nil then
 		return 0
@@ -36,6 +46,9 @@ function LuaNetworking:LocalPeerID()
 	return managers.network:session():local_peer():id() or 0
 end
 
+---Converts a table to a string representation
+---@param tbl table @Table to convert into a string
+---@return string @String representation of `tbl`
 function LuaNetworking:TableToString(tbl)
 	local str = ""
 	for k, v in pairs(tbl) do
@@ -47,6 +60,9 @@ function LuaNetworking:TableToString(tbl)
 	return str
 end
 
+---Converts the string representation of a table to a table
+---@param str string @String representation of a table
+---@return table @Table created from `str`
 function LuaNetworking:StringToTable(str)
 	local tbl = {}
 	local tblPairs = string.split(str, "[,]")
@@ -57,6 +73,9 @@ function LuaNetworking:StringToTable(str)
 	return tbl
 end
 
+---Returns the name of the player associated with the specified peer ID
+---@param id integer @Peer ID of the player to get the name from
+---@return string @Name of the player with peer ID `id`, or `"No Name"` if the player could not be found
 function LuaNetworking:GetNameFromPeerID(id)
 	if managers.network and managers.network:session() and managers.network:session():peers() then
 		for k, v in pairs(managers.network:session():peers()) do
@@ -69,6 +88,8 @@ function LuaNetworking:GetNameFromPeerID(id)
 	return "No Name"
 end
 
+---Returns an accessor for the session peers table
+---@return table @Table of all players in the current multiplayer session
 function LuaNetworking:GetPeers()
 	if managers.network and managers.network:session() then
 		return managers.network:session():peers()
@@ -77,6 +98,8 @@ function LuaNetworking:GetPeers()
 	end
 end
 
+---Returns the number of players in the multiplayer session
+---@return integer @Number of players in the current session
 function LuaNetworking:GetNumberOfPeers()
 	local i = 0
 	for k, v in pairs(self:GetPeers()) do
@@ -85,24 +108,35 @@ function LuaNetworking:GetNumberOfPeers()
 	return i
 end
 
-function LuaNetworking:SendToPeers(type_prm, data)
+---Sends networked data with a message id to all connected players
+---@param id string @Unique name of the data to send
+---@param data string @Data to send
+function LuaNetworking:SendToPeers(id, data)
 	local dataString = LuaNetworking.AllPeersString
 	dataString = dataString:gsub("{1}", LuaNetworking.AllPeers)
-	dataString = dataString:gsub("{2}", type_prm)
+	dataString = dataString:gsub("{2}", id)
 	dataString = dataString:gsub("{3}", data)
 	LuaNetworking:SendStringThroughChat(dataString)
 end
 
-function LuaNetworking:SendToPeer(peer, type_prm, data)
+---Sends networked data with a message id to a specific player
+---@param peer integer @Peer ID of the player to send the data to
+---@param id string @Unique name of the data to send
+---@param data string @Data to send
+function LuaNetworking:SendToPeer(peer, id, data)
 	local dataString = LuaNetworking.SinglePeerString
 	dataString = dataString:gsub("{1}", LuaNetworking.SinglePeer)
 	dataString = dataString:gsub("{2}", peer)
-	dataString = dataString:gsub("{3}", type_prm)
+	dataString = dataString:gsub("{3}", id)
 	dataString = dataString:gsub("{4}", data)
 	LuaNetworking:SendStringThroughChat(dataString)
 end
 
-function LuaNetworking:SendToPeersExcept(peer, type_prm, data)
+---Sends networked data with a message id to all connected players except specific ones
+---@param peer integer|table @Peer ID or table of peer IDs of the player(s) to exclude
+---@param id string @Unique name of the data to send
+---@param data string @Data to send
+function LuaNetworking:SendToPeersExcept(peer, id, data)
 	local dataString = LuaNetworking.ExceptPeerString
 	local peerStr = peer
 	if type(peer) == "table" then
@@ -117,7 +151,7 @@ function LuaNetworking:SendToPeersExcept(peer, type_prm, data)
 
 	dataString = dataString:gsub("{1}", LuaNetworking.ExceptPeer)
 	dataString = dataString:gsub("{2}", peerStr)
-	dataString = dataString:gsub("{3}", type_prm)
+	dataString = dataString:gsub("{3}", id)
 	dataString = dataString:gsub("{4}", data)
 	LuaNetworking:SendStringThroughChat(dataString)
 end

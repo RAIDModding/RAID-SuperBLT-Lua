@@ -1,3 +1,5 @@
+---@class VoicelineManager
+---@field new fun(self, unit: userdata):VoicelineManager
 local C = blt_class()
 XAudio.VoicelineManager = C
 

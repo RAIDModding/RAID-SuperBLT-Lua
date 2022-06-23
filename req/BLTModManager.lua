@@ -1,3 +1,5 @@
+---@class BLTModManager
+---@field new fun(self):BLTModManager
 BLTModManager = blt_class(BLTModule)
 BLTModManager.__type = "BLTModManager"
 
@@ -8,10 +10,15 @@ function BLTModManager:init()
 	Hooks:Register("BLTOnLoadData")
 end
 
+---Returns all mods managed by BLT
+---@return BLTMod[] @Table of mods
 function BLTModManager:Mods()
 	return self.mods
 end
 
+---Returns the mod with the given name
+---@param name string @The name of the mod
+---@return BLTMod? @The mod instance, or ``nil`` if not found
 function BLTModManager:GetModByName(name)
 	for _, mod in pairs(self:Mods()) do
 		if mod:GetName() == name then
@@ -20,6 +27,9 @@ function BLTModManager:GetModByName(name)
 	end
 end
 
+---Returns the mod with the given ID
+---@param id string @The ID of the mod
+---@return BLTMod? @The mod instance, or ``nil`` if not found
 function BLTModManager:GetMod(id)
 	for _, mod in ipairs(self:Mods()) do
 		if mod:GetId() == id then
@@ -28,6 +38,9 @@ function BLTModManager:GetMod(id)
 	end
 end
 
+---Returns the mod of which the given file is a part of
+---@param file string @The path (relative to payday2_win32_release.exe) of the file
+---@return BLTMod? @The mod instance, or ``nil`` if not found
 function BLTModManager:GetModOwnerOfFile(file)
 	for _, mod in pairs(self:Mods()) do
 		if string.find(file, mod:GetPath(), 1, true) == 1 then

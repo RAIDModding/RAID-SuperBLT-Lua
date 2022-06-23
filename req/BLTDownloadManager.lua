@@ -1,3 +1,5 @@
+---@class BLTDownloadManager
+---@field new fun(self):BLTDownloadManager
 BLTDownloadManager = BLTDownloadManager or blt_class(BLTModule)
 BLTDownloadManager.__type = "BLTDownloadManager"
 

@@ -1,4 +1,5 @@
-
+---@class AssetLoader
+---@field new fun(self, mod: BLTSuperMod):AssetLoader
 local c = blt_class()
 BLTSuperMod.AssetLoader = c
 

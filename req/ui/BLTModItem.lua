@@ -1,3 +1,5 @@
+---@class BLTModItem
+---@field new fun(self, panel, index, mod, show_icon):BLTModItem
 BLTModItem = BLTModItem or blt_class()
 
 local padding = 10

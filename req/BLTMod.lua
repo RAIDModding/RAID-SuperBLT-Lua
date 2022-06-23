@@ -1,4 +1,5 @@
--- BLT Mod
+---@class BLTMod
+---@field new fun(self, ident: string, data: table):BLTMod
 BLTMod = blt_class()
 BLTMod.enabled = true
 BLTMod._enabled = true

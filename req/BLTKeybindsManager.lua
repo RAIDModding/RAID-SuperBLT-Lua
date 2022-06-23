@@ -1,3 +1,5 @@
+---@class BLTKeybind
+---@field new fun(self, parent_mod: BLTMod, parameters: table):BLTKeybind
 BLTKeybind = BLTKeybind or blt_class()
 BLTKeybind.StateMenu = 1
 BLTKeybind.StateGame = 2
@@ -134,6 +136,8 @@ end
 
 --------------------------------------------------------------------------------
 
+---@class BLTKeybindsManager
+---@field new fun(self):BLTKeybindsManager
 BLTKeybindsManager = BLTKeybindsManager or blt_class(BLTModule)
 BLTKeybindsManager.__type = "BLTKeybindsManager"
 

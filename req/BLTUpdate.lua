@@ -1,4 +1,5 @@
--- BLT Update
+---@class BLTUpdate
+---@field new fun(self, parent_mod: BLTMod, data: table):BLTUpdate
 BLTUpdate = blt_class()
 BLTUpdate.enabled = true
 BLTUpdate.parent_mod = nil

@@ -1,3 +1,5 @@
+---@class BLTLogs
+---@field new fun(self):BLTLogs
 BLTLogs = blt_class(BLTModule)
 BLTLogs.__type = "BLTLogs"
 

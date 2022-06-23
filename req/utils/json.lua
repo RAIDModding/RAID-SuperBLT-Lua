@@ -1,5 +1,8 @@
 _G.json = {}
 
+---Converts a JSON string to a Lua table
+---@param data string @String to decode
+---@return table @Decoded data
 function json.decode(data)
 	-- Attempt to use 1.0 json module first
 	local value = nil
@@ -16,6 +19,9 @@ function json.decode(data)
 	return value
 end
 
+---Converts a Lua table to a JSON string
+---@param data table @Data to encode
+---@return string @Encoded data
 function json.encode(data)
 	return json10.encode(data)
 end

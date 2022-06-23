@@ -27,6 +27,9 @@ function MenuHelper:SetupMenuButton(menu, id, button_name)
 	self.menubutton_to_clone = menu[id]:items()[button_id]
 end
 
+---Registers a new menu that can have items added to it
+---@param menu_id string @Unique ID to use for this menu
+---@return any @The newly created menu
 function MenuHelper:NewMenu(menu_id)
 	self.menus = self.menus or {}
 
@@ -37,6 +40,9 @@ function MenuHelper:NewMenu(menu_id)
 	return new_menu
 end
 
+---Returns a registered menu
+---@param menu_id string @ID of the menu to get
+---@return any @Menu with `menu_id`
 function MenuHelper:GetMenu(menu_id)
 	local menu = (self.menus or {})[menu_id]
 	if menu == nil then
@@ -51,6 +57,9 @@ function MenuHelper:AddBackButton(menu_id)
 	MenuManager:add_back_button(menu)
 end
 
+---Adds a button to the menu specified in the table `button_data`
+---@param button_data table @Table containing data of the button to be added to the menu
+---@return any @The created menu item
 function MenuHelper:AddButton(button_data)
 	local data = {
 		type = "CoreMenuItem.Item"
@@ -82,6 +91,9 @@ function MenuHelper:AddButton(button_data)
 	return item
 end
 
+---Adds a divider to the menu specified in the table `divider_data`
+---@param divider_data table @Table containing data of the divider to be added to the menu
+---@return any @The created menu item
 function MenuHelper:AddDivider(divider_data)
 	local data = {
 		type = "MenuItemDivider",
@@ -102,6 +114,9 @@ function MenuHelper:AddDivider(divider_data)
 	return item
 end
 
+---Adds a toggle button to the menu specified in the table `toggle_data`
+---@param toggle_data table @Table containing data of the toggle button to be added to the menu
+---@return any @The created menu item
 function MenuHelper:AddToggle(toggle_data)
 	local data = {
 		type = "CoreMenuItemToggle.ItemToggle",
@@ -161,6 +176,9 @@ function MenuHelper:AddToggle(toggle_data)
 	return item
 end
 
+---Adds a slider to the menu specified in the table `slider_data`
+---@param slider_data table @Table containing data of the slider to be added to the menu
+---@return any @The created menu item
 function MenuHelper:AddSlider(slider_data)
 	local data = {
 		type = "CoreMenuItemSlider.ItemSlider",
@@ -195,6 +213,9 @@ function MenuHelper:AddSlider(slider_data)
 	return item
 end
 
+---Adds a multiple choice item to the menu specified in the table `divider_data`
+---@param multi_data table @Table containing data of the multiple choice item to be added to the menu
+---@return any @The created menu item
 function MenuHelper:AddMultipleChoice(multi_data)
 	local data = {
 		type = "MenuItemMultiChoice"
@@ -228,6 +249,9 @@ function MenuHelper:AddMultipleChoice(multi_data)
 	return item
 end
 
+---Adds a customizable keybinding to the menu specified in the table `bind_data`
+---@param bind_data table @Table containing data of the keybinding to be added to the menu
+---@return any @The created menu item
 function MenuHelper:AddKeybinding(bind_data)
 	local data = {
 		type = "MenuItemCustomizeController"
@@ -256,6 +280,9 @@ function MenuHelper:AddKeybinding(bind_data)
 	return item
 end
 
+---Adds an input box to the menu specified in the table `input_data`
+---@param input_data table @Table containing data of the input box to be added to the menu
+---@return any @The created menu item
 function MenuHelper:AddInput(input_data)
 	local data = {
 		type = "MenuItemInput"
@@ -282,6 +309,10 @@ function MenuHelper:AddInput(input_data)
 	return item
 end
 
+---Sets up and returns a menu so that it can be added to the in-game menus
+---@param menu_id string @ID of the menu to build
+---@param data table @Table containing extra data which this menu should be built with
+---@return any @The built menu
 function MenuHelper:BuildMenu(menu_id, data)
 	-- Check menu exists
 	local menu = self.menus[menu_id]
@@ -373,6 +404,14 @@ function MenuHelper:BuildMenu(menu_id, data)
 	return self.menus[menu_id]
 end
 
+---Adds a button to an already existing parent menu
+---@param parent_menu any @Menu which the menu item will be added to
+---@param child_menu string @ID of the menu which this menu item should open when clicked
+---@param name string @Localization key of the display name of this button
+---@param desc? string @Localization key of the description to display when highlighting this button
+---@param menu_position? integer|string @Where this menu item should be inserted into the parent menu. Using a number will insert it at a fixed position, using a string will insert it at the `subposition` relative to the child item with that name
+---@param subposition string? @Position to place this object at if using a child object's name. Can either be `"before"` or `"after"` and will place it above or below the object in the menu accordingly
+---@return any @The created menu item
 function MenuHelper:AddMenuItem(parent_menu, child_menu, name, desc, menu_position, subposition)
 	if parent_menu == nil then
 		BLT:Log(LogLevel.WARN, string.gsub("[Menus][Warning] Parent menu for child '{1}' is null, ignoring...", "{1}", child_menu))
@@ -414,6 +453,10 @@ function MenuHelper:AddMenuItem(parent_menu, child_menu, name, desc, menu_positi
 	return button
 end
 
+---Loads a json-formatted text file and automatically parses and converts into a usable menu
+---@param file_path string @Path of the file to load and convert into a menu
+---@param parent_class any @Class of which all keybind functions and data will be loaded and saved to
+---@param data_table table @Table containing the data keys which various menu items can load their value from
 function MenuHelper:LoadFromJsonFile(file_path, parent_class, data_table)
 	local file = io.open(file_path, "r")
 	if file then
@@ -589,6 +632,10 @@ function MenuHelper:LoadFromJsonFile(file_path, parent_class, data_table)
 	end
 end
 
+---Resets all specified items to a specific value
+---@param item any @Menu item for which the helper function can retreive any items specified in `items_table`
+---@param items_table table @Table of items, where the item name is the key, which should be reset to the value
+---@param value any @Value which all items specified should be reset to
 function MenuHelper:ResetItemsToDefaultValue(item, items_table, value)
 	if type(items_table) ~= "table" then
 		local s = tostring(items_table)

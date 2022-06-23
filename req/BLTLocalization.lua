@@ -1,3 +1,5 @@
+---@class BLTLocalization
+---@field new fun(self):BLTLocalization
 BLTLocalization = BLTLocalization or blt_class(BLTModule)
 BLTLocalization.__type = "BLTLocalization"
 BLTLocalization.default_language_code = "en"

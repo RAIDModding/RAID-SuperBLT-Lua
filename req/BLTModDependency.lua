@@ -1,3 +1,5 @@
+---@class BLTModDependency
+---@field new fun(self, parent_mod: BLTMod, id: string, download_data: table):BLTModDependency
 BLTModDependency = BLTModDependency or blt_class()
 
 function BLTModDependency:init(parent_mod, id, download_data)

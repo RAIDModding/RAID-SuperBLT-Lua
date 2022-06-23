@@ -1,3 +1,5 @@
+---@class BLTViewModGui : BLTCustomComponent
+---@field new fun(self):BLTViewModGui
 BLTViewModGui = BLTViewModGui or blt_class(BLTCustomComponent)
 
 -- Use the modified BLT back button

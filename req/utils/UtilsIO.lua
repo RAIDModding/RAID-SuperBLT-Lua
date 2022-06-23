@@ -1,3 +1,6 @@
+---Checks if a file can be opened to read from
+---@param fname string @The path (relative to payday2_win32_release.exe) and file name to check
+---@return boolean @``true`` if the file can be opened for reading, ``false`` otherwise
 function io.file_is_readable(fname)
 	local file = io.open(fname, "r")
 	if file ~= nil then
@@ -8,6 +11,10 @@ function io.file_is_readable(fname)
 	return false
 end
 
+---Recursively deletes all files and folders from the directory specified
+---@param path string @The path (relative to payday2_win32_release.exe) of the directory to delete
+---@param verbose boolean @Wether to print verbose output to the log
+---@return boolean @``true`` if the operation was successful, ``false`` otherwise
 function io.remove_directory_and_files(path, verbose)
 	vlog = function(str)
 		if verbose then
@@ -62,6 +69,10 @@ function io.remove_directory_and_files(path, verbose)
 	return true
 end
 
+---Converts a Lua table to a JSON string and saves it to a file
+---@param data table @The data to save as JSON file
+---@param path string @The path (relative to payday2_win32_release.exe) and file name to save the data to
+---@return boolean @``true`` if the operation was successful, ``false`` otherwise
 function io.save_as_json(data, path)
 	local count = 0
 	for k, v in pairs(data) do
@@ -84,6 +95,9 @@ function io.save_as_json(data, path)
 	end
 end
 
+---Loads a file containing JSON data and converts it into a Lua table
+---@param path string @The path (relative to payday2_win32_release.exe) and file name to load the data from
+---@return table @The table containing the data, or ``nil`` if loading wasn't successful
 function io.load_as_json(path)
 	local file = io.open(path, "r")
 	if file then

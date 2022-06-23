@@ -1,3 +1,5 @@
+---@class BLTNotificationsGui
+---@field new fun(self, ws, fullscreen_ws, node):BLTNotificationsGui
 BLTNotificationsGui = BLTNotificationsGui or blt_class(MenuGuiComponentGeneric)
 
 local padding = 10

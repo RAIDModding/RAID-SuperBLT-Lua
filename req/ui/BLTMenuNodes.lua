@@ -185,8 +185,11 @@ Hooks:Add("CoreMenuData.LoadDataMenu", "BLT.CoreMenuData.LoadDataMenu", function
 	end
 end)
 
--- Menu Initiator for the Mod Options
+---Menu Initiator for the Mod Options
+---@class BLTModOptionsInitiator
+---@field new fun(self):BLTModOptionsInitiator
 BLTModOptionsInitiator = BLTModOptionsInitiator or class(MenuInitiatorBase)
+
 function BLTModOptionsInitiator:modify_node(node)
 	local old_items = node:items()
 

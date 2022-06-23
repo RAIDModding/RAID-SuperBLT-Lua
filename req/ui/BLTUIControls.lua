@@ -18,6 +18,8 @@ end
 
 --------------------------------------------------------------------------------
 
+---@class BLTUIButton
+---@field new fun(self, panel, parameters):BLTUIButton
 BLTUIButton = BLTUIButton or blt_class()
 
 function BLTUIButton:init(panel, parameters)
@@ -149,6 +151,8 @@ end
 
 --------------------------------------------------------------------------------
 
+---@class BLTDownloadControl : BLTUIButton
+---@field new fun(self, panel, parameters):BLTDownloadControl
 BLTDownloadControl = BLTDownloadControl or blt_class(BLTUIButton)
 
 function BLTDownloadControl:init(panel, parameters)

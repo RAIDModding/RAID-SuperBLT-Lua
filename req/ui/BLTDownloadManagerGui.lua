@@ -1,3 +1,5 @@
+---@class BLTDownloadManagerGui
+---@field new fun(self):BLTDownloadManagerGui
 BLTDownloadManagerGui = BLTDownloadManagerGui or blt_class(BLTCustomComponent)
 
 -- Use the modified BLT back button

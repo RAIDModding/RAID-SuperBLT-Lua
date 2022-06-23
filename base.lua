@@ -73,6 +73,10 @@ BLT:Require("req/BLTKeybindsManager")
 BLT:Require("req/BLTAssetManager")
 BLT:Require("req/xaudio/XAudio")
 
+---Writes a message to the log file  
+---Multiple arguments can be passed to the function and will be concatenated
+---@param level integer @The log level of the message
+---@param ... any @The message to log
 function BLT:Log(level, ...)
 	if level > self.LOG_LEVEL then
 		return
@@ -130,10 +134,14 @@ function BLT:Setup()
 	rawset(_G, C.save_path_global, C.mods_directory .. C.saves_directory)
 end
 
+---Returns the version of BLT
+---@return string @The version of BLT
 function BLT:GetVersion()
 	return self.version
 end
 
+---Returns the operating system that the game is running on
+---@return '"windows"'|'"linux"' @The operating system
 function BLT:GetOS()
 	local info = blt.blt_info()
 	if not info then

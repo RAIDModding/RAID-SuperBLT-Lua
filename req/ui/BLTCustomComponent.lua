@@ -1,8 +1,6 @@
---[[
-	BLTCustomComponent
-
-	This is a GUI component customized for common uses in BLT.
-]]
+---GUI component customized for common uses in BLT.
+---@class BLTCustomComponent
+---@field new fun(self, ws, fullscreen_ws, node):BLTCustomComponent
 BLTCustomComponent = BLTCustomComponent or blt_class(MenuGuiComponentGeneric)
 
 local padding = 10

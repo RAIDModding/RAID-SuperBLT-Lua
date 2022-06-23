@@ -1,4 +1,5 @@
-
+---@class BLTModule
+---@field new fun(self):BLTModule
 BLTModule = blt_class()
 BLTModule.__type = "BLTModule"
 

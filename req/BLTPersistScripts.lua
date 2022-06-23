@@ -1,3 +1,5 @@
+---@class BLTPersistScripts
+---@field new fun(self):BLTPersistScripts
 BLTPersistScripts = blt_class(BLTModule)
 BLTPersistScripts.__type = "BLTPersistScripts"
 
