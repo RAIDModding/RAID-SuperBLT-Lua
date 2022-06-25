@@ -8,6 +8,10 @@ c.DYNAMIC_LOAD_TYPES = {
 	effect = true
 }
 
+c.EXTENSION_MAPPINGS = {
+	dds = "texture"
+}
+
 local _dynamic_unloaded_assets = {}
 local _flush_assets
 local _currently_loading_assets = {}
@@ -62,6 +66,7 @@ function c:LoadAsset(name, file, params, xml_convert)
 	local dot_index = name:find(".", 1, true)
 	local dbpath = name:sub(1, dot_index - 1)
 	local extension = name:sub(dot_index + 1)
+	extension = c.EXTENSION_MAPPINGS[extension] or extension
 
 	local dyn_package = c.DYNAMIC_LOAD_TYPES[extension] or false
 	if params.dyn_package == "true" then
