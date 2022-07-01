@@ -1,18 +1,5 @@
 _G.Utils = _G.Utils or {}
 
-if false then
-	_G.print = function(...)
-		local s = ""
-		for i, str in ipairs({...}) do
-			if type(str) == "string" then
-				str = string.gsub(str, "%%", "%%%%%")
-			end
-			s = string.format("%s%s%s", s, i > 1 and "\t" or "", tostring(str))
-		end
-		log(s)
-	end
-end
-
 ---Copies an existing class into an orig table, so that class functions can be overwritten and called again easily
 ---@param class table @The class table to clone
 function _G.CloneClass(class)
@@ -90,7 +77,7 @@ end
 
 ---Converts a formatted string to a Vector3, useful in conjunction with Networking
 ---@param string string @The string to convert to a Vector3
----@return Vector3 @A Vector3 of the converted string or ``nil`` if no conversion could be made
+---@return Vector3? @A Vector3 of the converted string or ``nil`` if no conversion could be made
 function string.ToVector3(string)
 	local x, y, z = string:match(Vector3.MatchFormat)
 	if x ~= nil and y ~= nil and z ~= nil then
@@ -118,10 +105,7 @@ end
 ---Returns whether you are in GameState (loadout, ingame, end screens like victory and defeat) or not
 ---@return boolean @``true`` if you are in GameState, ``false`` otherwise
 function Utils:IsInGameState()
-	if not game_state_machine then
-		return false
-	end
-	return string.find(game_state_machine:current_state_name(), "game")
+	return game_state_machine and string.find(game_state_machine:current_state_name(), "game") and true or false
 end
 
 ---Returns wether you are currently in a loading state or not
@@ -187,30 +171,21 @@ end
 ---@return boolean @``true`` if the currently equipped weapon matches ``type``, ``false`` otherwise
 function Utils:IsCurrentWeapon(type)
 	local weapon = managers.player:local_player():inventory():equipped_unit():base()._name_id
-	if weapon then
-		return weapon == string.lower(type)
-	end
-	return false
+	return weapon == string.lower(type)
 end
 
 ---Checks if the currently equipped weapon is your primary weapon
----@return boolean @``true`` if the current weapon is a primary, ``false`` otherwise
+---@return boolean @``true`` if the current weapon is a primary, ``false`` if not and ``nil`` if no weapon is equipped
 function Utils:IsCurrentWeaponPrimary()
 	local weapon = managers.player:local_player():inventory():equipped_unit():base():selection_index()
-	local curstate = managers.player._current_state
-	if weapon then
-		return (curstate ~= "mask_off" and weapon == 2)
-	end
+	return weapon and (managers.player._current_state ~= "mask_off" and weapon == 2)
 end
 
 ---Checks if the currently equipped weapon is your secondary weapon
----@return boolean @``true`` if the current weapon is a secondary, ``false`` otherwise
+---@return boolean @``true`` if the current weapon is a secondary, ``false`` if not and ``nil`` if no weapon is equipped
 function Utils:IsCurrentWeaponSecondary()
 	local weapon = managers.player:local_player():inventory():equipped_unit():base():selection_index()
-	local curstate = managers.player._current_state
-	if weapon then
-		return (curstate ~= "mask_off" and weapon == 1)
-	end
+	return weapon and (managers.player._current_state ~= "mask_off" and weapon == 1)
 end
 
 ---Gets the point in the world where the player is aiming at as a Vector3
@@ -218,7 +193,8 @@ end
 ---@param maximum_range number @The maximum distance to check for a point in cm (defaults to ``100000``)
 ---@return Vector3|boolean @A Vector3 containing the location that the player is looking at, or ``false`` if the player was not looking at anything or was looking at something past the maximum_range
 function Utils:GetPlayerAimPos(player, maximum_range)
-	local ray = self:GetCrosshairRay(player:camera():position(), player:camera():position() + player:camera():forward() * (maximum_range or 100000))
+	local player_camera = player:camera()
+	local ray = self:GetCrosshairRay(player_camera:position(), player_camera:position() + player_camera:forward() * (maximum_range or 100000))
 	if not ray then
 		return false
 	end
@@ -228,7 +204,7 @@ end
 ---Gets a ray between two points and checks for a collision with a slot mask along the ray
 ---@param from Vector3 @The starting position of the ray (defaults to the player's head)
 ---@param to Vector3 @The ending position of the ray (defaults to 1m in from of the player's head)
----@param slot_mask userdata @The collision group to check against the ray (defaults to all objects the player can shoot)
+---@param slot_mask? string @The collision group to check against the ray (defaults to all objects the player can shoot)
 ---@return table|boolean @A table containing the ray information or ``false`` if no viewport camera exists
 function Utils:GetCrosshairRay(from, to, slot_mask)
 	local viewport = managers.viewport
@@ -290,7 +266,7 @@ end
 ---Splits a string at every occurence of a delimiter up to an optional maximum number of times
 ---@param str string @String to split
 ---@param delim string @Substring at which to split ``str``
----@param max_num integer @Maximum amount of splits (defaults to ``0``, which is no limit)
+---@param max_num? integer @Maximum amount of splits (defaults to ``0``, which is no limit)
 ---@return table @Table containing all split substrings
 function string.blt_split(str, delim, max_num)
 	-- Eliminate bad cases...

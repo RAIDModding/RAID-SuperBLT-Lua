@@ -1,5 +1,5 @@
 ---@class Source
----@field new fun(self, buffer: Buffer, source: userdata):Source
+---@field new fun(self, buffer: Buffer?, source: userdata?):Source
 local C = blt_class()
 XAudio.Source = C
 

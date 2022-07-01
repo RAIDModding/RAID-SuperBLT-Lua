@@ -241,7 +241,8 @@ function Hooks:_ChkCreateTableStructure(object, func)
 
 	object[func] = function(...)
 		local hooked_func = self._function_hooks[object][func]
-		local r, _r = {}
+		local r = {}
+		local _r
 
 		for k, v in ipairs(hooked_func.overrides.pre) do
 			_r = {v.func(...)}
