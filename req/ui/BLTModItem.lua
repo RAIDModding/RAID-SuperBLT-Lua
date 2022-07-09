@@ -53,7 +53,7 @@ function BLTModItem:init(panel, index, mod, show_icon)
 	-- Background
 	self._background = self._panel:rect({
 		color = bg_color,
-		alpha = 0.2,
+		alpha = mod:IsEnabled() and 0.2 or 0.05,
 		blend_mode = "add",
 		layer = -1
 	})
@@ -69,6 +69,8 @@ function BLTModItem:init(panel, index, mod, show_icon)
 		valign = "scale"
 	})
 
+	local alpha = mod:IsEnabled() and 1 or 0.5
+
 	-- Mod name
 	local mod_name = self._panel:text({
 		name = "mod_name",
@@ -77,6 +79,7 @@ function BLTModItem:init(panel, index, mod, show_icon)
 		layer = 10,
 		blend_mode = "add",
 		color = text_color,
+		alpha = alpha,
 		text = mod:GetName(),
 		align = "center",
 		vertical = "top",
@@ -97,6 +100,7 @@ function BLTModItem:init(panel, index, mod, show_icon)
 		layer = 10,
 		blend_mode = "add",
 		color = text_color,
+		alpha = alpha,
 		text = string.sub(mod:GetDescription(), 1, 120),
 		align = "left",
 		vertical = "top",
@@ -119,6 +123,7 @@ function BLTModItem:init(panel, index, mod, show_icon)
 			name = "image",
 			texture = image_path,
 			color = Color.white,
+			alpha = alpha,
 			layer = 10,
 			w = BLTModItem.image_size,
 			h = BLTModItem.image_size
@@ -129,6 +134,7 @@ function BLTModItem:init(panel, index, mod, show_icon)
 		local no_image_panel = self._panel:panel({
 			w = BLTModItem.image_size,
 			h = BLTModItem.image_size,
+			alpha = alpha,
 			layer = 10
 		})
 		no_image_panel:set_center_x(self._panel:w() * 0.5)
@@ -171,9 +177,9 @@ function BLTModItem:init(panel, index, mod, show_icon)
 		icon_y = icon_y + icon_size + 4
 
 		if mod:WasEnabledAtStart() then
-			icon_enabled:set_alpha(mod:IsEnabled() and 1 or 0.4)
+			icon_enabled:set_alpha(mod:IsEnabled() and 1 or 0.2)
 		else
-			icon_enabled:set_alpha(mod:IsEnabled() and 1 or 0.4)
+			icon_enabled:set_alpha(mod:IsEnabled() and 1 or 0.2)
 			icon_enabled:set_color(mod:IsEnabled() and Color.yellow or Color.white)
 		end
 	end
@@ -185,7 +191,7 @@ function BLTModItem:init(panel, index, mod, show_icon)
 			texture = icon,
 			texture_rect = rect,
 			color = Color.white,
-			alpha = mod:AreUpdatesEnabled() and 1 or 0.4,
+			alpha = mod:AreUpdatesEnabled() and 1 or 0.2,
 			layer = 10,
 			w = icon_size,
 			h = icon_size
@@ -264,7 +270,7 @@ end
 function BLTModItem:set_highlight(enabled, no_sound)
 	if self._enabled ~= enabled then
 		self._enabled = enabled
-		self._background:set_alpha(enabled and 0.4 or 0.2)
+		self._background:set_alpha(enabled and 0.4 or self._mod:IsEnabled() and 0.2 or 0.05)
 		if enabled and not no_sound then
 			managers.menu_component:post_event("highlight")
 		end

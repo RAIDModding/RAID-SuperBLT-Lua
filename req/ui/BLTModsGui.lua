@@ -269,8 +269,24 @@ function BLTModsGui:update_visible_mods(scroll_position)
 	})
 	table.insert(self._buttons, button)
 
+	-- Sort mods by library and name
+	local mods = table.sorted_copy(BLT.Mods:Mods(), function (mod1, mod2)
+		if mod1:GetId() == "base" then
+			return true
+		elseif mod2:GetId() == "base" then
+			return false
+		elseif mod1:IsLibrary() ~= mod2:IsLibrary() then
+			return mod1:IsLibrary() and true or false
+		elseif mod1:GetName():lower() < mod2:GetName():lower() then
+			return true
+		elseif mod1:GetName():lower() > mod2:GetName():lower() then
+			return false
+		end
+		return mod1:GetId():lower() < mod2:GetId():lower()
+	end)
+
 	-- Create mod boxes
-	for _, mod in ipairs(BLT.Mods:Mods()) do
+	for _, mod in ipairs(mods) do
 		if BLTModsGui.show_libraries or not mod:IsLibrary() then
 			local i = #self._buttons + 1
 
