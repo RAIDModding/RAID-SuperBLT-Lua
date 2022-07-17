@@ -119,12 +119,13 @@ function BLTMod:AddHooks(data_key, destination, wildcards_destination)
 	for i, hook_data in ipairs(self.json_data[data_key] or {}) do
 		local hook_id = hook_data["hook_id"] and hook_data["hook_id"]:lower()
 		local script = hook_data["script_path"]
+		local game = hook_data.game
 
-		self:AddHook(data_key, hook_id, script, destination, wildcards_destination)
+		self:AddHook(data_key, hook_id, script, destination, wildcards_destination, game)
 	end
 end
 
-function BLTMod:AddHook(data_key, hook_id, script, destination, wildcards_destination)
+function BLTMod:AddHook(data_key, hook_id, script, destination, wildcards_destination, game)
 	self.hooks[data_key] = self.hooks[data_key] or {}
 
 	-- Add hook to info table
@@ -143,7 +144,8 @@ function BLTMod:AddHook(data_key, hook_id, script, destination, wildcards_destin
 	if hook_id and script and self:IsEnabled() then
 		local data = {
 			mod = self,
-			script = script
+			script = script,
+			game = game
 		}
 
 		if hook_id ~= "*" then

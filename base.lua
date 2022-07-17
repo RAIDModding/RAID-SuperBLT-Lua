@@ -150,6 +150,12 @@ function BLT:GetOS()
 	return info.platform == "mswindows" and "windows" or "linux"
 end
 
+---Returns the current running game
+---@return '"raid"'|'"pd2"' @The game
+function BLT:GetGame()
+	return Application:short_game_name() == "RAID WW2" and "raid" or "pd2"
+end
+
 function BLT:RunHookTable(hooks_table, path)
 	if not hooks_table or not hooks_table[path] then
 		return false
@@ -160,10 +166,12 @@ function BLT:RunHookTable(hooks_table, path)
 end
 
 function BLT:RunHookFile(path, hook_data)
-	rawset(_G, BLTModManager.Constants.required_script_global, path or false)
-	rawset(_G, BLTModManager.Constants.mod_path_global, hook_data.mod:GetPath() or false)
-	rawset(_G, BLTModManager.Constants.mod_instance_global, hook_data.mod or false)
-	dofile(hook_data.mod:GetPath() .. hook_data.script)
+	if not hook_data.game or hook_data.game == self:GetGame() then
+		rawset(_G, BLTModManager.Constants.required_script_global, path or false)
+		rawset(_G, BLTModManager.Constants.mod_path_global, hook_data.mod:GetPath() or false)
+		rawset(_G, BLTModManager.Constants.mod_instance_global, hook_data.mod or false)
+		dofile(hook_data.mod:GetPath() .. hook_data.script)
+	end
 end
 
 function BLT:OverrideRequire()

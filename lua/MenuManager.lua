@@ -37,37 +37,39 @@ function MenuManager:show_download_progress(mod_name)
 	managers.system_menu:show_download_progress(dialog_data)
 end
 
--- Add menus
-Hooks:Add("MenuManagerPostInitialize", "MenuManagerPostInitialize_Base", function(menu_manager)
-	local success, err = pcall(function()
-		-- Setup lua mods menu
-		menu_manager:_base_process_menu(
-			{"menu_main"},
-			"mods_options",
-			"options",
-			"MenuManager_Base_SetupModsMenu",
-			"MenuManager_Base_PopulateModsMenu",
-			"MenuManager_Base_BuildModsMenu"
-		)
+if BLT:GetGame() == "pd2" then
+	-- Add menus
+	Hooks:Add("MenuManagerPostInitialize", "MenuManagerPostInitialize_Base", function(menu_manager)
+		local success, err = pcall(function()
+			-- Setup lua mods menu
+			menu_manager:_base_process_menu(
+				{"menu_main"},
+				"mods_options",
+				"options",
+				"MenuManager_Base_SetupModsMenu",
+				"MenuManager_Base_PopulateModsMenu",
+				"MenuManager_Base_BuildModsMenu"
+			)
 
-		-- Setup mod options/keybinds menu
-		menu_manager:_base_process_menu(
-			{"menu_main", "menu_pause"},
-			"video",
-			"options",
-			"MenuManager_Base_SetupModOptionsMenu",
-			"MenuManager_Base_PopulateModOptionsMenu",
-			"MenuManager_Base_BuildModOptionsMenu"
-		)
+			-- Setup mod options/keybinds menu
+			menu_manager:_base_process_menu(
+				{"menu_main", "menu_pause"},
+				"video",
+				"options",
+				"MenuManager_Base_SetupModOptionsMenu",
+				"MenuManager_Base_PopulateModOptionsMenu",
+				"MenuManager_Base_BuildModOptionsMenu"
+			)
 
-		-- Allow custom menus on the main menu (and lobby) and the pause menu
-		menu_manager:_base_process_menu({"menu_main"})
-		menu_manager:_base_process_menu({"menu_pause"})
+			-- Allow custom menus on the main menu (and lobby) and the pause menu
+			menu_manager:_base_process_menu({"menu_main"})
+			menu_manager:_base_process_menu({"menu_pause"})
+		end)
+		if not success then
+			BLT:Log(LogLevel.ERROR, tostring(err))
+		end
 	end)
-	if not success then
-		BLT:Log(LogLevel.ERROR, tostring(err))
-	end
-end)
+end
 
 function MenuManager._base_process_menu(menu_manager, menu_names, parent_menu_name, parent_menu_button, setup_hook, populate_hook, build_hook)
 	for k, v in pairs(menu_names) do
@@ -78,8 +80,10 @@ function MenuManager._base_process_menu(menu_manager, menu_names, parent_menu_na
 			local hook_id_populate = populate_hook or "MenuManagerPopulateCustomMenus"
 			local hook_id_build = build_hook or "MenuManagerBuildCustomMenus"
 
-			MenuHelper:SetupMenu(nodes, parent_menu_name or "video")
-			MenuHelper:SetupMenuButton(nodes, parent_menu_button or "options", not parent_menu_button and "sound")
+			if BLT:GetGame() == "pd2" then
+				MenuHelper:SetupMenu(nodes, parent_menu_name or "video")
+				MenuHelper:SetupMenuButton(nodes, parent_menu_button or "options", not parent_menu_button and "sound")
+			end
 
 			Hooks:RegisterHook(hook_id_setup)
 			Hooks:RegisterHook(hook_id_populate)
