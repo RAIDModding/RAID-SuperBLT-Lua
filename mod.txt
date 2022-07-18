@@ -46,7 +46,7 @@
 	],
 	"pre_hooks" : [
 		{ "hook_id" : "lib/entry", "script_path" : "req/utils/UtilsCore.lua" },
-		{ "hook_id" : "lib/entry", "script_path" : "req/core/MenuHelper.lua", "game": "pd2" },
+		{ "hook_id" : "lib/entry", "script_path" : "req/core/MenuHelper.lua" },
 		{ "hook_id" : "lib/entry", "script_path" : "req/core/Networking.lua" },
 		{ "hook_id" : "lib/entry", "script_path" : "req/utils/QuickMenu.lua" }
 	],
@@ -60,16 +60,23 @@
 			"hook_id" : "core/lib/utils/coreclass",
 			"script_path" : "req/utils/UtilsClass.lua"
 		},
-
 		{
-			"hook_id" : "lib/managers/menu/menucomponentmanager",
-			"script_path" : "req/ui/BLTCustomComponent.lua",
-			"game": "pd2"
+			"hook_id": "lib/managers/menu/menucomponentmanager",
+			"script_path": "req/raid/BLTMenu.lua",
+			"game": "raid"
+		},
+		{
+			"hook_id": "lib/managers/menu/menucomponentmanager",
+			"script_path": "req/raid/MenuGuiComponentGeneric.lua",
+			"game": "raid"
 		},
 		{
 			"hook_id" : "lib/managers/menu/menucomponentmanager",
-			"script_path" : "req/ui/BLTModsGui.lua",
-			"game": "pd2"
+			"script_path" : "req/ui/BLTCustomComponent.lua"
+		},
+		{
+			"hook_id" : "lib/managers/menu/menucomponentmanager",
+			"script_path" : "req/ui/BLTModsGui.lua"
 		},
 		{ 
 			"hook_id" : "lib/managers/menu/menucomponentmanager",
@@ -78,19 +85,16 @@
 		},
 		{ 
 			"hook_id" : "lib/managers/menu/menucomponentmanager",
-			"script_path" : "req/ui/BLTDownloadManagerGui.lua",
-			"game": "pd2"
+			"script_path" : "req/ui/BLTDownloadManagerGui.lua"
 		},
 		{
 			"hook_id" : "lib/managers/menu/menucomponentmanager",
-			"script_path" : "req/ui/BLTNotificationsGui.lua",
-			"game": "pd2"
+			"script_path" : "req/ui/BLTNotificationsGui.lua"
 		},
 		
 		{ 
 			"hook_id" : "core/lib/managers/menu/coremenudata",
-			"script_path" : "lua/CoreMenuData.lua",
-			"game": "pd2"
+			"script_path" : "lua/CoreMenuData.lua"
 		},
 		{ 
 			"hook_id" : "lib/setups/gamesetup",
@@ -99,6 +103,11 @@
 		{ 
 			"hook_id" : "lib/setups/menusetup",
 			"script_path" : "lua/MenuSetup.lua"
+		},
+		{ 
+			"hook_id" : "lib/setups/setup",
+			"script_path" : "req/raid/AddCallOnNextUpdate.lua",
+			"game": "raid"
 		},
 		{ 
 			"hook_id" : "core/lib/system/corepatchlua",
@@ -133,8 +142,7 @@
 		},
 		{
 			"hook_id" : "lib/managers/menu/menucomponentmanager",
-			"script_path" : "lua/MenuComponentManager.lua",
-			"game": "pd2"
+			"script_path" : "lua/MenuComponentManager.lua"
 		},
 		{
 			"hook_id" : "lib/managers/systemmenumanager",

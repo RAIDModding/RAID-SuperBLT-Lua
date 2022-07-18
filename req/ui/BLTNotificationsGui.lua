@@ -47,15 +47,16 @@ function BLTNotificationsGui:_setup()
 	self._enabled = true
 
 	-- Get player profile panel
-	local profile_panel = managers.menu_component._player_profile_gui._panel
+	local profile_panel = managers.menu_component._player_profile_gui and managers.menu_component._player_profile_gui._panel
 
 	-- Create panels
 	self._panel =self._ws:panel():panel({
-		w = profile_panel:w(),
+		x = profile_panel and profile_panel:x() or 0,
+		w = profile_panel and profile_panel:w() or 524,
 		h = 128
 	})
-	self._panel:set_left(profile_panel:left())
-	self._panel:set_bottom(profile_panel:top())
+
+	self._panel:set_bottom(profile_panel and profile_panel:y() or self._ws:panel():h() - 90)
 	-- BoxGuiObject:new(self._panel:panel({ layer = 100 }), { sides = { 1, 1, 1, 1 } })
 
 	self._content_panel =self._panel:panel({
@@ -331,7 +332,26 @@ end
 --------------------------------------------------------------------------------
 
 function BLTNotificationsGui:set_bar_width(w, random)
-	NewHeistsGui.set_bar_width(self, w, random)
+	w = w or BAR_W
+	self._bar_width = w
+
+	self._bar:set_width(w)
+
+	self._bar_x = not random and self._bar_x or math.random(1, 255)
+	self._bar_y = not random and self._bar_y or math.random(0, math.round(self._bar:texture_height() / 2 - 1)) * 2
+	local x = self._bar_x
+	local y = self._bar_y
+	local h = 6
+	local mvector_tl = Vector3()
+	local mvector_tr = Vector3()
+	local mvector_bl = Vector3()
+	local mvector_br = Vector3()
+
+	mvector3.set_static(mvector_tl, x, y, 0)
+	mvector3.set_static(mvector_tr, x + w, y, 0)
+	mvector3.set_static(mvector_bl, x, y + h, 0)
+	mvector3.set_static(mvector_br, x + w, y + h, 0)
+	self._bar:set_texture_coordinates(mvector_tl, mvector_tr, mvector_bl, mvector_br)
 end
 
 function BLTNotificationsGui:_move_to_notification(destination)
@@ -510,10 +530,14 @@ Hooks:Add("CoreMenuData.LoadDataMenu", "BLTNotificationsGui.CoreMenuData.LoadDat
 		if node.name == "main" then
 			if node.menu_components then
 				node.menu_components = node.menu_components .. " blt_notifications"
-			elseif _G.CommunityChallengesGui then
-				node.menu_components = "player_profile menuscene_info new_heists game_installing debug_quicklaunch community_challenges blt_notifications"
 			else
-				node.menu_components = "player_profile menuscene_info new_heists game_installing debug_quicklaunch blt_notifications"
+				if BLT:GetGame() == "pd2" then
+					if _G.CommunityChallengesGui then
+						node.menu_components = "player_profile menuscene_info new_heists game_installing debug_quicklaunch community_challenges blt_notifications"
+					else
+						node.menu_components = "player_profile menuscene_info new_heists game_installing debug_quicklaunch blt_notifications"
+					end
+				end
 			end
 		end
 	end

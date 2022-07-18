@@ -714,7 +714,10 @@ function MenuHelper:AddComponent(name, clss)
 				return
 			end
 			self[u_name] = self[u_name] or clss:new(self._ws, self._fullscreen_ws, node)
-			self:register_component(c_name, self[u_name])
+			if self.register_component then
+				self:register_component(c_name, self[u_name])
+			end
+			return self[u_name]
 		end
 
 		-- function MenuComponentManager:close_name_gui()
@@ -722,7 +725,10 @@ function MenuHelper:AddComponent(name, clss)
 			if self[u_name] then
 				self[u_name]:close()
 				self[u_name] = nil
-				self:unregister_component(c_name)
+				if self.unregister_component then
+					self:unregister_component(c_name)
+				end
+				return self[u_name]
 			end
 		end
 
