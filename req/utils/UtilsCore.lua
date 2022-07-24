@@ -8,25 +8,92 @@ function _G.CloneClass(class)
 	end
 end
 
----Prints the contents of a table to your console  
----May cause game slowdown if the table is fairly large, only for debugging purposes
----@param tbl table @The table to print to console
-function _G.PrintTable(tbl, cmp)
-	cmp = cmp or {}
-	if type(tbl) == "table" then
-		for k, v in pairs(tbl) do
-			if type(v) == "table" and not cmp[v] then
-				cmp[v] = true
-				log(string.format("[\"%s\"] = table", tostring(k)));
-				-- PrintTable(v, cmp)
-			else
-				log(string.format("\"%s\" = %s", tostring(k), tostring(v)))
-			end
-		end
+function Utils.MakeValueOutput(value, output)
+	if type(value) == "string" then
+		output[#output + 1] = '"'
+		output[#output + 1] = value
+		output[#output + 1] = '"'
 	else
-		log(tbl)
+		output[#output + 1] = tostring(value)
 	end
 end
+
+function Utils.MakeTableOutput(tbl, output, has, tabs, depth, maxDepth)
+	has[tbl] = true
+	output[#output + 1] = tostring(tbl)
+
+	if next(tbl) then
+		output[#output + 1] = " {\n"
+		local nextTabs = tabs .. "\t"
+		depth = depth + 1
+
+		for k, v in pairs(tbl) do
+			output[#output + 1] = nextTabs
+			Utils.MakeValueOutput(k, output)
+			output[#output + 1] = " = "
+
+			if (type(v) == "table") and not has[v] and (depth < maxDepth) then
+				Utils.MakeTableOutput(v, output, has, nextTabs, depth, maxDepth)
+			else
+				Utils.MakeValueOutput(v, output)
+			end
+
+			output[#output + 1] = "\n"
+		end
+
+		output[#output + 1] = tabs
+		output[#output + 1] = "}"
+	else
+		output[#output + 1] = " {}"
+	end
+end
+
+---Returns a string representing value
+---If value is a table, ToString returns a string representing the table and its contents
+---ToString will include the contents of nested tables down to maxDepth or 1
+---@param value @Any value
+---@param maxDepth? number @Controls the depth that ToString will read to (defaults to ``1``)
+---@return string @A string representing value
+function Utils.ToString(value, maxDepth)
+	local output = {}
+
+	if type(value) == "table" then
+		local has = {}
+		local tabs = ""
+		local depth = 0
+		maxDepth = maxDepth or 1
+		Utils.MakeTableOutput(value, output, has, tabs, depth, maxDepth)
+	else
+		Utils.MakeValueOutput(value, output)
+	end
+
+	return table.concat(output)
+end
+
+---Prints the contents of a table to your console  
+---May cause game slowdown if the table is fairly large, only for debugging purposes
+---PrintTable will include the contents of nested tables down to maxDepth or 1
+---@param tbl table @The table to print to console
+---@param maxDepth? number @Controls the depth that PrintTable will read to (defaults to ``1``)
+function Utils.PrintTable(tbl, maxDepth)
+	local output = nil
+
+	if type(tbl) == "table" then
+		output = {"\n"} -- Start the output on a new line. Doing this here to avoid a possibly large copy later.
+		local has = {}
+		local tabs = ""
+		local depth = 0
+		maxDepth = maxDepth or 1
+		Utils.MakeTableOutput(tbl, output, has, tabs, depth, maxDepth)
+	else
+		output = {}
+		Utils.MakeValueOutput(tbl, output)
+	end
+
+	log(table.concat(output))
+end
+
+_G.PrintTable = Utils.PrintTable
 
 ---Saves the contents of a table to the specified file
 ---@param tbl table @The table to save to a file
