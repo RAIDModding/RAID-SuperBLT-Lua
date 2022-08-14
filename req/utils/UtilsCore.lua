@@ -51,7 +51,7 @@ end
 ---Returns a string representing value
 ---If value is a table, ToString returns a string representing the table and its contents
 ---ToString will include the contents of nested tables down to maxDepth or 1
----@param value @Any value
+---@param value any @Any value
 ---@param maxDepth? number @Controls the depth that ToString will read to (defaults to ``1``)
 ---@return string @A string representing value
 function Utils.ToString(value, maxDepth)
@@ -150,7 +150,6 @@ function string.ToVector3(string)
 	if x ~= nil and y ~= nil and z ~= nil then
 		return Vector3(tonumber(x), tonumber(y), tonumber(z))
 	end
-	return nil
 end
 
 ---Returns if a string exists or not
@@ -178,20 +177,14 @@ end
 ---Returns wether you are currently in a loading state or not
 ---@return boolean @``true`` if you are in a loading state, ``false`` otherwise
 function Utils:IsInLoadingState()
-	if not BaseNetworkHandler then
-		return false
-	end
-	return BaseNetworkHandler._gamestate_filter.waiting_for_players[game_state_machine:last_queued_state_name()]
+	return BaseNetworkHandler and BaseNetworkHandler._gamestate_filter.waiting_for_players[game_state_machine:last_queued_state_name()] and true or false
 end
 
 ---Returns wether you are currently in game (you're able to use your weapons, spot, call teammates etc) or not  
 ---Only returns true if currently ingame, does not check for GameState like ``Utils:IsInGameState()``
 ---@return boolean @``true`` if you are in game, ``false`` otherwise
 function Utils:IsInHeist()
-	if not BaseNetworkHandler then
-		return false
-	end
-	return BaseNetworkHandler._gamestate_filter.any_ingame_playing[game_state_machine:last_queued_state_name()]
+	return BaseNetworkHandler and BaseNetworkHandler._gamestate_filter.any_ingame_playing[game_state_machine:last_queued_state_name()] and true or false
 end
 
 ---Returns whether you are currently in custody or not
@@ -257,26 +250,23 @@ end
 
 ---Gets the point in the world where the player is aiming at as a Vector3
 ---@param player table @The player to get the aiming position of
----@param maximum_range number @The maximum distance to check for a point in cm (defaults to ``100000``)
----@return Vector3|boolean @A Vector3 containing the location that the player is looking at, or ``false`` if the player was not looking at anything or was looking at something past the maximum_range
+---@param maximum_range? number @The maximum distance to check for a point in cm (defaults to ``100000``)
+---@return Vector3? @A Vector3 containing the location that the player is looking at, or ``nil`` if the player was not looking at anything or was looking at something past the maximum_range
 function Utils:GetPlayerAimPos(player, maximum_range)
 	local player_camera = player:camera()
 	local ray = self:GetCrosshairRay(player_camera:position(), player_camera:position() + player_camera:forward() * (maximum_range or 100000))
-	if not ray then
-		return false
-	end
-	return ray.hit_position
+	return ray and ray.hit_position
 end
 
 ---Gets a ray between two points and checks for a collision with a slot mask along the ray
 ---@param from Vector3 @The starting position of the ray (defaults to the player's head)
 ---@param to Vector3 @The ending position of the ray (defaults to 1m in from of the player's head)
 ---@param slot_mask? string @The collision group to check against the ray (defaults to all objects the player can shoot)
----@return table|boolean @A table containing the ray information or ``false`` if no viewport camera exists
+---@return table? @A table containing the ray information or ``nil`` if no viewport camera exists
 function Utils:GetCrosshairRay(from, to, slot_mask)
 	local viewport = managers.viewport
 	if not viewport:get_current_camera() then
-		return false
+		return
 	end
 
 	slot_mask = slot_mask or "bullet_impact_targets"
@@ -292,8 +282,7 @@ function Utils:GetCrosshairRay(from, to, slot_mask)
 		mvector3.add(to, from)
 	end
 
-	local colRay = World:raycast("ray", from, to, "slot_mask", managers.slot:get_mask(slot_mask))
-	return colRay
+	return World:raycast("ray", from, to, "slot_mask", managers.slot:get_mask(slot_mask))
 end
 
 ---Gets the string value of a toggle menu item and converts it to a boolean value
