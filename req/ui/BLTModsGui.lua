@@ -259,7 +259,7 @@ function BLTModsGui:update_visible_mods(scroll_position)
 		x = 0,
 		y = 0,
 		w = (self._scroll:canvas():w() - (BLTModItem.layout.x + 1) * padding) / BLTModItem.layout.x,
-		h = 256 + (BLTModsGui.show_mod_icons and 0 or padding),
+		h = (self._scroll:canvas():h() - (BLTModItem.layout.y + 1) * padding) / BLTModItem.layout.y,
 		title = title_text,
 		text = managers.localization:text("blt_download_manager_help"),
 		image = icon,

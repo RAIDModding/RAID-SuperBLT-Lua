@@ -491,7 +491,7 @@ function BLTMod:GetDeveloperInfo()
 	local str = ""
 	local append = function(...)
 		for i, s in ipairs({...}) do
-			str = str .. (i > 1 and "	" or "") .. tostring(s)
+			str = str .. (i > 1 and " " or "") .. tostring(s)
 		end
 		str = str .. "\n"
 	end
@@ -512,7 +512,7 @@ function BLTMod:GetDeveloperInfo()
 	else
 		append("Hooks:")
 		for _, hook in ipairs(hooks) do
-			append("", tostring(hook))
+			append("   ", tostring(hook))
 		end
 	end
 
@@ -521,7 +521,7 @@ function BLTMod:GetDeveloperInfo()
 	else
 		append("Pre-Hooks:")
 		for _, hook in ipairs(prehooks) do
-			append("", tostring(hook))
+			append("   ", tostring(hook))
 		end
 	end
 
@@ -530,7 +530,7 @@ function BLTMod:GetDeveloperInfo()
 	else
 		append("Persisent Scripts:")
 		for _, script in ipairs(persists) do
-			append("", script.global, "->", script.file)
+			append("   ", script.global, "->", script.file)
 		end
 	end
 
