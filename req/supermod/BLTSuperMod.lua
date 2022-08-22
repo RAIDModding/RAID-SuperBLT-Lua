@@ -77,7 +77,7 @@ function BLTSuperMod:_add_hooks(xml, parent_scope)
 			self:_run_entry_script(tag, scope, "hooks", "post")
 		end,
 		wildcard = function(tag, scope)
-			BLT:Log(LogLevel.WARN, "TODO implement wildcard")
+			BLT:Log(LogLevel.ERROR, "Wildcard hooks are not implemented yet!")
 		end,
 	})
 end

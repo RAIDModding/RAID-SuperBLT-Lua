@@ -221,7 +221,9 @@ function BLTModManager:Save()
 	self._saved_data = save_data
 
 	local success = io.save_as_json(save_data, BLTModManager.Constants:ModManagerSaveFile())
-	BLT:Log(LogLevel.INFO, "[BLT] Save complete? " .. tostring(success))
+	if not success then
+		BLT:Log(LogLevel.ERROR, "[BLT] Could not save file " .. BLTModManager.Constants:ModManagerSaveFile())
+	end
 
 	-- Save a Wren-readable list of disabled mods - it doesn't have a JSON parser so it
 	-- can't load our normal file, and it needs to know what's enabled before any Lua code runs.

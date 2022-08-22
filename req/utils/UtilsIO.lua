@@ -16,7 +16,7 @@ end
 ---@param verbose boolean @Wether to print verbose output to the log
 ---@return boolean @``true`` if the operation was successful, ``false`` otherwise
 function io.remove_directory_and_files(path, verbose)
-	vlog = function(str)
+	local vlog = function(str)
 		if verbose then
 			BLT:Log(LogLevel.INFO, str)
 		end
@@ -97,7 +97,7 @@ end
 
 ---Loads a file containing JSON data and converts it into a Lua table
 ---@param path string @The path (relative to payday2_win32_release.exe) and file name to load the data from
----@return table @The table containing the data, or ``nil`` if loading wasn't successful
+---@return table? @The table containing the data, or ``nil`` if loading wasn't successful
 function io.load_as_json(path)
 	local file = io.open(path, "r")
 	if file then
@@ -106,6 +106,5 @@ function io.load_as_json(path)
 		return json.decode(file_contents)
 	else
 		BLT:Log(LogLevel.ERROR, string.format("Could not load file '%s', no data loaded...", path))
-		return nil
 	end
 end

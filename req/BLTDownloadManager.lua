@@ -288,8 +288,6 @@ function BLTDownloadManager:clbk_download_progress(http_id, bytes, total_bytes)
 end
 
 function BLTDownloadManager:flush_complete_downloads()
-	BLT:Log(LogLevel.INFO, "[Downloads] Flushing complete downloads...")
-
 	for i = #self._downloads, 0, -1 do
 		local download = self._downloads[i]
 		if download and download.state == "complete" then
