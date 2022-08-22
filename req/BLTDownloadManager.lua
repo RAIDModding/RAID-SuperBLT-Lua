@@ -219,7 +219,8 @@ function BLTDownloadManager:clbk_download_finished(data, http_id)
 				if mod_data then -- Is the data valid json?
 					local version = mod_data.version
 					local server_version = download.update:GetServerVersion()
-					if server_version == version then
+					-- Server version may be nil for simple URL based dependencies
+					if server_version == nil or server_version == version then
 						passed_check = true
 					else -- Versions don't match
 						BLT:Log(LogLevel.ERROR, "[Downloads] Failed to verify versions!")

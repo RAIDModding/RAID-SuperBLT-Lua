@@ -87,7 +87,7 @@ function BLTMod:Setup()
 	-- Check dependencies are installed for this mod
 	if not self:AreDependenciesInstalled() then
 		table.insert(self._errors, "blt_mod_missing_dependencies")
-		--self:RetrieveDependencies() -- At the moment, there's no location we can check to get dependencies.
+		self:RetrieveDependencies()
 		self:SetEnabled(false, true)
 		return
 	end
@@ -430,28 +430,22 @@ function BLTMod:AreDependenciesInstalled()
 	self.disabled_dependencies = {}
 
 	-- Iterate all mods and updates to find dependencies, store any that are missing
-	for key, value in pairs(self:GetDependencies()) do
-		local id, download_data
-
-		if type(value) == "string" then
-			id = value
-		else
-			id = key
-			download_data = value
-		end
-
+	for id, data in pairs(self:GetDependencies()) do
 		local found = false
 		for _, mod in ipairs(BLT.Mods:Mods()) do
-			if mod:HasLegacyUpdate(id) then
+			if mod:GetName() == id then
 				found = true
-			end
-
-			for _, update in ipairs(mod:GetUpdates()) do
-				if update:GetId() == id then
-					found = true
-					break
+			elseif mod:HasLegacyUpdate(id) then
+				found = true
+			else
+				for _, update in ipairs(mod:GetUpdates()) do
+					if update:GetId() == id then
+						found = true
+						break
+					end
 				end
 			end
+
 			if found then
 				if not mod:IsEnabled() then
 					installed = false
@@ -464,8 +458,13 @@ function BLTMod:AreDependenciesInstalled()
 
 		if not found then
 			installed = false
-			local dependency = BLTModDependency:new(self, id, download_data)
-			table.insert(self.missing_dependencies, dependency)
+			local download_data = type(data) == "table" and data or { download_url = data }
+			local dependency, valid = BLTModDependency:new(self, id, download_data)
+			if valid then
+				table.insert(self.missing_dependencies, dependency)
+			else
+				BLT:Log(LogLevel.ERROR, "Invalid dependency " .. id .. " for mod " .. self:GetName())
+			end
 		end
 	end
 
