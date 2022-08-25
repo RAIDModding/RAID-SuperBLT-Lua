@@ -147,27 +147,21 @@ function BLTDownloadManager:clbk_download_finished(data, http_id)
 			end
 		end
 
-		local install_dir = download.update:GetInstallDirectory()
-		local temp_dir = Application:nice_path(install_dir .. "_temp")
-		if install_dir == BLTModManager.Constants:ModsDirectory() then
-			temp_dir = Application:nice_path(BLTModManager.Constants:DownloadsDirectory() .. "_temp")
-		end
-
 		local file_path = Application:nice_path(BLTModManager.Constants:DownloadsDirectory() .. tostring(download.update:GetId()) .. ".zip")
-		local temp_install_dir = Application:nice_path(temp_dir .. "/" .. download.update:GetInstallFolder())
+		local temp_install_dir = Application:nice_path(BLTModManager.Constants:DownloadsDirectory() .. tostring(http_id))
 		local install_path = Application:nice_path(download.update:GetInstallDirectory() .. download.update:GetInstallFolder())
-		local extract_path = Application:nice_path(temp_install_dir .. "/" .. download.update:GetInstallFolder())
 
-		local cleanup = function()
+		local cleanup = function(full)
 			SystemFS:delete_file(temp_install_dir)
+			if full then
+				SystemFS:delete_file(file_path)
+			end
 		end
 
 		wait()
 
 		-- Prepare
-		SystemFS:make_dir(temp_dir) -- we dont wanna delete the temp dir at all, as it would not be thread safe. just make sure it exists.
-		SystemFS:delete_file(file_path)
-		cleanup()
+		cleanup(true)
 
 		-- Save download to disk
 		BLT:Log(LogLevel.INFO, "[Downloads] Saving to downloads...")
@@ -179,6 +173,11 @@ function BLTDownloadManager:clbk_download_finished(data, http_id)
 		if f then
 			f:write(data)
 			f:close()
+		else
+			BLT:Log(LogLevel.ERROR, "[Downloads] Failed to save file!")
+			download.state = "failed"
+			cleanup()
+			return
 		end
 
 		-- Start download extraction
@@ -190,10 +189,8 @@ function BLTDownloadManager:clbk_download_finished(data, http_id)
 
 		-- Update extract_path, in case user renamed mod's folder
 		local folders = SystemFS:list(temp_install_dir, true)
-		local extracted_folder_name = folders and #folders == 1 and folders[1]
-		if extracted_folder_name and extracted_folder_name ~= download.update:GetInstallFolder() then
-			extract_path = Application:nice_path(temp_install_dir .. "/" .. extracted_folder_name)
-		end
+		local extracted_folder_name = folders and #folders == 1 and folders[1] or download.update:GetInstallFolder()
+		local extract_path = Application:nice_path(temp_install_dir .. "/" .. extracted_folder_name)
 
 		-- Verify content hash with the server hash
 		BLT:Log(LogLevel.INFO, "[Downloads] Verifying...")
@@ -275,7 +272,7 @@ function BLTDownloadManager:clbk_download_finished(data, http_id)
 		-- Mark download as complete
 		BLT:Log(LogLevel.INFO, "[Downloads] Complete!")
 		download.state = "complete"
-		cleanup()
+		cleanup(true)
 	end
 
 	download.coroutine:animate(save)
