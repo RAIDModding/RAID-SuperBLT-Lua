@@ -152,16 +152,11 @@ function BLTDownloadManager:clbk_download_finished(data, http_id)
 		local install_path = Application:nice_path(download.update:GetInstallDirectory() .. download.update:GetInstallFolder())
 
 		local cleanup = function(full)
-			SystemFS:delete_file(temp_install_dir)
+			io.remove_directory_and_files(temp_install_dir)
 			if full then
-				SystemFS:delete_file(file_path)
+				os.remove(file_path)
 			end
 		end
-
-		wait()
-
-		-- Prepare
-		cleanup(true)
 
 		-- Save download to disk
 		BLT:Log(LogLevel.INFO, "[Downloads] Saving to downloads...")
@@ -188,7 +183,7 @@ function BLTDownloadManager:clbk_download_finished(data, http_id)
 		unzip(file_path, temp_install_dir)
 
 		-- Update extract_path, in case user renamed mod's folder
-		local folders = SystemFS:list(temp_install_dir, true)
+		local folders = file.GetDirectories(temp_install_dir, true)
 		local extracted_folder_name = folders and #folders == 1 and folders[1] or download.update:GetInstallFolder()
 		local extract_path = Application:nice_path(temp_install_dir .. "/" .. extracted_folder_name)
 
@@ -210,7 +205,7 @@ function BLTDownloadManager:clbk_download_finished(data, http_id)
 			end
 		else
 			local mod_txt = extract_path .. "/mod.txt" -- Check the downloaded mod.txt (if it exists) to know we are downloading a valid mod with valid version.
-			if SystemFS:exists(mod_txt) then
+			if file.FileExists(mod_txt) then
 				local file = io.open(mod_txt, "r")
 				local mod_data = json.decode(file:read("*all"))
 				if mod_data then -- Is the data valid json?
@@ -241,23 +236,16 @@ function BLTDownloadManager:clbk_download_finished(data, http_id)
 		-- Remove old installation, unless we're installing a mod (via dependencies)
 		if not download.update:IsInstall() then
 			wait()
-			if SystemFS:exists(install_path) then
-				local old_install_path = install_path .. "_old"
+			if file.DirectoryExists(install_path) then
 				BLT:Log(LogLevel.INFO, "[Downloads] Removing old installation...")
-				if not file.MoveDirectory(install_path, old_install_path) then
-					BLT:Log(LogLevel.ERROR, "[Downloads] Failed to rename old installation!")
-					download.state = "failed"
-					cleanup()
-					return
-				end
-
-				if not SystemFS:delete_file(old_install_path) then
+				if not io.remove_directory_and_files(install_path) then
 					BLT:Log(LogLevel.ERROR, "[Downloads] Failed to delete old installation!")
 					download.state = "failed"
 					cleanup()
 					return
 				end
 			end
+			wait()
 		end
 
 		-- Move the temporary installation
