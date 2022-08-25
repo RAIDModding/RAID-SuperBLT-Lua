@@ -13,7 +13,7 @@ end
 
 ---Recursively deletes all files and folders from the directory specified
 ---@param path string @The path (relative to payday2_win32_release.exe) of the directory to delete
----@param verbose boolean @Wether to print verbose output to the log
+---@param verbose boolean? @Wether to print verbose output to the log
 ---@return boolean @``true`` if the operation was successful, ``false`` otherwise
 function io.remove_directory_and_files(path, verbose)
 	local vlog = function(str)
@@ -27,33 +27,42 @@ function io.remove_directory_and_files(path, verbose)
 		return false
 	end
 
+	if path == "" then
+		BLT:Log(LogLevel.ERROR, "Cannot delete the root directory!")
+		return false
+	end
+
 	if not file.DirectoryExists(path) then
 		BLT:Log(LogLevel.ERROR, "Directory does not exist: " .. path)
 		return false
 	end
 
-	local dirs = file.GetDirectories(path)
-	if dirs then
-		for k, v in pairs(dirs) do
-			local child_path = path .. v .. "/"
-			vlog("Removing directory: " .. child_path)
-			io.remove_directory_and_files(child_path, verbose)
-			local r = file.RemoveDirectory(child_path)
+	-- Ensure final path separator
+	local path_end = path:sub(-1)
+	if path_end ~= "/" and path_end ~= "\\" then
+		path = path .. "/"
+	end
+
+	local files = file.GetFiles(path)
+	if files then
+		for _, v in pairs(files) do
+			local file_path = path .. v
+			vlog("Removing file: " .. file_path)
+			local r, error_str = os.remove(file_path)
 			if not r then
-				BLT:Log(LogLevel.ERROR, "Could not remove directory: " .. child_path)
+				BLT:Log(LogLevel.ERROR, "Could not remove file: " .. file_path .. ", " .. error_str)
 				return false
 			end
 		end
 	end
 
-	local files = file.GetFiles(path)
-	if files then
-		for k, v in pairs(files) do
-			local file_path = path .. v
-			vlog("Removing files: " .. file_path)
-			local r, error_str = os.remove(file_path)
+	local dirs = file.GetDirectories(path)
+	if dirs then
+		for _, v in pairs(dirs) do
+			local child_path = path .. v .. "/"
+			local r = io.remove_directory_and_files(child_path, verbose)
 			if not r then
-				BLT:Log(LogLevel.ERROR, "Could not remove file: " .. file_path .. ", " .. error_str)
+				BLT:Log(LogLevel.ERROR, "Could not remove directory: " .. child_path)
 				return false
 			end
 		end
