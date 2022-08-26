@@ -287,7 +287,7 @@ function BLTMod:GetModImage()
 	end
 
 	-- Check if the file exists on disk and generate if it does
-	if file.FileExists(Application:nice_path(self:GetModImagePath(), true)) then
+	if file.FileExists(Application:nice_path(self:GetModImagePath())) then
 		local new_textures = {}
 		local type_texture_id = Idstring("texture")
 		local path = self:GetModImagePath()
