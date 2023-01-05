@@ -1,4 +1,5 @@
 _G.Hooks = Hooks or {}
+Hooks._current_hook_return = {}
 Hooks._registered_hooks = Hooks._registered_hooks or {}
 Hooks._function_hooks = Hooks._function_hooks or {}
 
@@ -52,7 +53,7 @@ function Hooks:UnregisterHook(key)
 end
 
 ---Removes a hook, so that it will not call any functions  
---Functionaly the same as `Hooks:UnregisterHook`
+---Functionally the same as `Hooks:UnregisterHook`
 ---@param key string @Name of the hook to remove
 function Hooks:Unregister(key)
 	self:UnregisterHook(key)
@@ -74,7 +75,7 @@ end
 
 ---Calls a specified hook, and all of its hooked functions
 ---@param key string @Name of the hook to call
----@vararg any @Arguments to pass to the hooked functions
+---@param ... any @Arguments to pass to the hooked functions
 function Hooks:Call(key, ...)
 	if not self._registered_hooks[key] then
 		return
@@ -91,7 +92,7 @@ end
 
 ---Calls a specified hook and returns the first non-nil value returned by a hooked function
 ---@param key string @Name of the hook to call
----@vararg any @Arguments to pass to the hooked functions
+---@param ... any @Arguments to pass to the hooked functions
 ---@return any @The first non-nil value returned by a hooked function
 function Hooks:ReturnCall(key, ...)
 	if not self._registered_hooks[key] then
@@ -216,6 +217,12 @@ function Hooks:GetFunction(object, func)
 	end
 end
 
+---Returns the return value(s) of the currently running hook
+---@return any ... @Any amount of return values of the current hook
+function Hooks:GetReturn()
+	return unpack(self._current_hook_return)
+end
+
 -- Shared function to log hook errors
 function Hooks:_PrePostHookError(func, id)
 	BLT:Log(LogLevel.ERROR, string.format("[Hooks] Could not hook function '%s' (%s)", tostring(func), tostring(id)))
@@ -241,29 +248,31 @@ function Hooks:_ChkCreateTableStructure(object, func)
 
 	object[func] = function(...)
 		local hooked_func = self._function_hooks[object][func]
-		local r = {}
-		local _r
+		local hook_return = {}
 
+		-- Call prehooks
 		for k, v in ipairs(hooked_func.overrides.pre) do
-			_r = {v.func(...)}
-			if next(_r) then
-				r = _r
+			self._current_hook_return = {v.func(...)}
+			if next(self._current_hook_return) then
+				hook_return = self._current_hook_return
 			end
 		end
 
-		_r = {hooked_func.original(...)}
-		if next(_r) then
-			r = _r
+		-- Call original function
+		self._current_hook_return = {hooked_func.original(...)}
+		if next(self._current_hook_return) then
+			hook_return = self._current_hook_return
 		end
 
+		-- Call posthooks
 		for k, v in ipairs(hooked_func.overrides.post) do
-			_r = {v.func(...)}
-			if next(_r) then
-				r = _r
+			self._current_hook_return = {v.func(...)}
+			if next(self._current_hook_return) then
+				hook_return = self._current_hook_return
 			end
 		end
 
-		return unpack(r)
+		return unpack(hook_return)
 	end
 
 	return true
