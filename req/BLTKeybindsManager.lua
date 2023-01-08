@@ -116,6 +116,7 @@ function BLTKeybind:CanExecuteInState(state)
 end
 
 function BLTKeybind:Execute()
+	BLT:SetModGlobals(self:ParentMod())
 	if self:File() then
 		local path = Application:nice_path(self:ParentMod():GetPath() .. "/" .. self:File(), false)
 		dofile(path)

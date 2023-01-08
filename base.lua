@@ -1,10 +1,3 @@
-local DEBUG_MODE = false
-
--- Create console
-if false then
-	console.CreateConsole()
-end
-
 -- Only run if we have the global table
 if not _G then
 	return
@@ -31,7 +24,7 @@ _G.LogLevelPrefix = {
 }
 
 -- BLT Global table
-_G.BLT = {version = 2.0, DEBUG_MODE = DEBUG_MODE, LOG_LEVEL = LogLevel.ALL}
+_G.BLT = {version = 2.0, LOG_LEVEL = LogLevel.ALL}
 _G.BLT.Base = {}
 
 _G.print = function(...)
@@ -159,10 +152,14 @@ function BLT:RunHookTable(hooks_table, path)
 	end
 end
 
+function BLT:SetModGlobals(mod)
+	rawset(_G, BLTModManager.Constants.mod_path_global, mod and mod:GetPath() or false)
+	rawset(_G, BLTModManager.Constants.mod_instance_global, mod or false)
+end
+
 function BLT:RunHookFile(path, hook_data)
 	rawset(_G, BLTModManager.Constants.required_script_global, path or false)
-	rawset(_G, BLTModManager.Constants.mod_path_global, hook_data.mod:GetPath() or false)
-	rawset(_G, BLTModManager.Constants.mod_instance_global, hook_data.mod or false)
+	self:SetModGlobals(hook_data.mod)
 	dofile(hook_data.mod:GetPath() .. hook_data.script)
 end
 
