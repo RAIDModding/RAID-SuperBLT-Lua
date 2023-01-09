@@ -288,14 +288,11 @@ function BLTMod:GetModImage()
 
 	-- Check if the file exists on disk and generate if it does
 	if file.FileExists(Application:nice_path(self:GetModImagePath())) then
-		local new_textures = {}
 		local type_texture_id = Idstring("texture")
 		local path = self:GetModImagePath()
 		local texture_id = Idstring(path)
 
 		DB:create_entry(type_texture_id, texture_id, path)
-		table.insert(new_textures, texture_id)
-		Application:reload_textures(new_textures)
 
 		self.mod_image_id = texture_id
 
