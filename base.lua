@@ -217,14 +217,9 @@ function BLT:FindMods()
 				local file_contents = file:read("*all")
 				file:close()
 
-				-- Convert json data in a pcall so any errors won't crash the game
-				local mod_content = nil
-				local json_success = pcall(function()
-					mod_content = json.decode(file_contents)
-				end)
-
 				-- Create a BLT mod from the loaded data
-				if json_success and mod_content then
+				local mod_content = json.decode(file_contents)
+				if mod_content then
 					local new_mod = BLTMod:new(directory, mod_content)
 					table.insert(mods_list, new_mod)
 				else
