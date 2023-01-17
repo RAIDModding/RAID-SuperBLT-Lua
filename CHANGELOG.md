@@ -4,6 +4,17 @@ This lists the changes between different versions of the SuperBLT basemod,
 which controls things like the mod update menu. Note this does not contain the
 changes for the DLL.
 
+## v1.3.5
+
+- Improve error handling for json decoding - Hoppip
+- Add functionality to get return values in hooks - Hoppip
+- Add Czech translation - Dom
+- Update Spanish translation - ElCabe99
+- Re-implement mod dependencies - Hoppip
+- Improve download manager and BLT mod UI - Hoppip
+- Add and improve utility functions - Krimzin, Hoppip
+- Add documentation annotations - Hoppip
+
 ## v1.3.4
 
 - Fix a potential issue in the GetModOwnerOfFile function - Dot Net
