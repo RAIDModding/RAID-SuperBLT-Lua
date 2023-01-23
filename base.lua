@@ -191,8 +191,6 @@ function BLT:OverrideRequire()
 end
 
 function BLT:FindMods()
-	self:Log(LogLevel.INFO, "[BLT] Loading mods for state: " .. tostring(_G))
-
 	-- Get all folders in mods directory
 	local mods_list = {}
 	local folders = file.GetDirectories(BLTModManager.Constants.mods_directory)
@@ -205,8 +203,6 @@ function BLT:FindMods()
 	for index, directory in pairs(folders) do
 		-- Check if this directory is excluded from being checked for mods (logs, saves, etc.)
 		if not self.Mods:IsExcludedDirectory(directory) then
-			self:Log(LogLevel.INFO, "[BLT] Loading mod: " .. tostring(directory))
-
 			local mod_path = "mods/" .. directory .. "/"
 			local mod_defintion = mod_path .. "mod.txt"
 
@@ -226,7 +222,7 @@ function BLT:FindMods()
 					self:Log(LogLevel.ERROR, "[BLT] An error occured while loading mod.txt from: " .. tostring(mod_path))
 				end
 			else
-				self:Log(LogLevel.WARN, "[BLT] Could not read or find mod.txt in " .. tostring(directory))
+				self:Log(LogLevel.WARN, "[BLT] Could not read or find mod.txt in " .. tostring(mod_path))
 			end
 		end
 	end

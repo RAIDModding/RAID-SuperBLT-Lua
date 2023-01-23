@@ -414,7 +414,7 @@ end
 ---@return any @The created menu item
 function MenuHelper:AddMenuItem(parent_menu, child_menu, name, desc, menu_position, subposition)
 	if parent_menu == nil then
-		BLT:Log(LogLevel.WARN, string.gsub("[Menus][Warning] Parent menu for child '{1}' is null, ignoring...", "{1}", child_menu))
+		BLT:Log(LogLevel.WARN, string.format("[Menus] Parent menu for child '%s' is null, ignoring...", child_menu))
 		return
 	end
 
