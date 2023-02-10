@@ -1,6 +1,6 @@
 ---@class BLTAssetManager
 ---@field new fun(self):BLTAssetManager
-BLTAssetManager = BTLAssetManager or blt_class()
+BLTAssetManager = BLTAssetManager or blt_class()
 
 function BLTAssetManager:init()
 	self._recode = {}
