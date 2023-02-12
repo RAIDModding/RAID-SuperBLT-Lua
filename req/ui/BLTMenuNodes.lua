@@ -158,7 +158,7 @@ Hooks:Add("CoreMenuData.LoadDataMenu", "BLT.CoreMenuData.LoadDataMenu", function
 		next_node = "blt_keybinds"
 	}
 
-	local point = "user_interface"
+	local point = "advanced"
 
 	-- Inject menu nodes and items
 	if menu_id == "start_menu" then
