@@ -4,6 +4,13 @@ This lists the changes between different versions of the SuperBLT basemod,
 which controls things like the mod update menu. Note this does not contain the
 changes for the DLL.
 
+## v1.3.6
+
+This is a hotfix including a fix for a critical issue with the upcoming heist release
+
+- Fix an oversight in the Xaudio listener that would crash the game - Hoppip
+- Fix menu location for SuperBLT's mod options menu - Hoppip
+
 ## v1.3.5
 
 - Improve error handling for json decoding - Hoppip
