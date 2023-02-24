@@ -141,6 +141,14 @@ function C:set_direction(...)
 	self._source:setdirection(process_vector(...))
 end
 
+function C:set_min_distance(distance)
+	self._source:setmindis(distance)
+end
+
+function C:set_max_distance(distance)
+	self._source:setmaxdis(distance)
+end
+
 function C:set_volume(gain)
 	if gain > 1 then
 		log("Cannot set gain to more than 1")
