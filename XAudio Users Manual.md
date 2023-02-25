@@ -1,3 +1,5 @@
+# XAudio
+
 The SuperBLT XAudio 'eXtended Audio' API (coincedentally the same as the DirectX audio system) is an API
 that allows BLT mods to use 3D audio effects. It is based upon OpenAL, currently
 using OpenALSoft. HRTF support is planned.
@@ -5,6 +7,7 @@ using OpenALSoft. HRTF support is planned.
 XAudio works on the basis of sources and buffers:
 
 ## Buffers
+
 A piece of audio can be loaded from an OGG file into a buffer. The memory used in the buffer is shared between
 all sources playing it, so once a source is loaded it's memory consumption does not change.
 
@@ -24,10 +27,12 @@ object referencing the physical buffer).
 You can also find the length in seconds of a buffer with `buff:get_length()`.
 
 ## Sources
+
 A basic source is an instance of `XAudio.Source`. You probably won't use these basic sources very much, if
 at all. They are Lua objects (via `blt_class`), and can be subclassed and extended to perform custom tasks.
 
 There are two basic ways to use a source:
+
 - Create a source with `XAudio.Source:new()`, load buffers into it with `src:set_buffer(buffer)`, and
 close it when you're done
 - Create a source and supply a buffer as you create it with `XAudio.Source:new(buffer)`. The source
@@ -57,7 +62,12 @@ You can set the position, velocity and direction of a source using `src:set_posi
 and `src:set_direction`, respectively. These functions accept world positions either as vectors or as x,y,z sets
 for their arguments.
 
+You can set the minimum and maximum range at which the sound is audible by using `src:set_min_distance` and
+`src:set_max_distance`. The minimum distance defines the range at which the sound will always play at full
+volume and the maximum distance specifies the range at which the sound stops being audible.
+
 ## Unit Sources
+
 A unit source is similar to a basic source, only it is attached to a unit - if you attach a unit source to a cop,
 then the source will move to follow the cop around.
 
@@ -65,6 +75,7 @@ A unit source is created in a very similar way to a basic source - use `XAudio.U
 the unit source. If you want the source to follow the player, provide `XAudio.PLAYER` as the unit argument.
 
 ## Voiceline Manager
+
 A voiceline manager is a utility to help you with making units speak (and ensuring they don't say two lines at
 the same time). They can be created with `XAudio.VoicelineManager:new(unit)` (also accepting `XAudio.PLAYER`).
 
@@ -75,4 +86,3 @@ When you've created one, use `vm:play(buffer[, channel])` to play a sound. Voice
 channels - it will happily play two sounds at once if they're one seperate channels. If `channel` is not
 speicifed, it defaults to `XAudio.VoicelineManager.DEFAULT`. Trying to play a sound while another sound is busy
 playing on the same channel will result in it being queued until the first source is done.
-
