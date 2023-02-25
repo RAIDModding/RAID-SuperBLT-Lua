@@ -217,7 +217,9 @@ function BLT:FindMods()
 				local mod_content = json.decode(file_contents)
 				if mod_content then
 					local new_mod = BLTMod:new(directory, mod_content)
-					table.insert(mods_list, new_mod)
+					if new_mod:IsAllowedInCurrentMode() then
+						table.insert(mods_list, new_mod)
+					end
 				else
 					self:Log(LogLevel.ERROR, "[BLT] An error occured while loading mod.txt from: " .. tostring(mod_path))
 				end

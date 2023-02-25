@@ -158,7 +158,12 @@ end
 
 function BLTModManager:Load()
 	-- Load data
-	local saved_data = io.load_as_json(BLTModManager.Constants:ModManagerSaveFile()) or {}
+	local save_file = BLTModManager.Constants:ModManagerSaveFile(_G.IS_VR)
+	-- If the VR save file doesnt exist yet, load the regular save file
+	if _G.IS_VR and not io.file_is_readable(save_file) then
+		save_file = BLTModManager.Constants:ModManagerSaveFile(false)
+	end
+	local saved_data = io.load_as_json(save_file) or {}
 
 	-- Process mods
 	if saved_data["mods"] then
@@ -220,14 +225,14 @@ function BLTModManager:Save()
 
 	self._saved_data = save_data
 
-	local success = io.save_as_json(save_data, BLTModManager.Constants:ModManagerSaveFile())
+	local success = io.save_as_json(save_data, BLTModManager.Constants:ModManagerSaveFile(_G.IS_VR))
 	if not success then
 		BLT:Log(LogLevel.ERROR, "[BLT] Could not save file " .. BLTModManager.Constants:ModManagerSaveFile())
 	end
 
 	-- Save a Wren-readable list of disabled mods - it doesn't have a JSON parser so it
 	-- can't load our normal file, and it needs to know what's enabled before any Lua code runs.
-	local wren_file = io.open(BLTModManager.Constants:ModManagerWrenDisabledModsFile(), "wb")
+	local wren_file = io.open(BLTModManager.Constants:ModManagerWrenDisabledModsFile(_G.IS_VR), "wb")
 	for _, mod in ipairs(self.mods) do
 		-- Write the item even if the mod doesn't have a supermod file - maybe it will after an update, and there's
 		-- no harm in writing extra items here.
@@ -286,12 +291,20 @@ function BLTModManager.Constants:SavesDirectory()
 	return self["mods_directory"] .. self["saves_directory"]
 end
 
-function BLTModManager.Constants:ModManagerSaveFile()
-	return self:SavesDirectory() .. "blt_data.txt"
+function BLTModManager.Constants:ModManagerSaveFile(is_vr)
+	if is_vr then
+		return self:SavesDirectory() .. "blt_data_vr.txt"
+	else
+		return self:SavesDirectory() .. "blt_data.txt"
+	end
 end
 
-function BLTModManager.Constants:ModManagerWrenDisabledModsFile()
-	return self:SavesDirectory() .. "blt_wren_disabled_mods.txt"
+function BLTModManager.Constants:ModManagerWrenDisabledModsFile(is_vr)
+	if is_vr then
+		return self:SavesDirectory() .. "blt_wren_disabled_mods_vr.txt"
+	else
+		return self:SavesDirectory() .. "blt_wren_disabled_mods.txt"
+	end
 end
 
 function BLTModManager.Constants:LuaModsMenuID()

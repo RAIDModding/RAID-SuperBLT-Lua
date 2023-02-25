@@ -37,6 +37,8 @@ function BLTMod:init(ident, data)
 	self.undisablable = data["undisablable"] or false
 	self.safe_mode = true
 	self.library = data["is_library"] or false
+	self.vr_disabled = data["vr_disabled"] or false
+	self.desktop_disabled = data["desktop_disabled"] or false
 
 	-- Parse color info
 	-- Stored as a table until first requested due to Color not existing yet
@@ -79,6 +81,10 @@ function BLTMod:init(ident, data)
 			end
 		end
 	end
+end
+
+function BLTMod:IsAllowedInCurrentMode()
+	return _G.IS_VR and not self.vr_disabled or not _G.IS_VR and not self.desktop_disabled
 end
 
 function BLTMod:Setup()
