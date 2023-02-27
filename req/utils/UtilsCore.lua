@@ -249,18 +249,31 @@ function Utils:IsCurrentWeaponSecondary()
 end
 
 ---Gets the point in the world where the player is aiming at as a Vector3
----@param player table @The player to get the aiming position of
+---@param player_unit? userdata @The player unit to get the aiming position of (defaults to the local player)
 ---@param maximum_range? number @The maximum distance to check for a point in cm (defaults to ``100000``)
 ---@return Vector3? @A Vector3 containing the location that the player is looking at, or ``nil`` if the player was not looking at anything or was looking at something past the maximum_range
-function Utils:GetPlayerAimPos(player, maximum_range)
-	local player_camera = player:camera()
-	local ray = self:GetCrosshairRay(player_camera:position(), player_camera:position() + player_camera:forward() * (maximum_range or 100000))
+function Utils:GetPlayerAimPos(player_unit, maximum_range)
+	player_unit = player_unit or managers.player:local_player()
+	maximum_range = maximum_range or 100000
+
+	local from, dir
+	if player_unit:base().is_local_player then
+		local player_camera = player_unit:camera()
+		from = player_camera:position()
+		dir = player_camera:forward()
+	elseif player_unit:base().is_husk_player then
+		local player_movement = player_unit:movement()
+		from = player_movement:m_head_pos()
+		dir = player_movement:detect_look_dir()
+	end
+
+	local ray = self:GetCrosshairRay(from, from + dir * maximum_range)
 	return ray and ray.hit_position
 end
 
 ---Gets a ray between two points and checks for a collision with a slot mask along the ray
----@param from Vector3 @The starting position of the ray (defaults to the player's head)
----@param to Vector3 @The ending position of the ray (defaults to 1m in from of the player's head)
+---@param from Vector3 @The starting position of the ray (defaults to the current camera position)
+---@param to Vector3 @The ending position of the ray (defaults to 200m in the current camera's look direction)
 ---@param slot_mask? string @The collision group to check against the ray (defaults to all objects the player can shoot)
 ---@return table? @A table containing the ray information or ``nil`` if no viewport camera exists
 function Utils:GetCrosshairRay(from, to, slot_mask)
