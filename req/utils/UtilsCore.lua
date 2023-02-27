@@ -1,7 +1,6 @@
 _G.Utils = _G.Utils or {}
 
----Copies an existing class into an orig table, so that class functions can be overwritten and called again easily
----@param class table @The class table to clone
+---@deprecated
 function _G.CloneClass(class)
 	if not class.orig then
 		class.orig = clone(class)
@@ -52,7 +51,7 @@ end
 ---If value is a table, ToString returns a string representing the table and its contents
 ---ToString will include the contents of nested tables down to maxDepth or 1
 ---@param value any @Any value
----@param maxDepth? number @Controls the depth that ToString will read to (defaults to ``1``)
+---@param maxDepth? number @Controls the depth that ToString will read to (defaults to `1`)
 ---@return string @A string representing value
 function Utils.ToString(value, maxDepth)
 	local output = {}
@@ -74,7 +73,7 @@ end
 ---May cause game slowdown if the table is fairly large, only for debugging purposes
 ---PrintTable will include the contents of nested tables down to maxDepth or 1
 ---@param tbl table @The table to print to console
----@param maxDepth? number @Controls the depth that PrintTable will read to (defaults to ``1``)
+---@param maxDepth? number @Controls the depth that PrintTable will read to (defaults to `1`)
 function Utils.PrintTable(tbl, maxDepth)
 	local output = nil
 
@@ -154,14 +153,14 @@ end
 
 ---Returns if a string exists or not
 ---@param str string @The string to check
----@return boolean @``false`` if the string is ``""`` or ``nil``, ``true`` otherwise
+---@return boolean @``false`` if the string is `""` or ``nil``, ``true`` otherwise
 function string.is_nil_or_empty(str)
 	return str == "" or str == nil
 end
 
 ---Rounds a number to the specified precision (decimal places)
 ---@param num number @The number to round
----@param idp integer @The number of decimal places to round to (defaults to ``0``)
+---@param idp integer @The number of decimal places to round to (defaults to `0`)
 ---@return number @The input number rounded to the input precision
 function math.round_with_precision(num, idp)
 	local mult = 10 ^ (idp or 0)
@@ -335,7 +334,7 @@ end
 ---Splits a string at every occurence of a delimiter up to an optional maximum number of times
 ---@param str string @String to split
 ---@param delim string @Substring at which to split ``str``
----@param max_num? integer @Maximum amount of splits (defaults to ``0``, which is no limit)
+---@param max_num? integer @Maximum amount of splits (defaults to `0`, which is no limit)
 ---@return table @Table containing all split substrings
 function string.blt_split(str, delim, max_num)
 	-- Eliminate bad cases...

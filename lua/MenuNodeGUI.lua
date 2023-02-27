@@ -1,7 +1,5 @@
-CloneClass(MenuNodeGui)
-
 Hooks:RegisterHook("CustomizeControllerOnKeySet")
-function MenuNodeGui._key_press(self, o, key, input_id, item, no_add)
+function MenuNodeGui:_key_press(o, key, input_id, item, no_add)
 	if managers.system_menu:is_active() then
 		return
 	end
@@ -24,9 +22,6 @@ function MenuNodeGui._key_press(self, o, key, input_id, item, no_add)
 		Hooks:Call("CustomizeControllerOnKeySet", item:parameters().connection_name, "")
 		self:_end_customize_controller(o, item)
 		return
-	end
-
-	if input_id ~= "mouse" or not Input:mouse():button_name_str(key) then
 	end
 
 	local key_name = "" .. Input:keyboard():button_name_str(key)
@@ -62,7 +57,7 @@ function MenuNodeGui._key_press(self, o, key, input_id, item, no_add)
 	if not key_name:is_nil_or_empty() then
 		for _, btn in ipairs(forbidden_btns) do
 			if Idstring(btn) == key then
-				managers.menu:show_key_binding_forbidden({KEY = key_name})
+				managers.menu:show_key_binding_forbidden({ KEY = key_name })
 				self:_end_customize_controller(o, item)
 				return
 			end
@@ -125,7 +120,7 @@ function MenuNodeGui._key_press(self, o, key, input_id, item, no_add)
 		end
 
 		connections[item:parameters().button]:set_controller_id(input_id)
-		connections[item:parameters().button]:set_input_name_list({key_name})
+		connections[item:parameters().button]:set_input_name_list({ key_name })
 		managers.controller:set_user_mod(item:parameters().connection_name, {
 			button = item:parameters().button,
 			connection = key_name,

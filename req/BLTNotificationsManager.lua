@@ -71,7 +71,7 @@ function BLTNotificationsManager:remove_notification(uid)
 	end
 end
 
----BLT legacy support, use ``BLT.Notifications`` instead
+---BLT legacy support, use `BLT.Notifications` instead
 ---@diagnostic disable: deprecated
 ---@deprecated
 NotificationsManager = NotificationsManager or {}

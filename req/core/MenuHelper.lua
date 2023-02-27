@@ -312,7 +312,7 @@ end
 ---Sets up and returns a menu so that it can be added to the in-game menus
 ---@param menu_id string @ID of the menu to build
 ---@param data? table @Table containing extra data which this menu should be built with
----@return table? @The built menu or ``nil`` if the menu could not be built
+---@return table? @The built menu or `nil` if the menu could not be built
 function MenuHelper:BuildMenu(menu_id, data)
 	-- Check menu exists
 	local menu = self.menus[menu_id]

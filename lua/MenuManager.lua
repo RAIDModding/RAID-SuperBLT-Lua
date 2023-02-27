@@ -1,28 +1,18 @@
-CloneClass(MenuManager)
-CloneClass(MenuCallbackHandler)
-CloneClass(MenuModInfoGui)
-
 Hooks:RegisterHook("MenuManagerInitialize")
 Hooks:RegisterHook("MenuManagerPostInitialize")
-function MenuManager.init(self, ...)
-	self.orig.init(self, ...)
+Hooks:PostHook(MenuManager, "init", "BLT.MenuManager.init", function(self)
 	Hooks:Call("MenuManagerInitialize", self)
 	Hooks:Call("MenuManagerPostInitialize", self)
-end
+end)
 
 Hooks:RegisterHook("MenuManagerOnOpenMenu")
-function MenuManager.open_menu(self, menu_name, position)
-	self.orig.open_menu(self, menu_name, position)
+Hooks:PostHook(MenuManager, "open_menu", "BLT.MenuManager.open_menu", function(self, menu_name, position)
 	Hooks:Call("MenuManagerOnOpenMenu", self, menu_name, position)
-end
-
-function MenuManager.open_node(self, node_name, parameter_list)
-	self.orig.open_node(self, node_name, parameter_list)
-end
+end)
 
 function MenuManager:show_download_progress(mod_name)
 	local dialog_data = {}
-	dialog_data.title = managers.localization:text("base_mod_download_downloading_mod", {["mod_name"] = mod_name})
+	dialog_data.title = managers.localization:text("base_mod_download_downloading_mod", { ["mod_name"] = mod_name })
 	dialog_data.mod_name = mod_name or "No Mod Name"
 
 	local ok_button = {}
@@ -42,7 +32,7 @@ Hooks:Add("MenuManagerPostInitialize", "MenuManagerPostInitialize_Base", functio
 	local success, err = pcall(function()
 		-- Setup lua mods menu
 		menu_manager:_base_process_menu(
-			{"menu_main"},
+			{ "menu_main" },
 			"mods_options",
 			"options",
 			"MenuManager_Base_SetupModsMenu",
@@ -52,7 +42,7 @@ Hooks:Add("MenuManagerPostInitialize", "MenuManagerPostInitialize_Base", functio
 
 		-- Setup mod options/keybinds menu
 		menu_manager:_base_process_menu(
-			{"menu_main", "menu_pause"},
+			{ "menu_main", "menu_pause" },
 			"video",
 			"options",
 			"MenuManager_Base_SetupModOptionsMenu",
@@ -61,17 +51,17 @@ Hooks:Add("MenuManagerPostInitialize", "MenuManagerPostInitialize_Base", functio
 		)
 
 		-- Allow custom menus on the main menu (and lobby) and the pause menu
-		menu_manager:_base_process_menu({"menu_main"})
-		menu_manager:_base_process_menu({"menu_pause"})
+		menu_manager:_base_process_menu({ "menu_main" })
+		menu_manager:_base_process_menu({ "menu_pause" })
 	end)
 	if not success then
 		BLT:Log(LogLevel.ERROR, tostring(err))
 	end
 end)
 
-function MenuManager._base_process_menu(menu_manager, menu_names, parent_menu_name, parent_menu_button, setup_hook, populate_hook, build_hook)
+function MenuManager:_base_process_menu(menu_names, parent_menu_name, parent_menu_button, setup_hook, populate_hook, build_hook)
 	for k, v in pairs(menu_names) do
-		local menu = menu_manager._registered_menus[v]
+		local menu = self._registered_menus[v]
 		if menu then
 			local nodes = menu.logic._data._nodes
 			local hook_id_setup = setup_hook or "MenuManagerSetupCustomMenus"
@@ -85,15 +75,15 @@ function MenuManager._base_process_menu(menu_manager, menu_names, parent_menu_na
 			Hooks:RegisterHook(hook_id_populate)
 			Hooks:RegisterHook(hook_id_build)
 
-			Hooks:Call(hook_id_setup, menu_manager, nodes)
-			Hooks:Call(hook_id_populate, menu_manager, nodes)
-			Hooks:Call(hook_id_build, menu_manager, nodes)
+			Hooks:Call(hook_id_setup, self, nodes)
+			Hooks:Call(hook_id_populate, self, nodes)
+			Hooks:Call(hook_id_build, self, nodes)
 		end
 	end
 end
 
 -- Create this function if it doesn't exist
-function MenuCallbackHandler.can_toggle_chat(self)
+function MenuCallbackHandler:can_toggle_chat()
 	if managers and managers.menu then
 		local input = managers.menu:active_menu() and managers.menu:active_menu().input
 		return not input or input.can_toggle_chat and input:can_toggle_chat()
@@ -135,7 +125,7 @@ function MenuCallbackHandler:blt_update_dll_dialog(update)
 	ok_button.text = managers.localization:text("blt_update_later")
 	ok_button.cancel_button = true
 
-	dialog_data.button_list = {download_button, ok_button}
+	dialog_data.button_list = { download_button, ok_button }
 	managers.system_menu:show(dialog_data)
 end
 

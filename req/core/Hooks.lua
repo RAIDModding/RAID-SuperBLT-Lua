@@ -90,10 +90,10 @@ function Hooks:Call(key, ...)
 	end
 end
 
----Calls a specified hook and returns the first non-nil value returned by a hooked function
+---Calls a specified hook and returns the first non nil value(s) returned by a hooked function
 ---@param key string @Name of the hook to call
 ---@param ... any @Arguments to pass to the hooked functions
----@return any @The first non-nil value returned by a hooked function
+---@return any ... @The value(s) returned by a hooked function
 function Hooks:ReturnCall(key, ...)
 	if not self._registered_hooks[key] then
 		return

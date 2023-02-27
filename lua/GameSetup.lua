@@ -1,13 +1,9 @@
-CloneClass(GameSetup)
-
 Hooks:RegisterHook("GameSetupUpdate")
-function GameSetup.update(this, t, dt)
+Hooks:PreHook(GameSetup, "update", "BLT.GameSetup.update", function(self, t, dt)
 	Hooks:Call("GameSetupUpdate", t, dt)
-	return this.orig.update(this, t, dt)
-end
+end)
 
 Hooks:RegisterHook("GameSetupPausedUpdate")
-function GameSetup.paused_update(this, t, dt)
+Hooks:PreHook(GameSetup, "paused_update", "BLT.GameSetup.paused_update", function(self, t, dt)
 	Hooks:Call("GameSetupPausedUpdate", t, dt)
-	return this.orig.paused_update(this, t, dt)
-end
+end)

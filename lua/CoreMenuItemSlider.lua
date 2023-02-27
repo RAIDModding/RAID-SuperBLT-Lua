@@ -1,11 +1,10 @@
+local tweak_data = tweak_data
+
 core:module("CoreMenuItemSlider")
-local CloneClass = _G.CloneClass
-local tweak_data = _G.tweak_data
 
-CloneClass(ItemSlider)
-
+local setup_gui = ItemSlider.setup_gui
 function ItemSlider.setup_gui(self, node, row_item)
-	local r = self.orig.setup_gui(self, node, row_item)
+	local r = setup_gui(self, node, row_item)
 	row_item.gui_slider_text:set_font_size(tweak_data.menu.stats_font_size)
 	return r
 end
@@ -15,12 +14,13 @@ function ItemSlider.set_value(self, value)
 	self:dirty()
 end
 
+local reload = ItemSlider.reload
 function ItemSlider.reload(self, row_item, node)
-	local r = self.orig.reload(self, row_item, node)
+	local r = reload(self, row_item, node)
 	if row_item then
 		local value
 		if self:show_value() then
-			value = string.format("%.2f", math.round_with_precision(self:value(), 2))
+			value = string.format("%.2f", self:value())
 		else
 			value = string.format("%.0f", self:percentage()) .. "%"
 		end
