@@ -32,6 +32,7 @@ function BLTMod:init(ident, data)
 	self.contact = data["contact"] or self.contact
 	self.priority = tonumber(data["priority"]) or 0
 	self.dependencies = data["dependencies"] or {}
+	self.color = data["color"] or nil
 	self.image_path = data["image"] or nil
 	self.disable_safe_mode = data["disable_safe_mode"] or false
 	self.undisablable = data["undisablable"] or false
@@ -39,27 +40,6 @@ function BLTMod:init(ident, data)
 	self.library = data["is_library"] or false
 	self.vr_disabled = data["vr_disabled"] or false
 	self.desktop_disabled = data["desktop_disabled"] or false
-
-	-- Parse color info
-	-- Stored as a table until first requested due to Color not existing yet
-	if data["color"] and type(data["color"]) == "string" then
-		local colors = string.blt_split(data["color"], " ")
-		local cp = {}
-		local divisor = 1
-		for i = 1, 3 do
-			local c = tonumber(colors[i] or 0)
-			table.insert(cp, c)
-			if c > 1 then
-				divisor = 255
-			end
-		end
-		if divisor > 1 then
-			for i, val in ipairs(cp) do
-				cp[i] = val / divisor
-			end
-		end
-		self.color = cp
-	end
 
 	-- Updates data
 	self.updates = {}
@@ -270,9 +250,21 @@ function BLTMod:GetColor()
 	if not self.color then
 		return tweak_data.screen_colors.button_stage_3
 	end
-	if type(self.color) == "table" then
-		self.color = Color(unpack(self.color))
+
+	-- Delay evaluation of color until first call
+	if type(self.color) == "string" then
+		local r, g, b = self.color:match("([.0-9]+)%s+([.0-9]+)%s+([.0-9]+)")
+		r = tonumber(r) or 0
+		g = tonumber(g) or 0
+		b = tonumber(b) or 0
+		if r > 1 or g > 1 or b > 1 then
+			r = r / 255
+			g = g / 255
+			b = b / 255
+		end
+		self.color = Color(r, g, b)
 	end
+
 	return self.color
 end
 

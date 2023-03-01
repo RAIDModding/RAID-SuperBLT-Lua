@@ -1,12 +1,5 @@
 _G.Utils = _G.Utils or {}
 
----@deprecated
-function _G.CloneClass(class)
-	if not class.orig then
-		class.orig = clone(class)
-	end
-end
-
 function Utils.MakeValueOutput(value, output)
 	if type(value) == "string" then
 		output[#output + 1] = '"'
@@ -92,12 +85,10 @@ function Utils.PrintTable(tbl, maxDepth)
 	log(table.concat(output))
 end
 
-_G.PrintTable = Utils.PrintTable
-
 ---Saves the contents of a table to the specified file
 ---@param tbl table @The table to save to a file
 ---@param file string @The path (relative to payday2_win32_release.exe) and file name to save the table to
-function _G.SaveTable(tbl, file)
+function Utils.SaveTable(tbl, file)
 	Utils.DoSaveTable(tbl, {}, file, nil, "")
 end
 
@@ -331,34 +322,25 @@ function Utils:TimestampToEpoch(year, month, day)
 	return (time or 0) + (offset or 0)
 end
 
----Splits a string at every occurence of a delimiter up to an optional maximum number of times
----@param str string @String to split
----@param delim string @Substring at which to split ``str``
----@param max_num? integer @Maximum amount of splits (defaults to `0`, which is no limit)
----@return table @Table containing all split substrings
+
+---@deprecated @Use hooks or manual cloning instead
+function _G.CloneClass(class)
+	if not class.orig then
+		class.orig = clone(class)
+	end
+end
+
+---@deprecated @Use `Utils.PrintTable` instead
+function _G.PrintTable(...)
+	return Utils.PrintTable(...)
+end
+
+---@deprecated @Use `Utils.SaveTable` instead
+function _G.SaveTable(...)
+	return Utils.SaveTable(...)
+end
+
+---@deprecated @Use `string.split` instead
 function string.blt_split(str, delim, max_num)
-	-- Eliminate bad cases...
-	if string.find(str, delim) == nil then
-		return {str}
-	end
-	max_num = max_num or 0
-
-	local result = {}
-	local pat = "(.-)" .. delim .. "()"
-	local nb = 0
-	local lastPos
-	for part, pos in string.gmatch(str, pat) do
-		nb = nb + 1
-		result[nb] = part
-		lastPos = pos
-		if nb == max_num then
-			break
-		end
-	end
-
-	-- Handle the last field
-	if nb ~= maxNb then
-		result[nb + 1] = string.sub(str, lastPos)
-	end
-	return result
+	return string.split(str, delim, true, max_num)
 end
