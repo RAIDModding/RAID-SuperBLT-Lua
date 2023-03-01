@@ -1,4 +1,4 @@
----@class BLTLocalization
+---@class BLTLocalization : BLTModule
 ---@field new fun(self):BLTLocalization
 BLTLocalization = BLTLocalization or blt_class(BLTModule)
 BLTLocalization.__type = "BLTLocalization"
@@ -6,7 +6,6 @@ BLTLocalization.default_language_code = "en"
 BLTLocalization.directory = "mods/base/loc/"
 
 function BLTLocalization:init()
-	-- Initialize module
 	BLTLocalization.super.init(self)
 
 	self._languages = {}
@@ -63,11 +62,11 @@ function BLTLocalization:load_languages()
 	-- Load legacy support
 	self:_init_legacy_support()
 
-	-- Load the language that was loaded from the BLT save if it is available
 	self._languages_loaded = true
-	if self._desired_language_on_load then
-		self:set_language(self._desired_language_on_load)
-		self._desired_language_on_load = nil
+
+	local lang_code = BLT.save_data.language
+	if lang_code then
+		self:set_language(lang_code)
 	end
 end
 
@@ -89,7 +88,6 @@ end
 
 function BLTLocalization:set_language(lang_code)
 	if not self._languages_loaded then
-		self._desired_language_on_load = lang_code
 		return false
 	end
 
@@ -126,20 +124,10 @@ function BLTLocalization:load_localization(loc_manager)
 	end
 end
 
---------------------------------------------------------------------------------
--- Save/Load
-
-Hooks:Add("BLTOnLoadData", "BLTOnLoadData.BLTLocalization", function(cache)
-	local lang_code = cache["language"]
-	if lang_code then
-		BLT.Localization:set_language(lang_code)
-	end
-end)
-
-Hooks:Add("BLTOnSaveData", "BLTOnSaveData.BLTLocalization", function(cache)
+Hooks:Add("BLTOnSaveData", "BLTOnSaveData.BLTLocalization", function(save_data)
 	local lang = BLT.Localization:get_language()
 	if lang then
-		cache["language"] = lang.language
+		save_data.language = lang.language
 	end
 end)
 
@@ -149,31 +137,4 @@ end)
 Hooks:Add("LocalizationManagerPostInit", "BLTLocalization.LocalizationManagerPostInit", function(loc_manager)
 	BLT.Localization:load_languages()
 	BLT.Localization:load_localization(loc_manager)
-end)
-
---------------------------------------------------------------------------------
--- Add the language selector to the mod options menu
-
-Hooks:Add("BLTOnBuildOptions", "BLTLocalization.BLTOnBuildOptions", function(node)
-	-- Create multiple choice item
-	local item = {
-		_meta = "item",
-		type = "MenuItemMultiChoice",
-		name = "blt_localization_choose",
-		text_id = "blt_language_select",
-		help_id = "blt_language_select_desc",
-		callback = "blt_choose_language"
-	}
-
-	-- Add languages as options
-	for _, lang in ipairs(BLT.Localization:languages()) do
-		local option = {
-			_meta = "option",
-			text_id = "blt_language_" .. tostring(lang.language),
-			value = tostring(lang.language)
-		}
-		table.insert(item, option)
-	end
-
-	table.insert(node, item)
 end)

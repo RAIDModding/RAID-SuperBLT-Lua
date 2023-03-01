@@ -1,9 +1,11 @@
----@class BLTDownloadManager
+---@class BLTDownloadManager : BLTModule
 ---@field new fun(self):BLTDownloadManager
 BLTDownloadManager = BLTDownloadManager or blt_class(BLTModule)
 BLTDownloadManager.__type = "BLTDownloadManager"
 
 function BLTDownloadManager:init()
+	BLTDownloadManager.super.init(self)
+
 	self._pending_downloads = {}
 	self._downloads = {}
 end

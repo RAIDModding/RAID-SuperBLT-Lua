@@ -84,7 +84,8 @@ function BLTMod:init(ident, data)
 end
 
 function BLTMod:IsAllowedInCurrentMode()
-	return _G.IS_VR and not self.vr_disabled or not _G.IS_VR and not self.desktop_disabled
+	local is_vr = BLT:IsVr()
+	return is_vr and not self.vr_disabled or not is_vr and not self.desktop_disabled
 end
 
 function BLTMod:Setup()

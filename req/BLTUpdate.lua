@@ -14,7 +14,7 @@ function BLTUpdate:init(parent_mod, data)
 	assert(data, "BLTUpdates can not be created without json update data!")
 
 	self.parent_mod = parent_mod
-	self.id = data["identifier"]
+	self.id = data["identifier"] or ""
 	self.name = data["display_name"] or parent_mod:GetName()
 	self.dir = data["install_dir"] or "mods/"
 	self.folder = data["install_folder"] or parent_mod:GetId()

@@ -95,8 +95,16 @@ end
 --------------------------------------------------------------------------------
 -- Add BLT save function
 
+Hooks:Register("BLTOnSaveData")
 function MenuCallbackHandler:perform_blt_save()
-	BLT.Mods:Save()
+	BLT:Log(LogLevel.INFO, "[BLT] Performing save...")
+
+	Hooks:Call("BLTOnSaveData", BLT.save_data)
+
+	local success = io.save_as_json(BLT.save_data, BLTModManager.Constants:ModManagerSaveFile(BLT:IsVr()))
+	if not success then
+		BLT:Log(LogLevel.ERROR, "[BLT] Could not save file " .. BLTModManager.Constants:ModManagerSaveFile())
+	end
 end
 
 function MenuCallbackHandler:close_blt_mods()
@@ -141,10 +149,18 @@ function MenuCallbackHandler:blt_show_keybinds_item()
 end
 
 --------------------------------------------------------------------------------
--- Add language callback
+-- Add settings callbacks
 
 function MenuCallbackHandler:blt_choose_language(item)
 	if BLT.Localization then
 		BLT.Localization:set_language(item:value())
 	end
+end
+
+function MenuCallbackHandler:blt_choose_log_level(item)
+	BLTLogs.log_level = math.clamp(item:value(), _G.LogLevel.NONE, _G.LogLevel.ALL)
+end
+
+function MenuCallbackHandler:blt_choose_log_lifetime(item)
+	BLTLogs.lifetime = item:value()
 end

@@ -1,13 +1,10 @@
----@class BLTModManager
+---@class BLTModManager : BLTModule
 ---@field new fun(self):BLTModManager
 BLTModManager = blt_class(BLTModule)
 BLTModManager.__type = "BLTModManager"
 
 function BLTModManager:init()
 	BLTModManager.super.init(self)
-
-	Hooks:Register("BLTOnSaveData")
-	Hooks:Register("BLTOnLoadData")
 end
 
 ---Returns all mods managed by BLT
@@ -53,8 +50,33 @@ function BLTModManager:SetModsList(mods_list)
 	-- Set mods
 	self.mods = mods_list
 
-	-- Load data
-	self:Load()
+	-- Check saved mod data
+	local mods = BLT.save_data.mods
+	if mods then
+		for i, mod in ipairs(self.mods) do
+			if mods[mod:GetId()] then
+				local data = mods[mod:GetId()]
+
+				mod:SetEnabled(data.enabled, true)
+				mod:SetSafeModeEnabled(data.safe)
+
+				local updates = data.updates
+				if updates then
+					for update_id, enabled in pairs(updates) do
+						local update = mod:GetUpdate(update_id)
+						if update then
+							update:SetEnabled(enabled)
+						end
+					end
+				end
+			end
+		end
+	end
+
+	-- Setup mods
+	for i, mod in ipairs(self.mods) do
+		mod:Setup()
+	end
 end
 
 function BLTModManager:IsExcludedDirectory(directory)
@@ -153,98 +175,33 @@ function BLTModManager:clbk_got_update(update, required, reason)
 	end
 end
 
---------------------------------------------------------------------------------
--- Saving and Loading
-
-function BLTModManager:Load()
-	-- Load data
-	local save_file = BLTModManager.Constants:ModManagerSaveFile(_G.IS_VR)
-	-- If the VR save file doesnt exist yet, load the regular save file
-	if _G.IS_VR and not io.file_is_readable(save_file) then
-		save_file = BLTModManager.Constants:ModManagerSaveFile(false)
-	end
-	local saved_data = io.load_as_json(save_file) or {}
-
-	-- Process mods
-	if saved_data["mods"] then
-		for index, mod in ipairs(self.mods) do
-			if saved_data["mods"][mod:GetId()] then
-				local data = saved_data["mods"][mod:GetId()]
-
-				mod:SetEnabled(data["enabled"], true)
-				mod:SetSafeModeEnabled(data["safe"])
-
-				local updates = data["updates"]
-				if updates then
-					for update_id, enabled in pairs(updates) do
-						local update = mod:GetUpdate(update_id)
-						if update then
-							update:SetEnabled(enabled)
-						end
-					end
-				end
-			end
-		end
-	end
-
-	-- Setup mods
-	for index, mod in ipairs(self.mods) do
-		mod:Setup()
-	end
-
-	-- Call load hook
-	Hooks:Call("BLTOnLoadData", saved_data)
-
-	-- Stash it for use later
-	self._saved_data = saved_data
-end
-
-function BLTModManager:Save()
-	BLT:Log(LogLevel.INFO, "[BLT] Performing save...")
-
-	local save_data = {}
-
-	-- Write mod/updates data
-	save_data["mods"] = {}
-	for index, mod in ipairs(self.mods) do
-		-- Save mod updates enabled data
-		local updates = {}
-		for index, update in ipairs(mod:GetUpdates()) do
-			updates[update:GetId()] = update:IsEnabled()
-		end
-
-		save_data["mods"][mod:GetId()] = {
-			["enabled"] = mod:IsEnabled(),
-			["safe"] = mod:IsSafeModeEnabled(),
-			["updates"] = updates
-		}
-	end
-
-	-- Hook to allow modules to save data
-	Hooks:Call("BLTOnSaveData", save_data)
-
-	self._saved_data = save_data
-
-	local success = io.save_as_json(save_data, BLTModManager.Constants:ModManagerSaveFile(_G.IS_VR))
-	if not success then
-		BLT:Log(LogLevel.ERROR, "[BLT] Could not save file " .. BLTModManager.Constants:ModManagerSaveFile())
-	end
+Hooks:Add("BLTOnSaveData", "BLTOnSaveData.BLTModManager", function(save_data)
+	save_data.mods = {}
 
 	-- Save a Wren-readable list of disabled mods - it doesn't have a JSON parser so it
 	-- can't load our normal file, and it needs to know what's enabled before any Lua code runs.
-	local wren_file = io.open(BLTModManager.Constants:ModManagerWrenDisabledModsFile(_G.IS_VR), "wb")
-	for _, mod in ipairs(self.mods) do
-		-- Write the item even if the mod doesn't have a supermod file - maybe it will after an update, and there's
-		-- no harm in writing extra items here.
+	local wren_file = io.open(BLTModManager.Constants:ModManagerWrenDisabledModsFile(BLT:IsVr()), "wb")
+
+	for _, mod in pairs(BLT.Mods:Mods()) do
+		-- Save mod updates enabled data
+		local updates = {}
+		for _, update in pairs(mod:GetUpdates()) do
+			updates[update:GetId()] = update:IsEnabled()
+		end
+
+		save_data.mods[mod:GetId()] = {
+			enabled = mod:IsEnabled(),
+			safe = mod:IsSafeModeEnabled(),
+			updates = updates
+		}
+
 		if not mod:IsEnabled() then
-			local supermod_path = mod.path .. "supermod.xml"
-			wren_file:write(supermod_path .. "\n")
+			wren_file:write(mod.path .. "supermod.xml" .. "\n")
 		end
 	end
-	wren_file:close()
 
-	return success
-end
+	wren_file:close()
+end)
 
 --------------------------------------------------------------------------------
 -- Constants

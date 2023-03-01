@@ -45,6 +45,22 @@ local function add_blt_options_node(menu)
 			back = true,
 			previous_node = true,
 			visible_callback = "is_pc_controller"
+		},
+		[5] = {
+			_meta = "item",
+			name = "blt_settings",
+			text_id = "blt_settings",
+			help_id = "blt_settings_desc",
+			next_node = "blt_settings",
+			priority = 1
+		},
+		[6] = {
+			_meta = "item",
+			name = "blt_divider",
+			type = "MenuItemDivider",
+			no_text = true,
+			size = 8,
+			priority = 0
 		}
 	}
 	table.insert(menu, new_node)
@@ -99,6 +115,105 @@ local function add_blt_downloads_node(menu)
 			name = "back"
 		}
 	}
+	table.insert(menu, new_node)
+
+	return new_node
+end
+
+-- Create the menu node for BLT settings
+local function add_blt_settings_node(menu)
+	local new_node = {
+		_meta = "node",
+		name = "blt_settings",
+		refresh = "BLTSettingsInitiator",
+		back_callback = "perform_blt_save",
+		modifier = "BLTSettingsInitiator",
+		[1] = {
+			_meta = "legend",
+			name = "menu_legend_select"
+		},
+		[2] = {
+			_meta = "legend",
+			name = "menu_legend_back"
+		},
+		[3] = {
+			_meta = "default_item",
+			name = "back"
+		},
+		[4] = {
+			_meta = "item",
+			name = "back",
+			text_id = "menu_back",
+			back = true,
+			previous_node = true,
+			visible_callback = "is_pc_controller"
+		}
+	}
+
+	local menu_item_language = {
+		_meta = "item",
+		type = "MenuItemMultiChoice",
+		name = "blt_localization_choose",
+		text_id = "blt_language_select",
+		help_id = "blt_language_select_desc",
+		callback = "blt_choose_language",
+		value_func = function() return BLT.Localization:get_language().language end
+	}
+	for _, lang in ipairs(BLT.Localization:languages()) do
+		table.insert(menu_item_language, {
+			_meta = "option",
+			text_id = "blt_language_" .. tostring(lang.language),
+			value = tostring(lang.language)
+		})
+	end
+
+	local menu_item_divider = {
+		_meta = "item",
+		name = "blt_divider",
+		type = "MenuItemDivider",
+		no_text = true,
+		size = 8
+	}
+
+	local menu_item_log_level = {
+		_meta = "item",
+		type = "MenuItemMultiChoice",
+		name = "blt_log_level_choose",
+		text_id = "blt_log_level_select",
+		help_id = "blt_log_level_select_desc",
+		callback = "blt_choose_log_level",
+		value_func = function() return BLTLogs.log_level end
+	}
+	for i = _G.LogLevel.NONE, _G.LogLevel.ALL do
+		table.insert(menu_item_log_level, {
+			_meta = "option",
+			text_id = "blt_log_level_" .. i,
+			value = i
+		})
+	end
+
+	local menu_item_log_lifetime = {
+		_meta = "item",
+		type = "MenuItemMultiChoice",
+		name = "blt_log_lifetime_choose",
+		text_id = "blt_log_lifetime_select",
+		help_id = "blt_log_lifetime_select_desc",
+		callback = "blt_choose_log_lifetime",
+		value_func = function() return BLTLogs.lifetime end
+	}
+	for _, lifetime in ipairs(BLTLogs.lifetime_options) do
+		table.insert(menu_item_log_lifetime, {
+			_meta = "option",
+			text_id = lifetime[2],
+			value = lifetime[1]
+		})
+	end
+
+	table.insert(new_node, menu_item_language)
+	table.insert(new_node, menu_item_divider)
+	table.insert(new_node, menu_item_log_level)
+	table.insert(new_node, menu_item_log_lifetime)
+
 	table.insert(menu, new_node)
 
 	return new_node
@@ -167,6 +282,7 @@ Hooks:Add("CoreMenuData.LoadDataMenu", "BLT.CoreMenuData.LoadDataMenu", function
 		Hooks:Call("BLTOnBuildOptions", options_node, menu_id) -- All mods to hook into the options menu to add items
 		add_blt_keybinds_node(menu)
 		add_blt_downloads_node(menu)
+		add_blt_settings_node(menu)
 		inject_menu_options(menu, "options", point, {
 			menu_item_divider,
 			menu_item_mods,
@@ -177,6 +293,7 @@ Hooks:Add("CoreMenuData.LoadDataMenu", "BLT.CoreMenuData.LoadDataMenu", function
 		local options_node = add_blt_options_node(menu)
 		Hooks:Call("BLTOnBuildOptions", options_node, menu_id) -- All mods to hook into the options menu to add items
 		add_blt_keybinds_node(menu)
+		add_blt_settings_node(menu)
 		inject_menu_options(menu, "options", point, {
 			menu_item_divider,
 			menu_item_options,
@@ -193,26 +310,18 @@ BLTModOptionsInitiator = BLTModOptionsInitiator or class(MenuInitiatorBase)
 function BLTModOptionsInitiator:modify_node(node)
 	local old_items = node:items()
 
-	local blt_languages
-	for k, item in pairs(old_items) do
-		if item:parameters().name == "blt_localization_choose" then
-			blt_languages = table.remove(old_items, k)
-			break
-		end
-	end
-
 	node:clean_items()
 
-	if blt_languages then
-		node:add_item(blt_languages)
-		if BLT.Localization then
-			blt_languages:set_value(tostring(BLT.Localization:get_language().language))
-		end
-	end
-
 	table.sort(old_items, function(a, b)
-		local text_a = managers.localization:text(a:parameters().text_id)
-		local text_b = managers.localization:text(b:parameters().text_id)
+		local a_params = a:parameters()
+		local b_params = b:parameters()
+		if a_params.priority and (not b_params.priority or b_params.priority < a_params.priority) then
+			return true
+		elseif b_params.priority and (not a_params.priority or a_params.priority < b_params.priority) then
+			return false
+		end
+		local text_a = managers.localization:text(a_params.text_id)
+		local text_b = managers.localization:text(b_params.text_id)
 		return text_a < text_b
 	end)
 
@@ -225,4 +334,18 @@ end
 
 function BLTModOptionsInitiator:refresh_node(node)
 	self:modify_node(node)
+end
+
+---Menu Initiator for the BLT Settings
+---@class BLTSettingsInitiator : BLTModOptionsInitiator
+---@field new fun(self):BLTSettingsInitiator
+BLTSettingsInitiator = BLTSettingsInitiator or class(BLTModOptionsInitiator)
+
+function BLTSettingsInitiator:modify_node(node)
+	for _, item in pairs(node:items()) do
+		if item:parameters().value_func then
+			item:set_value(item:parameters().value_func())
+		end
+	end
+	return node
 end

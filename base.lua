@@ -19,17 +19,17 @@ _G.LogLevel = {
 
 _G.LogLevelPrefix = {
 	[LogLevel.ERROR] = "[ERROR] ",
-	[LogLevel.WARN] = "[WARNING] ",
+	[LogLevel.WARN] = "[WARN] ",
 	[LogLevel.INFO] = "[INFO] "
 }
 
 -- BLT Global table
-_G.BLT = {version = 2.0, LOG_LEVEL = LogLevel.ALL}
+_G.BLT = { version = 2.0 }
 _G.BLT.Base = {}
 
 _G.print = function(...)
 	local s = ""
-	for i, str in ipairs({...}) do
+	for i, str in ipairs({ ... }) do
 		if type(str) == "string" then
 			str = string.gsub(str, "%%", "%%%%%")
 		end
@@ -43,6 +43,7 @@ _G.BLT._PATH = "mods/base/"
 function BLT:Require(path)
 	dofile(string.format("%s%s", BLT._PATH, path .. ".lua"))
 end
+
 BLT:Require("req/utils/UtilsClass")
 BLT:Require("req/utils/UtilsCore")
 BLT:Require("req/utils/UtilsIO")
@@ -66,16 +67,16 @@ BLT:Require("req/BLTKeybindsManager")
 BLT:Require("req/BLTAssetManager")
 BLT:Require("req/xaudio/XAudio")
 
----Writes a message to the log file  
+---Writes a message to the log file
 ---Multiple arguments can be passed to the function and will be concatenated
 ---@param level integer @The log level of the message
 ---@param ... any @The message to log
 function BLT:Log(level, ...)
-	if level > self.LOG_LEVEL then
+	if level > BLTLogs.log_level then
 		return
 	end
 	local s = LogLevelPrefix[level] or ""
-	for _, v in pairs({...}) do
+	for _, v in pairs({ ... }) do
 		s = s .. tostring(v) .. " "
 	end
 	log(s)
@@ -96,8 +97,21 @@ function BLT:Initialize()
 	self:Setup()
 end
 
+function BLT:IsVr()
+	return _G.SystemInfo ~= nil and getmetatable(_G.SystemInfo).is_vr ~= nil and SystemInfo:is_vr()
+end
+
 function BLT:Setup()
-	self:Log(LogLevel.INFO, "[BLT] Setup...")
+	-- Load saved data
+	if BLT:IsVr() then
+		local save_file = BLTModManager.Constants:ModManagerSaveFile(true)
+		self.save_data = io.file_is_readable(save_file) and io.load_as_json(save_file)
+	end
+
+	if not self.save_data then
+		local save_file = BLTModManager.Constants:ModManagerSaveFile(false)
+		self.save_data = io.file_is_readable(save_file) and io.load_as_json(save_file) or {}
+	end
 
 	-- Setup modules
 	self.Logs = BLTLogs:new()
@@ -173,7 +187,7 @@ function BLT:OverrideRequire()
 
 	-- Override require function to run hooks
 	_G.require = function(...)
-		local args = {...}
+		local args = { ... }
 		local path = args[1]
 		local path_lower = path:lower()
 		local require_result = nil
