@@ -34,7 +34,7 @@
 
 	"blt_mod_safemode_enabled" : "Bezpečný režim:\nPovolen",
 	"blt_mod_safemode_enabled_help" : "Po velkých aktualizacích hry tento mod bude zakázán, aby se zabránilo pádům hry.",
-	"blt_mod_safemode_disabled" : "Bezpečný režim:\Zakázán",
+	"blt_mod_safemode_disabled" : "Bezpečný režim:\nZakázán",
 	"blt_mod_safemode_disabled_help" : "Po velkých aktualizacích hry tento mod nebude zakázán.",
 
 	"blt_mod_updates_enabled" : "Automatické aktualizace:\nPovoleny",
@@ -80,6 +80,9 @@
 	"blt_checking_updates_none_required" : "Aktuální",
 	"blt_checking_updates_none_required_help" : "Žádná modifikace nepotřebuje aktualizovat!",
 
+	"blt_settings" : "BLT nastavení",
+	"blt_settings_desc" : "Změňte nastavení BLT",
+
 	"blt_language_select" : "Jazyk",
 	"blt_language_select_desc" : "Vyberte jazyk v čem se zobrazí BLT",
 	"blt_language_cs" : "Čeština",
@@ -99,6 +102,22 @@
 	"blt_language_pl" : "Polština",
 	"blt_language_nl" : "Nizozemština",
 	"blt_language_pt-br" : "Brazilská portugalština",
+
+	"blt_log_level_select" : "Úroveň logů",
+	"blt_log_level_select_desc" : "Vyberte podrobnost logů BLT",
+	"blt_log_level_0" : "Žádný",
+	"blt_log_level_1" : "Chyby",
+	"blt_log_level_2" : "Varování",
+	"blt_log_level_3" : "Informace",
+	"blt_log_level_4" : "Všechny",
+
+	"blt_log_lifetime_select" : "Životnost log souboru",
+	"blt_log_lifetime_select_desc" : "Vyberte si, jak dlouho zachovávat staré BLT logy",
+	"blt_logs_one_day" : "1 den",
+	"blt_logs_three_days" : "3 dny",
+	"blt_logs_one_week" : "1 týden",
+	"blt_logs_two_weeks" : "2 týdny",
+	"blt_logs_thirty_days" : "30 dní", 
 
 	"blt_no_image" : "Žádná ikona",
 	"blt_no_name" : "Žádné jméno",
