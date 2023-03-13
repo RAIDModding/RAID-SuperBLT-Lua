@@ -17,14 +17,16 @@ function BLTSuperMod.try_load(mod, file_name)
 
 		-- Parse it
 		local xml = blt.parsexml(file_contents)
+		if not xml then
+			return
+		end
+
 		xml._doc = {
 			filename = supermod_path
 		}
 
 		return BLTSuperMod:new(mod, xml)
 	end
-
-	return nil
 end
 
 function BLTSuperMod:init(mod, xml)
@@ -138,14 +140,15 @@ function BLTSuperMod:_replace_includes(xml)
 
 			-- Parse it
 			local included = blt.parsexml(file_contents)
-			assert(included, "Parsed file " .. file_path .. " resolves to nil. Is it valid?")
-			included._doc = {
-				filename = file_path
-			}
+			if included then
+				included._doc = {
+					filename = file_path
+				}
 
-			-- Substitute it in
-			tag = included
-			xml[i] = included
+				-- Substitute it in
+				tag = included
+				xml[i] = included
+			end
 		end
 
 		self:_replace_includes(tag)
