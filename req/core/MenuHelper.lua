@@ -70,7 +70,7 @@ end
 ---	callback = "changed_callback_func",
 ---	disabled = false,
 ---	disabled_color = Color(0.25, 1, 1, 1),
----	localized = false,
+---	localized = true,
 ---	priority = 1
 ---}
 ---```
@@ -150,7 +150,7 @@ end
 ---	callback = "changed_callback_func",
 ---	disabled = false,
 ---	disabled_color = Color(0.25, 1, 1, 1),
----	localized = false,
+---	localized = true,
 ---	priority = 1
 ---}
 ---```
@@ -226,10 +226,13 @@ end
 ---	max = 10,
 ---	step = 1,
 ---	show_value = false,
+---	display_precision = 2,
+---	display_scale = 1,
+---	is_percentage = false,
 ---	callback = "changed_callback_func",
 ---	disabled = false,
 ---	disabled_color = Color(0.25, 1, 1, 1),
----	localized = false,
+---	localized = true,
 ---	priority = 1
 ---}
 ---```
@@ -240,7 +243,11 @@ function MenuHelper:AddSlider(slider_data)
 		min = slider_data.min or 0,
 		max = slider_data.max or 10,
 		step = slider_data.step or 1,
-		show_value = slider_data.show_value or false
+		show_value = slider_data.show_value or false,
+		decimal_count = slider_data.display_precision or 2,
+		show_scale = slider_data.display_scale or 1,
+		is_scaled = slider_data.display_scale and slider_data.display_scale ~= 1,
+		is_percentage = slider_data.is_percentage or false
 	}
 
 	local params = {
@@ -278,10 +285,11 @@ end
 ---	desc = "My slider description",
 ---	items = { "First", "Second", "Third" }
 ---	value = 1,
+---	localized_items = true,
 ---	callback = "changed_callback_func",
 ---	disabled = false,
 ---	disabled_color = Color(0.25, 1, 1, 1),
----	localized = false,
+---	localized = true,
 ---	priority = 1
 ---}
 ---```
@@ -291,7 +299,7 @@ function MenuHelper:AddMultipleChoice(multi_data)
 		type = "MenuItemMultiChoice"
 	}
 	for k, v in ipairs(multi_data.items or {}) do
-		table.insert(data, {_meta = "option", text_id = v, value = k})
+		table.insert(data, {_meta = "option", text_id = v, value = k, localize = multi_data.localized_items})
 	end
 
 	local params = {
@@ -331,7 +339,7 @@ end
 ---	binding = "left shift",
 ---	button = "left shift",
 ---	callback = "changed_callback_func",
----	localized = false,
+---	localized = true,
 ---	priority = 1
 ---}
 ---```
@@ -375,7 +383,7 @@ end
 ---	callback = "changed_callback_func",
 ---	disabled = false,
 ---	disabled_color = Color(0.25, 1, 1, 1),
----	localized = false,
+---	localized = true,
 ---	priority = 1
 ---}
 ---```
@@ -446,13 +454,6 @@ function MenuHelper:BuildMenu(menu_id, data)
 		end
 		for k, item in pairs(nonpriority_items) do
 			menu:add_item(item)
-		end
-
-		-- Slider dirty callback fix
-		for k, item in pairs(menu._items) do
-			if item._type == "slider" or item._parameters.type == "CoreMenuItemSlider.ItemSlider" then
-				item.dirty_callback = nil
-			end
 		end
 
 		-- Back callback
@@ -645,7 +646,10 @@ function MenuHelper:LoadFromJsonFile(file_path, parent_class, data_table)
 						min = item.min or 0,
 						max = item.max or 1,
 						step = item.step or 0.1,
-						show_value = true,
+						show_value = item.show_value == nil and true or item.show_value,
+						display_precision = item.display_precision,
+						display_scale = item.display_scale,
+						is_percentage = item.is_percentage,
 						menu_id = menu_id,
 						priority = priority,
 						localized = localized
@@ -706,7 +710,8 @@ function MenuHelper:LoadFromJsonFile(file_path, parent_class, data_table)
 						value = value,
 						menu_id = menu_id,
 						priority = priority,
-						localized = localized
+						localized = localized,
+						localized_items = item.localized_items
 					})
 				end
 
