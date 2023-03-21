@@ -8,6 +8,7 @@ BLTModsGui = BLTModsGui or blt_class(MenuGuiComponentGeneric)
 BLTModsGui.last_y_position = 0
 BLTModsGui.show_libraries = false
 BLTModsGui.show_mod_icons = true
+BLTModsGui.save_data_loaded = false
 
 local padding = 10
 
@@ -50,6 +51,7 @@ function BLTModsGui:init(ws, fullscreen_ws, node)
 		BLTModsGui.show_libraries = mods_gui.show_libraries
 		BLTModsGui.show_mod_icons = mods_gui.show_mod_icons
 	end
+	BLTModsGui.save_data_loaded = true
 
 	self:_setup()
 end
@@ -435,10 +437,14 @@ function BLTModsGui:mouse_wheel_down(x, y)
 end
 
 Hooks:Add("BLTOnSaveData", "BLTOnSaveData.BLTModsGui", function(save_data)
-	save_data.mods_gui = {
-		show_libraries = BLTModsGui.show_libraries,
-		show_mod_icons = BLTModsGui.show_mod_icons
-	}
+	-- Special case - if the user never entered the BLT mod manager but changed BLT settings via mod options menu
+	-- the data for BLTModsGui is not set from the save data, so only save mods gui data when it has been opened before
+	if BLTModsGui.save_data_loaded then
+		save_data.mods_gui = {
+			show_libraries = BLTModsGui.show_libraries,
+			show_mod_icons = BLTModsGui.show_mod_icons
+		}
+	end
 end)
 
 --------------------------------------------------------------------------------
