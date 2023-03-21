@@ -120,31 +120,9 @@ function Utils.DoSaveTable(tbl, cmp, fileName, fileIsOpen, preText)
 	end
 end
 
----@class Vector3
-Vector3 = Vector3 or {}
-Vector3.StringFormat = "%08f,%08f,%08f"
-Vector3.MatchFormat = "([-0-9.]+),([-0-9.]+),([-0-9.]+)"
-
----Converts a Vector3 to a string, useful in conjunction with Networking
----@param v Vector3 @The Vector3 to convert to a formatted string
----@return string @A formatted string containing the data of the Vector3
-function Vector3.ToString(v)
-	return string.format(Vector3.StringFormat, v.x, v.y, v.z)
-end
-
----Converts a formatted string to a Vector3, useful in conjunction with Networking
----@param string string @The string to convert to a Vector3
----@return Vector3? @A Vector3 of the converted string or ``nil`` if no conversion could be made
-function string.ToVector3(string)
-	local x, y, z = string:match(Vector3.MatchFormat)
-	if x ~= nil and y ~= nil and z ~= nil then
-		return Vector3(tonumber(x), tonumber(y), tonumber(z))
-	end
-end
-
 ---Returns if a string exists or not
 ---@param str string @The string to check
----@return boolean @``false`` if the string is `""` or ``nil``, ``true`` otherwise
+---@return boolean @`false` if the string is `""` or `nil`, `true` otherwise
 function string.is_nil_or_empty(str)
 	return str == "" or str == nil
 end
@@ -159,26 +137,26 @@ function math.round_with_precision(num, idp)
 end
 
 ---Returns whether you are in GameState (loadout, ingame, end screens like victory and defeat) or not
----@return boolean @``true`` if you are in GameState, ``false`` otherwise
+---@return boolean @`true` if you are in GameState, `false` otherwise
 function Utils:IsInGameState()
 	return game_state_machine and string.find(game_state_machine:current_state_name(), "game") and true or false
 end
 
 ---Returns wether you are currently in a loading state or not
----@return boolean @``true`` if you are in a loading state, ``false`` otherwise
+---@return boolean @`true` if you are in a loading state, `false` otherwise
 function Utils:IsInLoadingState()
 	return BaseNetworkHandler and BaseNetworkHandler._gamestate_filter.waiting_for_players[game_state_machine:last_queued_state_name()] and true or false
 end
 
 ---Returns wether you are currently in game (you're able to use your weapons, spot, call teammates etc) or not  
----Only returns true if currently ingame, does not check for GameState like ``Utils:IsInGameState()``
----@return boolean @``true`` if you are in game, ``false`` otherwise
+---Only returns true if currently ingame, does not check for GameState like `Utils:IsInGameState()`
+---@return boolean @`true` if you are in game, `false` otherwise
 function Utils:IsInHeist()
 	return BaseNetworkHandler and BaseNetworkHandler._gamestate_filter.any_ingame_playing[game_state_machine:last_queued_state_name()] and true or false
 end
 
 ---Returns whether you are currently in custody or not
----@return boolean @``true`` if you are in custody, ``false`` otherwise
+---@return boolean @`true` if you are in custody, `false` otherwise
 function Utils:IsInCustody()
 	local player = managers.player:local_player()
 	local in_custody = false
@@ -194,7 +172,7 @@ end
 
 ---Checks current primary weapon's weapon category
 ---@param type string @The weapon category to check for (refer to weapontweakdata.lua)
----@return boolean @``true`` if the weapon has ``type`` as category, ``false`` otherwise
+---@return boolean @`true` if the weapon has `type` as category, `false` otherwise
 function Utils:IsCurrentPrimaryOfCategory(type)
 	local primary = managers.blackmarket:equipped_primary()
 	if primary then
@@ -206,7 +184,7 @@ end
 
 ---Checks current secondary weapon's weapon category
 ---@param type string @The weapon category to check for (refer to weapontweakdata.lua)
----@return boolean @``true`` if the weapon has ``type`` as category, ``false`` otherwise
+---@return boolean @`true` if the weapon has `type` as category, `false` otherwise
 function Utils:IsCurrentSecondaryOfCategory(type)
 	local secondary = managers.blackmarket:equipped_secondary()
 	if secondary then
@@ -218,21 +196,21 @@ end
 
 ---Checks if a specific weapon is currently equipped
 ---@param type string @The weapon's name ID (refer to weapontweakdata.lua)
----@return boolean @``true`` if the currently equipped weapon matches ``type``, ``false`` otherwise
+---@return boolean @`true` if the currently equipped weapon matches `type`, `false` otherwise
 function Utils:IsCurrentWeapon(type)
 	local weapon = managers.player:local_player():inventory():equipped_unit():base()._name_id
 	return weapon == string.lower(type)
 end
 
 ---Checks if the currently equipped weapon is your primary weapon
----@return boolean @``true`` if the current weapon is a primary, ``false`` if not and ``nil`` if no weapon is equipped
+---@return boolean? @`true` if the current weapon is a primary, `false` if not and `nil` if no weapon is equipped
 function Utils:IsCurrentWeaponPrimary()
 	local weapon = managers.player:local_player():inventory():equipped_unit():base():selection_index()
 	return weapon and (managers.player._current_state ~= "mask_off" and weapon == 2)
 end
 
 ---Checks if the currently equipped weapon is your secondary weapon
----@return boolean @``true`` if the current weapon is a secondary, ``false`` if not and ``nil`` if no weapon is equipped
+---@return boolean? @`true` if the current weapon is a secondary, `false` if not and `nil` if no weapon is equipped
 function Utils:IsCurrentWeaponSecondary()
 	local weapon = managers.player:local_player():inventory():equipped_unit():base():selection_index()
 	return weapon and (managers.player._current_state ~= "mask_off" and weapon == 1)
@@ -240,8 +218,8 @@ end
 
 ---Gets the point in the world where the player is aiming at as a Vector3
 ---@param player_unit? userdata @The player unit to get the aiming position of (defaults to the local player)
----@param maximum_range? number @The maximum distance to check for a point in cm (defaults to ``100000``)
----@return Vector3? @A Vector3 containing the location that the player is looking at, or ``nil`` if the player was not looking at anything or was looking at something past the maximum_range
+---@param maximum_range? number @The maximum distance to check for a point in cm (defaults to `100000`)
+---@return Vector3? @A Vector3 containing the location that the player is looking at, or `nil` if the player was not looking at anything or was looking at something past the maximum_range
 function Utils:GetPlayerAimPos(player_unit, maximum_range)
 	player_unit = player_unit or managers.player:local_player()
 	maximum_range = maximum_range or 100000
@@ -265,7 +243,7 @@ end
 ---@param from Vector3 @The starting position of the ray (defaults to the current camera position)
 ---@param to Vector3 @The ending position of the ray (defaults to 200m in the current camera's look direction)
 ---@param slot_mask? string @The collision group to check against the ray (defaults to all objects the player can shoot)
----@return table? @A table containing the ray information or ``nil`` if no viewport camera exists
+---@return table? @A table containing the ray information or `nil` if no viewport camera exists
 function Utils:GetCrosshairRay(from, to, slot_mask)
 	local viewport = managers.viewport
 	if not viewport:get_current_camera() then
@@ -290,7 +268,7 @@ end
 
 ---Gets the string value of a toggle menu item and converts it to a boolean value
 ---@param item table @The toggle menu item to get a boolean value from
----@return boolean @``true`` if the toggle item is on, ``false`` otherwise
+---@return boolean @`true` if the toggle item is on, `false` otherwise
 function Utils:ToggleItemToBoolean(item)
 	return item:value() == "on" and true or false
 end
@@ -322,6 +300,78 @@ function Utils:TimestampToEpoch(year, month, day)
 	return (time or 0) + (offset or 0)
 end
 
+---Returns the first value in the list of arguments that isn't `nil`
+---@param ... any @List of values
+---@return any @First value that isn't `nil`, or `nil` if all of them are
+function Utils:FirstNonNil(...)
+	for _, v in pairs({...}) do
+		if v ~= nil then
+			return v
+		end
+	end
+end
+
+---Retrieves a value from a nested table by a sequence of keys
+---@param tbl table @The nested table to retrieve the value from
+---@param ... any @A sequence of keys to traverse the nested table
+---@return any @The value found in the nested table, or `nil` if any key in the sequence is not found
+function Utils:GetNestedValue(tbl, ...)
+	local value = tbl
+	for _, v in ipairs({...}) do
+		if type(value) ~= "table" then
+			return
+		end
+		value = value[v]
+	end
+	return value
+end
+
+---Sets a value in a nested table by a sequence of keys  
+---Creates keys if needed but will not override existing keys that don't hold table values
+---@param tbl table @The nested table to set the value in
+---@param val any @The value to set in the table
+---@param ... any @A sequence of keys to traverse the nested table
+---@return boolean @`true` if the value was set, or `false` if any key in the sequence doesn't hold a table value
+function Utils:SetNestedValue(tbl, val, ...)
+	local args = {...}
+	if #args == 0 then
+		return false
+	end
+
+	local scope = tbl
+	local last_key = table.remove(args)
+	for _, v in ipairs(args) do
+		if scope[v] == nil then
+			scope[v] = {}
+		elseif type(scope[v]) ~= "table" then
+			return false
+		end
+		scope = scope[v]
+	end
+
+	scope[last_key] = val
+
+	return true
+end
+
+---Checks if the given object is an instance of the specified class or a subclass of it
+---@param object table @The object to check
+---@param c table @The class to check against
+---@return boolean @`true` if the object is an instance of the specified class or subclass of it, `false` otherwise
+function Utils:IsInstanceOf(object, c)
+	local meta = getmetatable(object) or object
+	while meta do
+		if meta == c then
+			return true
+		end
+		meta = meta.super
+	end
+	return false
+end
+
+
+
+-- DEPRECATED FUNCTIONALITY --
 
 ---@deprecated @Use hooks or manual cloning instead
 function _G.CloneClass(class)
