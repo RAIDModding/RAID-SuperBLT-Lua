@@ -281,15 +281,16 @@ end
 ---multi_data = {
 ---	menu_id = "menu_id",
 ---	id = "element_id",
----	title = "My slider",
----	desc = "My slider description",
----	items = { "First", "Second", "Third" }
+---	title = "My multi choice",
+---	desc = "My multi choice description",
+---	items = { "First", "Second", "Third" },
+---	item_values = { 1, 2, 3 },
 ---	value = 1,
----	localized_items = true,
 ---	callback = "changed_callback_func",
 ---	disabled = false,
 ---	disabled_color = Color(0.25, 1, 1, 1),
 ---	localized = true,
+---	localized_items = true,
 ---	priority = 1
 ---}
 ---```
@@ -298,8 +299,14 @@ function MenuHelper:AddMultipleChoice(multi_data)
 	local data = {
 		type = "MenuItemMultiChoice"
 	}
-	for k, v in ipairs(multi_data.items or {}) do
-		table.insert(data, {_meta = "option", text_id = v, value = k, localize = multi_data.localized_items})
+	local values = multi_data.item_values or {}
+	for i, v in ipairs(multi_data.items or {}) do
+		table.insert(data, {
+			_meta = "option",
+			text_id = v,
+			value = values[i] == nil and i or values[i],
+			localize = multi_data.localized_items
+		})
 	end
 
 	local params = {
@@ -315,7 +322,7 @@ function MenuHelper:AddMultipleChoice(multi_data)
 	local menu = self:GetMenu(multi_data.menu_id)
 	local item = menu:create_item(data, params)
 	item._priority = multi_data.priority
-	item:set_value(multi_data.value or 1)
+	item:set_value(multi_data.value or values[1] == nil and 1 or values[1])
 
 	if multi_data.disabled then
 		item:set_enabled(not multi_data.disabled)
@@ -707,6 +714,7 @@ function MenuHelper:LoadFromJsonFile(file_path, parent_class, data_table)
 						desc = desc,
 						callback = callback,
 						items = item.items,
+						item_values = item.item_values,
 						value = value,
 						menu_id = menu_id,
 						priority = priority,
