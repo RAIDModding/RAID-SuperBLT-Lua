@@ -4,6 +4,15 @@ This lists the changes between different versions of the SuperBLT basemod,
 the changes for the DLL are listed in their own changelog.
 Contributors other than maintainers are listed in parenthesis after specific changes.
 
+## v1.3.8
+- Updated Simplified Chinese localization (act2498)
+- Updated Czech localization (vojin154)
+- Updated Spanish localization (ElCabe99)
+- Updated MenuHelper documentation
+- Added additional parameters for slider and multi choice menu items (see documentation)
+- Fixed mod UI resetting its settings occasionally
+- Added additional utility functions to UtilsCore
+
 ## v1.3.7
 
 - Added functionality for setting minimum and maximum sound distance on XAudio sources
