@@ -63,7 +63,7 @@
 	"blt_download_manager_help" : "记得更新您的 BLT 模组。\n看在上帝的份上，记得更新您的模组。",
 	"blt_download_ready" : "准备下载",
 	"blt_download_waiting" : "请稍后...",
-	"blt_download_downloading" : "正在下载... $bytes;b/$total_bytes;b",
+	"blt_download_downloading" : "正在下载... $current; $unit; / $total; $unit;",
 	"blt_download_saving" : "正在保存到本地磁盘...",
 	"blt_download_extracting" : "正在解压...",
 	"blt_download_verifying" : "正在验证...",

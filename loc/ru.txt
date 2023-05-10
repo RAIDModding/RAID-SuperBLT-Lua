@@ -59,7 +59,7 @@
 	"blt_download_manager_help" : "Обновите свои BLT моды.\nРади Бога, обновите их!",
 	"blt_download_ready" : "Готов к загрузке",
 	"blt_download_waiting" : "Ожидание...",
-	"blt_download_downloading" : "Загрузка... $bytes;б/$total_bytes;б",
+	"blt_download_downloading" : "Загрузка... $current; $unit; / $total; $unit;",
 	"blt_download_saving" : "Сохранение на диск...",
 	"blt_download_extracting" : "Распаковка...",
 	"blt_download_verifying" : "Проверка...",

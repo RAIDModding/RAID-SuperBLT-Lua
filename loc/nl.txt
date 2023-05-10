@@ -63,7 +63,7 @@
 	"blt_download_manager_help" : "Update je BLT Mods.\nZorg dat je mods bijgewerkt blijven.",
 	"blt_download_ready" : "Klaar om te downloaden",
 	"blt_download_waiting" : "Wachten...",
-	"blt_download_downloading" : "Downloaden... $bytes;b/$total_bytes;b",
+	"blt_download_downloading" : "Downloaden... $current; $unit; / $total; $unit;",
 	"blt_download_saving" : "Opslaan...",
 	"blt_download_extracting" : "Uitpakken...",
 	"blt_download_verifying" : "Controleren...",

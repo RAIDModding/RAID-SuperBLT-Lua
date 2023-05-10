@@ -63,7 +63,7 @@
 	"blt_download_manager_help" : "Mettre à jour vos mods BLT.\nPour l'amour de Dieu, mettez à jour vos mods.",
 	"blt_download_ready" : "Prêt à télécharger",
 	"blt_download_waiting" : "Attente...",
-	"blt_download_downloading" : "Téléchargement... $bytes;b/$total_bytes;b",
+	"blt_download_downloading" : "Téléchargement... $current; $unit; / $total; $unit;",
 	"blt_download_saving" : "Enregistrement sur le disque...",
 	"blt_download_extracting" : "Extraction...",
 	"blt_download_verifying" : "Vérification...",

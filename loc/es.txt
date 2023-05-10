@@ -63,7 +63,7 @@
 	"blt_download_manager_help" : "Actualiza tus mods BLT.\nPor el amor de Sydney, ¡actualiza tus mods!",
 	"blt_download_ready" : "Listo para descargar",
 	"blt_download_waiting" : "Esperando...",
-	"blt_download_downloading" : "Descargando... $bytes;b/$total_bytes;b",
+	"blt_download_downloading" : "Descargando... $current; $unit; / $total; $unit;",
 	"blt_download_saving" : "Guardando...",
 	"blt_download_extracting" : "Extrayendo...",
 	"blt_download_verifying" : "Verificando...",

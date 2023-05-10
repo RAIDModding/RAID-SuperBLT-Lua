@@ -460,9 +460,18 @@ function BLTDownloadControl:_update_saving(download, percent)
 end
 
 function BLTDownloadControl:_update_download(download, percent)
+	local current = download.bytes / 1024
+	local total = download.total_bytes / 1024
+	local unit = "KB"
+	if total > 1024 then
+		current = current / 1024
+		total = total / 1024
+		unit = "MB"
+	end
 	local macros = {
-		bytes = managers.experience:cash_string(download.bytes, ""),
-		total_bytes = managers.experience:cash_string(download.total_bytes, "")
+		current = string.format("%.1f", current),
+		total = string.format("%.1f", total),
+		unit = unit
 	}
 	self._download_state:set_text(managers.localization:text("blt_download_downloading", macros))
 	self._download_progress:set_visible(true)

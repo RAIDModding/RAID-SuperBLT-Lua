@@ -63,7 +63,7 @@
 	"blt_download_manager_help" : "Aktualizujte vaše mody.\nPro lásku boží udělejte to.",
 	"blt_download_ready" : "Připraveno ke stažení",
 	"blt_download_waiting" : "Čekání...",
-	"blt_download_downloading" : "Stahování... $bytes;B/$total_bytes;B",
+	"blt_download_downloading" : "Stahování... $current; $unit; / $total; $unit;",
 	"blt_download_saving" : "Ukládání na disk...",
 	"blt_download_extracting" : "Extrahování...",
 	"blt_download_verifying" : "Ověřování...",
