@@ -1,5 +1,4 @@
 _G.Hooks = Hooks or {}
-Hooks._current_hook_return = {}
 Hooks._registered_hooks = Hooks._registered_hooks or {}
 Hooks._function_hooks = Hooks._function_hooks or {}
 
@@ -102,7 +101,7 @@ function Hooks:ReturnCall(key, ...)
 	for k, v in pairs(self._registered_hooks[key]) do
 		if v then
 			if type(v.func) == "function" then
-				local r = {v.func(...)}
+				local r = { v.func(...) }
 				if next(r) == 1 then
 					return unpack(r)
 				end
@@ -220,7 +219,9 @@ end
 ---Returns the return value(s) of the currently running hook
 ---@return any ... @Any amount of return values of the current hook
 function Hooks:GetReturn()
-	return unpack(self._current_hook_return)
+	if self._current_function_hook and self._current_function_hook.returns then
+		return unpack(Hooks._current_function_hook.returns)
+	end
 end
 
 -- Shared function to log hook errors
@@ -247,32 +248,39 @@ function Hooks:_ChkCreateTableStructure(object, func)
 	}
 
 	object[func] = function(...)
-		local hooked_func = self._function_hooks[object][func]
-		local hook_return = {}
+		local function_hook = self._function_hooks[object][func]
+		local hook_return
 
 		-- Call prehooks
-		for k, v in ipairs(hooked_func.overrides.pre) do
-			self._current_hook_return = {v.func(...)}
-			if next(self._current_hook_return) then
-				hook_return = self._current_hook_return
+		for k, v in ipairs(function_hook.overrides.pre) do
+			self._current_function_hook = function_hook
+			hook_return = { v.func(...) }
+			if next(hook_return) then
+				function_hook.returns = hook_return
 			end
 		end
 
 		-- Call original function
-		self._current_hook_return = {hooked_func.original(...)}
-		if next(self._current_hook_return) then
-			hook_return = self._current_hook_return
+		hook_return = { function_hook.original(...) }
+		if next(hook_return) then
+			function_hook.returns = hook_return
 		end
 
 		-- Call posthooks
-		for k, v in ipairs(hooked_func.overrides.post) do
-			self._current_hook_return = {v.func(...)}
-			if next(self._current_hook_return) then
-				hook_return = self._current_hook_return
+		for k, v in ipairs(function_hook.overrides.post) do
+			self._current_function_hook = function_hook
+			hook_return = { v.func(...) }
+			if next(hook_return) then
+				function_hook.returns = hook_return
 			end
 		end
 
-		return unpack(hook_return)
+		if function_hook.returns then
+			hook_return = function_hook.returns
+			function_hook.returns = nil
+
+			return unpack(hook_return)
+		end
 	end
 
 	return true
