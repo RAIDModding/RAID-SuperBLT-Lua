@@ -159,61 +159,52 @@ end
 ---@return boolean @`true` if you are in custody, `false` otherwise
 function Utils:IsInCustody()
 	local player = managers.player:local_player()
-	local in_custody = false
-	if managers and managers.trade and not alive(player) then
+	if not alive(player) and managers and managers.trade then
 		local session = managers.network:session()
-
-		if session and session:local_peer() and session:local_peer():id() then
-			in_custody = managers.trade:is_peer_in_custody(managers.network:session():local_peer():id())
-		end
+		return session and session:local_peer() and managers.trade:is_peer_in_custody(session:local_peer():id()) or false
 	end
-	return in_custody
+	return false
 end
 
 ---Checks current primary weapon's weapon category
----@param type string @The weapon category to check for (refer to weapontweakdata.lua)
----@return boolean @`true` if the weapon has `type` as category, `false` otherwise
-function Utils:IsCurrentPrimaryOfCategory(type)
+---@param category string @The weapon category to check for (refer to weapontweakdata.lua)
+---@return boolean @`true` if the weapon has `category` as category, `false` otherwise
+function Utils:IsCurrentPrimaryOfCategory(category)
 	local primary = managers.blackmarket:equipped_primary()
-	if primary then
-		local category = tweak_data.weapon[primary.weapon_id].category
-		return category == string.lower(type)
-	end
-	return false
+	return primary and table.contains(tweak_data.weapon[primary.weapon_id].categories, category) or false
 end
 
 ---Checks current secondary weapon's weapon category
----@param type string @The weapon category to check for (refer to weapontweakdata.lua)
----@return boolean @`true` if the weapon has `type` as category, `false` otherwise
-function Utils:IsCurrentSecondaryOfCategory(type)
+---@param category string @The weapon category to check for (refer to weapontweakdata.lua)
+---@return boolean @`true` if the weapon has `category` as category, `false` otherwise
+function Utils:IsCurrentSecondaryOfCategory(category)
 	local secondary = managers.blackmarket:equipped_secondary()
-	if secondary then
-		local category = tweak_data.weapon[secondary.weapon_id].category
-		return category == string.lower(type)
-	end
-	return false
+	return secondary and table.contains(tweak_data.weapon[secondary.weapon_id].categories, category) or false
 end
 
 ---Checks if a specific weapon is currently equipped
----@param type string @The weapon's name ID (refer to weapontweakdata.lua)
----@return boolean @`true` if the currently equipped weapon matches `type`, `false` otherwise
-function Utils:IsCurrentWeapon(type)
-	local weapon = managers.player:local_player():inventory():equipped_unit():base()._name_id
-	return weapon == string.lower(type)
+---@param id string @The weapon's name ID (refer to weapontweakdata.lua)
+---@return boolean @`true` if the currently equipped weapon matches `id`, `false` if not and `nil` if no weapon is equipped
+function Utils:IsCurrentWeapon(id)
+	local player = managers.player:local_player()
+	local weapon = player and player:inventory():equipped_unit()
+	return weapon and weapon:base()._name_id == id
 end
 
 ---Checks if the currently equipped weapon is your primary weapon
 ---@return boolean? @`true` if the current weapon is a primary, `false` if not and `nil` if no weapon is equipped
 function Utils:IsCurrentWeaponPrimary()
-	local weapon = managers.player:local_player():inventory():equipped_unit():base():selection_index()
-	return weapon and (managers.player._current_state ~= "mask_off" and weapon == 2)
+	local player = managers.player:local_player()
+	local weapon = player and player:inventory():equipped_unit()
+	return weapon and weapon:base():selection_index() == 2
 end
 
 ---Checks if the currently equipped weapon is your secondary weapon
 ---@return boolean? @`true` if the current weapon is a secondary, `false` if not and `nil` if no weapon is equipped
 function Utils:IsCurrentWeaponSecondary()
-	local weapon = managers.player:local_player():inventory():equipped_unit():base():selection_index()
-	return weapon and (managers.player._current_state ~= "mask_off" and weapon == 1)
+	local player = managers.player:local_player()
+	local weapon = player and player:inventory():equipped_unit()
+	return weapon and weapon:base():selection_index() == 1
 end
 
 ---Gets the point in the world where the player is aiming at as a Vector3
