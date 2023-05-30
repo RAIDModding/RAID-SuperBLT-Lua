@@ -27,17 +27,6 @@ _G.LogLevelPrefix = {
 _G.BLT = { version = 2.0 }
 _G.BLT.Base = {}
 
-_G.print = function(...)
-	local s = ""
-	for i, str in ipairs({ ... }) do
-		if type(str) == "string" then
-			str = string.gsub(str, "%%", "%%%%%")
-		end
-		s = string.format("%s%s%s", s, i > 1 and "\t" or "", tostring(str))
-	end
-	log(s)
-end
-
 -- Load modules
 _G.BLT._PATH = "mods/base/"
 function BLT:Require(path)
@@ -75,11 +64,14 @@ function BLT:Log(level, ...)
 	if level > BLTLogs.log_level then
 		return
 	end
-	local s = LogLevelPrefix[level] or ""
-	for _, v in pairs({ ... }) do
-		s = s .. tostring(v) .. " "
+
+	local out = {LogLevelPrefix[level] or "", ...}
+	local n = select("#", ...) -- allow nil holes
+	-- skip prefix, allow for n=0
+	for i = 2, n+1, 1 do
+		out[i] = tostring(out[i])
 	end
-	log(s)
+	log(table.concat(out, " "))
 end
 
 -- BLT base functions
