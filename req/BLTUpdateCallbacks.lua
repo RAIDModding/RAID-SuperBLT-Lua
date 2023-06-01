@@ -5,9 +5,5 @@
 BLTUpdateCallbacks = {}
 
 function BLTUpdateCallbacks.blt_can_update_dll(update)
-	if not file.FileExists then
-		return update.hash_file == "./IPHLPAPI.dll"
-	end
-
-	return file.FileExists(update.hash_file)
+	return io.file_is_readable(update.hash_file)
 end
