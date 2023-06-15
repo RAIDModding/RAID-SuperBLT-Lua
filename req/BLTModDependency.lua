@@ -54,14 +54,14 @@ function BLTModDependency:Retrieve(clbk)
 	-- If a download url is provided use it, otherwise get the url from a meta file
 	if self._download_data.download_url then
 		-- Need to wrap this in a coroutine to prevent crashing when called from main thread
-		local co = coroutine.create(function ()
+		local co = coroutine.create(function()
 			clbk(self, true)
 		end)
 		coroutine.resume(co)
 	else
 		self._retrieving = true
-		dohttpreq(self._download_data.meta, function(json_data, http_id)
-			self:clbk_got_data(clbk, json_data, http_id)
+		dohttpreq(self._download_data.meta, function(json_data, http_id, request_info)
+			self:clbk_got_data(clbk, json_data, http_id, request_info)
 		end)
 	end
 end
@@ -70,10 +70,10 @@ function BLTModDependency:GetDownloadURL()
 	return self._server_data and self._server_data.download_url or self._download_data.download_url
 end
 
-function BLTModDependency:clbk_got_data(clbk, json_data, http_id)
+function BLTModDependency:clbk_got_data(clbk, json_data, http_id, request_info)
 	self._retrieving = false
 
-	if json_data:is_nil_or_empty() then
+	if not request_info.querySucceeded or string.is_nil_or_empty(json_data) then
 		BLT:Log(LogLevel.ERROR, "Could not connect to the downloads server!")
 		return self:_run_update_callback(clbk, false, "Could not connect to the downloads server.")
 	end

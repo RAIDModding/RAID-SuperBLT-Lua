@@ -49,20 +49,19 @@ function BLTUpdate:CheckForUpdates(clbk)
 	local url = self.host.meta
 
 	-- Make the actual request
-	dohttpreq(url, function(json_data, http_id)
-		self:clbk_got_update_data(clbk, json_data, http_id)
+	dohttpreq(url, function(json_data, http_id, request_info)
+		self:clbk_got_update_data(clbk, json_data, http_id, request_info)
 	end)
 end
 
-function BLTUpdate:clbk_got_update_data(clbk, json_data, http_id)
-	if json_data:is_nil_or_empty() then
+function BLTUpdate:clbk_got_update_data(clbk, json_data, http_id, request_info)
+	self._requesting_updates = false
+
+	if not request_info.querySucceeded or string.is_nil_or_empty(json_data) then
 		BLT:Log(LogLevel.WARN, "Could not connect to the download server!")
 		self._error = "Could not connect to the download server."
 		return self:_run_update_callback(clbk, false, self._error)
 	end
-
-	-- We're done checking for updates
-	self._requesting_updates = false
 
 	local server_data = json.decode(json_data)
 	if server_data then

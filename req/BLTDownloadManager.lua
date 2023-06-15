@@ -132,8 +132,15 @@ function BLTDownloadManager:start_download(update)
 	return true
 end
 
-function BLTDownloadManager:clbk_download_finished(data, http_id)
+function BLTDownloadManager:clbk_download_finished(data, http_id, request_info)
 	local download = self:get_download_from_http_id(http_id)
+
+	if not request_info.querySucceeded or string.is_nil_or_empty(data) then
+		BLT:Log(LogLevel.ERROR, string.format("[Downloads] Download of %s (%s) failed", download.update:GetName(), download.update:GetParentMod():GetName()))
+		download.state = "failed"
+		return
+	end
+
 	BLT:Log(LogLevel.INFO, string.format("[Downloads] Finished download of %s (%s)", download.update:GetName(), download.update:GetParentMod():GetName()))
 
 	-- Holy shit this is hacky, but to make sure we can update the UI correctly to reflect whats going on, we run this in a coroutine
