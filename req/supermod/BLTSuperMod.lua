@@ -5,7 +5,7 @@ BLTSuperMod = blt_class()
 BLT:Require("req/supermod/SuperModAssetLoader")
 
 function BLTSuperMod.try_load(mod, file_name)
-	local supermod_path = "mods/" .. mod:GetId() .. "/" .. (file_name or "supermod.xml")
+	local supermod_path = mod:GetPath() .. (file_name or "supermod.xml")
 
 	-- Attempt to read the mod defintion file
 	local file = io.open(supermod_path)
@@ -127,7 +127,7 @@ function BLTSuperMod:_replace_includes(xml)
 		tag._doc = xml._doc
 
 		if tag.name == ":include" then
-			local file_path = "mods/" .. self._mod:GetId() .. "/" .. tag.params.src
+			local file_path = self._mod:GetPath() .. tag.params.src
 
 			-- Attempt to read the mod defintion file
 			local file = io.open(file_path)

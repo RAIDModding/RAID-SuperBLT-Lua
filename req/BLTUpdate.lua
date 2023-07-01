@@ -1,28 +1,26 @@
 ---@class BLTUpdate
----@field new fun(self, parent_mod: BLTMod, data: table):BLTUpdate
+---@field new fun(self, parent_mod: BLTMod, data: table):BLTUpdate, boolean
 BLTUpdate = blt_class()
 BLTUpdate.enabled = true
-BLTUpdate.parent_mod = nil
-BLTUpdate.id = ""
-BLTUpdate.name = "BLT Update"
 BLTUpdate.revision = 1
-BLTUpdate.dir = "mods/"
-BLTUpdate.folder = ""
 
 function BLTUpdate:init(parent_mod, data)
-	assert(parent_mod, "BLTUpdates can not be created without a parent mod!")
-	assert(data, "BLTUpdates can not be created without json update data!")
+	if not parent_mod or not data or not data.host then
+		return false
+	end
 
 	self.parent_mod = parent_mod
-	self.id = data["identifier"] or ""
-	self.name = data["display_name"] or parent_mod:GetName()
-	self.dir = data["install_dir"] or "mods/"
-	self.folder = data["install_folder"] or parent_mod:GetId()
-	self.disallow_update = data["disallow_update"] or false
-	self.hash_file = data["hash_file"] or false
-	self.critical = data["critical"] or false
-	self.host = data["host"]
-	self.present_func = data["present_func"]
+	self.id = data.identifier or ""
+	self.name = data.display_name or parent_mod:GetName()
+	self.dir = data.install_dir or parent_mod:GetDir()
+	self.folder = data.install_folder or parent_mod:GetId()
+	self.disallow_update = data.disallow_update or false
+	self.hash_file = data.hash_file or false
+	self.critical = data.critical or false
+	self.host = data.host
+	self.present_func = data.present_func
+
+	return true
 end
 
 function BLTUpdate:__tostring()
@@ -46,10 +44,7 @@ function BLTUpdate:CheckForUpdates(clbk)
 	self._requesting_updates = true
 
 	-- Perform the request from the server
-	local url = self.host.meta
-
-	-- Make the actual request
-	dohttpreq(url, function(json_data, http_id, request_info)
+	dohttpreq(self.host.meta, function(json_data, http_id, request_info)
 		self:clbk_got_update_data(clbk, json_data, http_id, request_info)
 	end)
 end

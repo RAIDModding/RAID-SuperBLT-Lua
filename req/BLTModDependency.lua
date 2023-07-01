@@ -3,7 +3,7 @@
 BLTModDependency = BLTModDependency or blt_class()
 
 function BLTModDependency:init(parent_mod, id, download_data)
-	if not download_data or not download_data.meta and not download_data.download_url then
+	if not parent_mod or not id or not download_data or not download_data.meta and not download_data.download_url then
 		return false
 	end
 
@@ -43,7 +43,7 @@ function BLTModDependency:DisallowsUpdate()
 end
 
 function BLTModDependency:GetInstallDirectory()
-	return self._server_data and self._server_data.install_dir or self._download_data.install_dir or "mods/"
+	return self._server_data and self._server_data.install_dir or self._download_data.install_dir or BLTModManager.Constants.mods_directory
 end
 
 function BLTModDependency:Retrieve(clbk)

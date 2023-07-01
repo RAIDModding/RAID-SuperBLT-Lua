@@ -18,9 +18,9 @@ _G.LogLevel = {
 }
 
 _G.LogLevelPrefix = {
-	[LogLevel.ERROR] = "[ERROR] ",
-	[LogLevel.WARN] = "[WARN] ",
-	[LogLevel.INFO] = "[INFO] "
+	[LogLevel.ERROR] = "[ERROR]",
+	[LogLevel.WARN] = "[WARN]",
+	[LogLevel.INFO] = "[INFO]"
 }
 
 -- BLT Global table
@@ -199,7 +199,8 @@ end
 function BLT:FindMods()
 	-- Get all folders in mods directory
 	local mods_list = {}
-	local folders = file.GetDirectories(BLTModManager.Constants.mods_directory)
+	local mods_directory = BLTModManager.Constants.mods_directory
+	local folders = file.GetDirectories(mods_directory)
 
 	-- If we didn't get any folders then return an empty mods list
 	if not folders then
@@ -209,11 +210,10 @@ function BLT:FindMods()
 	for index, directory in pairs(folders) do
 		-- Check if this directory is excluded from being checked for mods (logs, saves, etc.)
 		if not self.Mods:IsExcludedDirectory(directory) then
-			local mod_path = "mods/" .. directory .. "/"
-			local mod_defintion = mod_path .. "mod.txt"
+			local mod_path = mods_directory .. directory .. "/"
 
 			-- Attempt to read the mod defintion file
-			local file = io.open(mod_defintion)
+			local file = io.open(mod_path .. "mod.txt")
 			if file then
 				-- Read the file contents
 				local file_contents = file:read("*all")
@@ -222,8 +222,8 @@ function BLT:FindMods()
 				-- Create a BLT mod from the loaded data
 				local mod_content = json.decode(file_contents)
 				if mod_content then
-					local new_mod = BLTMod:new(directory, mod_content)
-					if new_mod:IsAllowedInCurrentMode() then
+					local new_mod, valid = BLTMod:new(directory, mod_content, mod_path)
+					if valid then
 						table.insert(mods_list, new_mod)
 					end
 				else

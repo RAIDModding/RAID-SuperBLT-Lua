@@ -1,52 +1,43 @@
 ---@class BLTMod
----@field new fun(self, ident: string, data: table):BLTMod
+---@field new fun(self, identifier: string, data: table, path: string):BLTMod, boolean
 BLTMod = blt_class()
 BLTMod.enabled = true
 BLTMod._enabled = true
-BLTMod.path = ""
-BLTMod.json_data = ""
-BLTMod.id = "blt_mod"
-BLTMod.name = "Unnamed BLT Mod"
-BLTMod.desc = "No description."
-BLTMod.version = "1.0"
-BLTMod.author = "Unknown"
-BLTMod.contact = "N/A"
-BLTMod.priority = 0
+BLTMod.safe_mode = true
 
-function BLTMod:init(ident, data)
-	assert(ident, "BLTMods can not be created without a mod identifier!")
-	assert(data, "BLTMods can not be created without json data!")
+function BLTMod:init(identifier, data, path)
+	if not identifier or not data or not path then
+		return false
+	end
 
 	self._errors = {}
 	self._legacy_updates = {}
 
 	-- Mod information
+	self.id = identifier
 	self.json_data = data
-	self.id = ident
-	self.path = string.format("mods/%s/", ident)
-	self.name = data["name"] or "Error: No Name!"
-	self.desc = data["description"] or self.desc
-	self.version = data["version"] or self.version
-	self.blt_version = data["blt_version"] or "unknown"
-	self.author = data["author"] or self.author
-	self.contact = data["contact"] or self.contact
-	self.priority = tonumber(data["priority"]) or 0
-	self.dependencies = data["dependencies"] or {}
-	self.color = data["color"] or nil
-	self.image_path = data["image"] or nil
-	self.disable_safe_mode = data["disable_safe_mode"] or false
-	self.undisablable = data["undisablable"] or false
-	self.safe_mode = true
-	self.library = data["is_library"] or false
-	self.vr_disabled = data["vr_disabled"] or false
-	self.desktop_disabled = data["desktop_disabled"] or false
+	self.path = path
+
+	self.name = data.name or "Unnamed BLT Mod"
+	self.desc = data.description or "No description"
+	self.version = data.version or "1.0"
+	self.blt_version = data.blt_version or "1.0"
+	self.author = data.author or "Unknown"
+	self.contact = data.contact or "N/A"
+	self.priority = tonumber(data.priority) or 0
+	self.dependencies = data.dependencies or {}
+	self.color = data.color or nil
+	self.image_path = data.image or nil
+	self.disable_safe_mode = data.disable_safe_mode or false
+	self.undisablable = data.undisablable or false
+	self.library = data.is_library or false
+	self.vr_disabled = data.vr_disabled or false
+	self.desktop_disabled = data.desktop_disabled or false
 
 	-- Updates data
 	self.updates = {}
-
-	local updates = self.json_data["updates"]
-	if updates then
-		for i, update_data in ipairs(updates) do
+	if data.updates then
+		for i, update_data in ipairs(data.updates) do
 			if not update_data.host then
 				-- Old PaydayMods update, server is gone so don't update those
 				-- Do keep track of what we have installed though, for dependencies
@@ -54,16 +45,15 @@ function BLTMod:init(ident, data)
 					self._legacy_updates[update_data.identifier] = true
 				end
 			else
-				local new_update = BLTUpdate:new(self, update_data)
-				if new_update:IsPresent() then
+				local new_update, valid = BLTUpdate:new(self, update_data)
+				if valid and new_update:IsPresent() then
 					table.insert(self.updates, new_update)
 				end
 			end
 		end
 	end
-end
 
-function BLTMod:IsAllowedInCurrentMode()
+	-- Return wether the mod is valid (allowed to run in VR/Non-VR)
 	local is_vr = BLT:IsVr()
 	return is_vr and not self.vr_disabled or not is_vr and not self.desktop_disabled
 end
@@ -86,26 +76,26 @@ function BLTMod:Setup()
 
 	-- Keybinds
 	if BLT.Keybinds then
-		for i, keybind_data in ipairs(self.json_data["keybinds"] or {}) do
+		for i, keybind_data in ipairs(self.json_data.keybinds or {}) do
 			BLT.Keybinds:register_keybind_json(self, keybind_data)
 		end
 	end
 
 	-- Persist Scripts
-	for i, persist_data in ipairs(self.json_data["persist_scripts"] or {}) do
-		if persist_data and persist_data["global"] and persist_data["script_path"] then
-			self:AddPersistScript(persist_data["global"], persist_data["script_path"])
+	for i, persist_data in ipairs(self.json_data.persist_scripts or {}) do
+		if persist_data and persist_data.global and persist_data.script_path then
+			self:AddPersistScript(persist_data.global, persist_data.script_path)
 		end
 	end
 
 	-- Set up the supermod instance
-	self.supermod = BLTSuperMod.try_load(self, self.json_data["supermod_definition"])
+	self.supermod = BLTSuperMod.try_load(self, self.json_data.supermod_definition)
 end
 
 function BLTMod:AddHooks(data_key, destination, wildcards_destination)
 	for i, hook_data in ipairs(self.json_data[data_key] or {}) do
-		local hook_id = hook_data["hook_id"] and hook_data["hook_id"]:lower()
-		local script = hook_data["script_path"]
+		local hook_id = hook_data.hook_id and hook_data.hook_id:lower()
+		local script = hook_data.script_path
 
 		self:AddHook(data_key, hook_id, script, destination, wildcards_destination)
 	end
@@ -151,11 +141,11 @@ function BLTMod:AddPersistScript(global, file)
 end
 
 function BLTMod:GetHooks()
-	return (self.hooks or {})["hooks"]
+	return (self.hooks or {}).hooks
 end
 
 function BLTMod:GetPreHooks()
-	return (self.hooks or {})["pre_hooks"]
+	return (self.hooks or {}).pre_hooks
 end
 
 function BLTMod:GetPersistScripts()
@@ -191,23 +181,21 @@ function BLTMod:WasEnabledAtStart()
 	return self._enabled
 end
 
-function BLTMod:CanBeDisabled()
-	return self.id ~= "base"
-end
-
 function BLTMod:SetEnabled(enable, force)
-	if not self:CanBeDisabled() then
-		-- Base mod must always be enabled
-		enable = true
-	end
-	self.enabled = enable
+	self.enabled = self:IsUndisablable() or enable
 	if force then
-		self._enabled = enable
+		self._enabled = self.enabled
 	end
 end
 
 function BLTMod:GetPath()
 	return self.path
+end
+
+function BLTMod:GetDir()
+	-- Strip mod folder name from path
+	local dir = self:GetPath():gsub("[^/\\]+[/\\]$", "")
+	return dir
 end
 
 function BLTMod:GetJsonData()
@@ -401,7 +389,7 @@ function BLTMod:DisableSafeMode()
 end
 
 function BLTMod:IsUndisablable()
-	return self.undisablable or false
+	return self.id == "base" or self.undisablable or false
 end
 
 function BLTMod:HasDependencies()
@@ -455,9 +443,9 @@ function BLTMod:AreDependenciesInstalled()
 		if not found then
 			installed = false
 			local download_data = type(data) == "table" and data or { download_url = data }
-			local dependency, valid = BLTModDependency:new(self, id, download_data)
+			local new_dependency, valid = BLTModDependency:new(self, id, download_data)
 			if valid then
-				table.insert(self.missing_dependencies, dependency)
+				table.insert(self.missing_dependencies, new_dependency)
 			else
 				BLT:Log(LogLevel.ERROR, string.format("Invalid dependency '%s' for mod '%s'", id, self:GetName()))
 			end
