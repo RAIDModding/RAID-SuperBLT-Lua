@@ -58,16 +58,16 @@ function BLTUpdate:clbk_got_update_data(clbk, json_data, http_id, request_info)
 	self._requesting_updates = false
 
 	if not request_info.querySucceeded or string.is_nil_or_empty(json_data) then
-		BLT:Log(LogLevel.WARN, "Could not connect to the download server!")
-		self._error = "Could not connect to the download server."
+		BLT:Log(LogLevel.WARN, string.format("[Updates] Could not retrieve update data for '%s'", self:GetId()))
+		self._error = "Could not retrieve update data."
 		return self:_run_update_callback(clbk, false, self._error)
 	end
 
 	local server_data = json.decode(json_data)
 	if server_data then
 		for _, data in pairs(server_data) do
-			BLT:Log(LogLevel.INFO, string.format("[Updates] Received update data for '%s'", data.ident))
 			if data.ident == self:GetId() then
+				BLT:Log(LogLevel.INFO, string.format("[Updates] Received update data for '%s'", self:GetId()))
 				self._update_data = data
 				if data.hash then -- Use hash to check
 					self._server_hash = data.hash
@@ -86,8 +86,8 @@ function BLTUpdate:clbk_got_update_data(clbk, json_data, http_id, request_info)
 				-- A string is the hashed value
 				if not hash_result then
 					-- Errored, file does not exist
-					self._error = "File to be version checked was missing on local machine"
-					BLT:Log(LogLevel.ERROR, "[Updates] " .. self._error .. " mod " .. self:GetId())
+					self._error = "File to be version checked is missing."
+					BLT:Log(LogLevel.ERROR, string.format("[Updates] File to be version checked is missing for '%s'", self:GetId()))
 					return self:_run_update_callback(clbk, false, self._error)
 				elseif hash_result ~= true then
 					-- Manually check the hash, since we're running on an old
@@ -105,7 +105,7 @@ function BLTUpdate:clbk_got_update_data(clbk, json_data, http_id, request_info)
 	end
 
 	self._error = "No valid mod ID was returned by the server."
-	BLT:Log(LogLevel.ERROR, "[Updates] Invalid or corrupt update data for mod " .. self:GetId())
+	BLT:Log(LogLevel.ERROR, string.format("[Updates] Invalid or corrupt update data for '%s'", self:GetId()))
 	return self:_run_update_callback(clbk, false, self._error)
 end
 
@@ -114,9 +114,9 @@ function BLTUpdate:_check_hash(dat, local_hash)
 
 	self._requesting_updates = false
 
-	BLT:Log(LogLevel.INFO, string.format("[Updates] Comparing hash data for %s:\nServer: %s\n Local: %s", data.ident, data.hash, local_hash))
+	BLT:Log(LogLevel.INFO, string.format("[Updates] Comparing hash data for '%s':\nServer: %s\n Local: %s", data.ident, data.hash, local_hash))
 	if not data.hash then
-		BLT:Log(LogLevel.WARN, string.format("[Updates] [WARN] Missing server hash for mod %s", data.ident))
+		BLT:Log(LogLevel.WARN, string.format("[Updates] [WARN] Missing server hash for mod '%s'", data.ident))
 		return self:_run_update_callback(clbk, false)
 	end
 

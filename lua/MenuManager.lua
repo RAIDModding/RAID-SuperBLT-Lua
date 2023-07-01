@@ -103,7 +103,7 @@ function MenuCallbackHandler:perform_blt_save()
 
 	local success = io.save_as_json(BLT.save_data, BLTModManager.Constants:ModManagerSaveFile(BLT:IsVr()))
 	if not success then
-		BLT:Log(LogLevel.ERROR, "[BLT] Could not save file " .. BLTModManager.Constants:ModManagerSaveFile())
+		BLT:Log(LogLevel.ERROR, "[BLT] Could not save file " .. BLTModManager.Constants:ModManagerSaveFile(BLT:IsVr()))
 	end
 end
 

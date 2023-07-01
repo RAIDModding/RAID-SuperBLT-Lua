@@ -109,17 +109,16 @@ function BLTSuperMod:_add_native_module(tag, scope)
 	end
 
 	if not blt.load_native or not blt.blt_info then
-		BLT:Log(LogLevel.ERROR, "[BLT] Cannot load native module for mod " .. self._mod:GetId()
-			.. " as such functionality is not available in this version of the SuperBLT DLL/SO")
+		BLT:Log(LogLevel.ERROR, string.format("[BLT] Cannot load native module for '%s' (functionality missing)", self._mod:GetName()))
 		return
 	end
 
 	if blt.blt_info().platform ~= scope.platform then
-		BLT:Log(LogLevel.ERROR, "[BLT] Incorrect platform for native module for " .. self._mod:GetId())
+		BLT:Log(LogLevel.ERROR, string.format("[BLT] Incorrect platform for native module for '%s'", self._mod:GetName()))
 		return
 	end
 
-	BLT:Log(LogLevel.INFO, "[BLT] Loading native module for " .. self._mod:GetId())
+	BLT:Log(LogLevel.INFO, string.format("[BLT] Loading native module for '%s'", self._mod:GetName()))
 	blt.load_native(self._mod:GetPath() .. scope.filename)
 end
 

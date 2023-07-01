@@ -44,7 +44,7 @@ function BLTKeybind:_SetKey(idx, key)
 	if not idx then
 		return false
 	end
-	BLT:Log(LogLevel.INFO, string.format("[Keybind] Bound %s to %s", tostring(self:Id()), tostring(key)))
+	BLT:Log(LogLevel.INFO, string.format("[Keybind] Bound '%s' to %s", tostring(self:Id()), tostring(key)))
 	self._key[idx] = key
 end
 
@@ -166,7 +166,7 @@ function BLTKeybindsManager:register_keybind(mod, parameters)
 	-- Create the mod
 	local bind = BLTKeybind:new(mod, parameters)
 	table.insert(self._keybinds, bind)
-	BLT:Log(LogLevel.INFO, "[Keybind] Registered keybind " .. tostring(bind))
+	BLT:Log(LogLevel.INFO, string.format("[Keybind] Registered keybind '%s'", bind:Id()))
 
 	-- Check through the potential keybinds for the added bind and restore it's key
 	for i, bind_data in ipairs(self._potential_keybinds) do

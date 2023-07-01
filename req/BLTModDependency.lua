@@ -74,15 +74,15 @@ function BLTModDependency:clbk_got_data(clbk, json_data, http_id, request_info)
 	self._retrieving = false
 
 	if not request_info.querySucceeded or string.is_nil_or_empty(json_data) then
-		BLT:Log(LogLevel.ERROR, "Could not connect to the downloads server!")
-		return self:_run_update_callback(clbk, false, "Could not connect to the downloads server.")
+		BLT:Log(LogLevel.ERROR, string.format("[Dependencies] Could not retrieve update data for '%s'", self:GetId()))
+		return self:_run_update_callback(clbk, false, "Could not retrieve update data.")
 	end
 
 	local server_data = json.decode(json_data)
 	if server_data then
 		for _, data in pairs(server_data) do
 			if data.ident == self:GetId() then
-				BLT:Log(LogLevel.INFO, string.format("[Dependencies] Received server data for '%s'", data.ident))
+				BLT:Log(LogLevel.INFO, string.format("[Dependencies] Received update data for '%s'", self:GetId()))
 				self._server_data = data
 				break
 			end
@@ -90,7 +90,7 @@ function BLTModDependency:clbk_got_data(clbk, json_data, http_id, request_info)
 	end
 
 	if not self._server_data then
-		BLT:Log(LogLevel.ERROR, string.format("[Dependencies] No matching download data found for '%s'", self:GetId()))
+		BLT:Log(LogLevel.ERROR, string.format("[Dependencies] No matching update data found for '%s'", self:GetId()))
 		return self:_run_update_callback(clbk, false, "Could not find dependency data.")
 	end
 

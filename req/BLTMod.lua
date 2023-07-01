@@ -69,7 +69,7 @@ function BLTMod:IsAllowedInCurrentMode()
 end
 
 function BLTMod:Setup()
-	BLT:Log(LogLevel.INFO, "[BLT] Setting up mod: ", self:GetId())
+	BLT:Log(LogLevel.INFO, string.format("[BLT] Setting up mod '%s'", self:GetName()))
 
 	-- Check dependencies are installed for this mod
 	if not self:AreDependenciesInstalled() then
@@ -297,7 +297,7 @@ function BLTMod:GetModImage()
 
 		return texture_id
 	else
-		BLT:Log(LogLevel.WARN, "Mod image at path does not exist! " .. tostring(self:GetModImagePath()))
+		BLT:Log(LogLevel.WARN, string.format("Mod image '%s' does not exist", tostring(self:GetModImagePath())))
 		return nil
 	end
 end
@@ -459,7 +459,7 @@ function BLTMod:AreDependenciesInstalled()
 			if valid then
 				table.insert(self.missing_dependencies, dependency)
 			else
-				BLT:Log(LogLevel.ERROR, "Invalid dependency " .. id .. " for mod " .. self:GetName())
+				BLT:Log(LogLevel.ERROR, string.format("Invalid dependency '%s' for mod '%s'", id, self:GetName()))
 			end
 		end
 	end

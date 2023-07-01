@@ -158,7 +158,7 @@ function c:FreeAssetGroup(group_name)
 end
 
 local function convert_xml_asset(params)
-	BLT:Log(LogLevel.INFO, "[BLT] Converting " .. tostring(params.path) .. " into " .. tostring(params.built_path))
+	BLT:Log(LogLevel.INFO, string.format("[BLT] Converting '%s' into '%s'", tostring(params.path), tostring(params.built_path)))
 	-- Read the source file
 	local input_str
 	do

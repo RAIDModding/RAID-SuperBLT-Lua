@@ -738,7 +738,7 @@ function MenuHelper:LoadFromJsonFile(file_path, parent_class, data_table)
 			end
 		end)
 	else
-		BLT:Log(LogLevel.ERROR, "Could not load file: " .. file_path)
+		BLT:Log(LogLevel.ERROR, string.format("Could not load file '%s'", file_path))
 	end
 end
 
