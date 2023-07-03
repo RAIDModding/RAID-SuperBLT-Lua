@@ -281,7 +281,7 @@ end
 ---@param day integer @Day of the date
 ---@return integer @Timestamp
 function Utils:TimestampToEpoch(year, month, day)
-	-- Adapted from http://stackoverflow.com/questions/4105012/convert-a-string-date-to-a-timestamp
+	-- Adapted from https://stackoverflow.com/questions/4105012/convert-a-string-date-to-a-timestamp
 	local offset = os.time() - os.time(os.date("!*t"))
 	local time = os.time({
 		day = day,

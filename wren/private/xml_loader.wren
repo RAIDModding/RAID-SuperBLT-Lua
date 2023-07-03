@@ -101,7 +101,7 @@ class XMLTweakApplier {
 		find_tweaks(tweak_path, name, ext, tweaks)
 
 		// As with pairs() in Lua, Wren makes no guarantees about the iteration order of maps
-		// (see http://wren.io/maps.html#iterating-over-the-contents). Fortunately, tweaks is a
+		// (see https://wren.io/maps.html#iterating-over-the-contents). Fortunately, tweaks is a
 		// list (since new elements are appended with .add() in handle_tweak_element() below),
 		// so iteration order should be consistent enough to be tracked this way (or if need be,
 		// indexing it like an array within a range loop)
