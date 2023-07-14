@@ -4,6 +4,13 @@ This lists the changes between different versions of the SuperBLT basemod,
 the changes for the DLL are listed in their own changelog.
 Contributors other than maintainers are listed in parenthesis after specific changes.
 
+## v1.4.0
+
+- Fixed some utility functions that were using outdated code
+- Improved BLT logging (Vadim)
+- Fixed mod patchnotes button crashing on Epic
+- Improved update and dependency checking
+
 ## v1.3.9
 
 - Updated German localization
