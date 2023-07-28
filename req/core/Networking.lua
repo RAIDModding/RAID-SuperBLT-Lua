@@ -244,10 +244,12 @@ end
 
 ---@deprecated @Use `LuaNetworking:VectorToString` instead
 function Vector3.ToString(v)
+	BLT:Log(LogLevel.WARN, "Vector3.ToString is deprecated and will be removed in a future version\n" .. debug.traceback())
 	return LuaNetworking:Vector3ToString(v)
 end
 
 ---@deprecated @Use `LuaNetworking:StringToVector` instead
 function string.ToVector3(string)
+	BLT:Log(LogLevel.WARN, "string.ToVector3 is deprecated and will be removed in a future version\n" .. debug.traceback())
 	return LuaNetworking:StringToVector3(string)
 end
