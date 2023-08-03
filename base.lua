@@ -40,7 +40,6 @@ BLT:Require("req/utils/json-1.0")
 BLT:Require("req/utils/json-0.9")
 BLT:Require("req/utils/json")
 BLT:Require("req/core/Hooks")
-BLT:Require("req/supermod/BLTSuperMod")
 BLT:Require("req/BLTMod")
 BLT:Require("req/BLTUpdate")
 BLT:Require("req/BLTUpdateCallbacks")
@@ -207,32 +206,45 @@ function BLT:FindMods()
 		return {}
 	end
 
-	for index, directory in pairs(folders) do
+	for _, directory in pairs(folders) do
 		-- Check if this directory is excluded from being checked for mods (logs, saves, etc.)
 		if not self.Mods:IsExcludedDirectory(directory) then
 			local mod_path = mods_directory .. directory .. "/"
 
 			-- Attempt to read the mod defintion file
-			local file = io.open(mod_path .. "mod.txt")
-			if file then
-				-- Read the file contents
-				local file_contents = file:read("*all")
-				file:close()
+			local json_file = io.open(mod_path .. "mod.txt")
+			local xml = file.FileExists(mod_path .. "supermod.xml")
 
-				-- Create a BLT mod from the loaded data
-				local mod_content = json.decode(file_contents)
-				if mod_content then
-					local new_mod, valid = BLTMod:new(directory, mod_content, mod_path)
-					if valid then
-						table.insert(mods_list, new_mod)
+			if json_file or xml then
+				-- Read the file contents
+				local data
+
+				if json_file then
+					local file_contents = json_file:read("*all")
+					json_file:close()
+					if file_contents then
+						data = json.decode(file_contents)
+						if not data then
+							self:Log(LogLevel.ERROR, "[BLT] An error occured while loading mod.txt from: " .. tostring(mod_path))
+						end
 					end
-				else
-					self:Log(LogLevel.ERROR, "[BLT] An error occured while loading mod.txt from: " .. tostring(mod_path))
 				end
-			else
-				self:Log(LogLevel.WARN, "[BLT] Could not read or find mod.txt in " .. tostring(mod_path))
+
+				local new_mod = BLTMod:new(directory, data, mod_path)
+				if xml then
+					new_mod:LoadXML()
+				end
+				if new_mod:isValid() then
+					table.insert(mods_list, new_mod)
+				else
+					self:Log(LogLevel.ERROR, "[BLT] Attempted to load mod.txt or supermod.xml, mod is invalid." .. tostring(mod_path))
+				end
 			end
 		end
+	end
+
+	for _, mod in pairs(mods_list) do
+		mod:PostInit()
 	end
 
 	return mods_list

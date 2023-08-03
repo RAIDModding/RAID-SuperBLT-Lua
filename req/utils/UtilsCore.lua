@@ -264,6 +264,12 @@ function Utils:ToggleItemToBoolean(item)
 	return item:value() == "on" and true or false
 end
 
+--- Converts any value to boolean value. The check is strict so if the value isn't 'true' it will be false
+---@param val any The value to convert
+function Utils:ToBoolean(val)
+	return val == true or val == "true"
+end
+
 ---Escapes special characters in a URL to turn it into a usable URL
 ---@param input_url string @The url to escape the characters of
 ---@return string @A url string with escaped characters
@@ -360,6 +366,61 @@ function Utils:IsInstanceOf(object, c)
 	return false
 end
 
+-- Needed for clbk functions
+local list_add = function(...)
+	local result = {}
+
+	for _, list_table in ipairs({...}) do
+		for _, value in ipairs(list_table) do
+			table.insert(result, value)
+		end
+	end
+
+	return result
+end
+
+--- Creates a callback with arguments. Similar to callback, but simpler.
+---@param f function the function that will be called
+function SimpleClbk(f, a, b, c, ...)
+    if not f then
+        return function() end
+    end
+    if a ~= nil then
+        if c ~= nil then
+            local args = {...}
+            return function(...) return f(a, b, c, unpack(list_add(args, ...))) end
+        elseif b ~= nil then
+            return function(...) return f(a, b, ...) end
+        else
+            return function(...) return f(a, ...) end
+        end
+    else
+        return function(...) return f(...) end
+    end
+end
+
+--- Create a callback that is tied to a class object (table)
+--- @param clss table The object that contains the function
+--- @param func string The name of the function to call
+function ClassClbk(clss, func, a, b, c, ...)
+    local f = clss[func]
+    if not f then
+        BeardLib:log("[Callback Error] Function named %s was not found in the given class", tostring(func))
+        return function() end
+    end
+    if a ~= nil then
+        if c ~= nil then
+            local args = {...}
+            return function(...) return f(clss, a, b, c, unpack(list_add(args, ...))) end
+        elseif b ~= nil then
+            return function(...) return f(clss, a, b, ...) end
+        else
+            return function(...) return f(clss, a, ...) end
+        end
+    else
+        return function(...) return f(clss, ...) end
+    end
+end
 
 
 -- DEPRECATED FUNCTIONALITY --
