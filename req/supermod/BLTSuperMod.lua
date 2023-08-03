@@ -5,7 +5,7 @@ BLTSuperMod = blt_class()
 BLT:Require("req/supermod/SuperModAssetLoader")
 
 function BLTSuperMod.try_load(mod, file_name)
-	local supermod_path = "mods/" .. mod:GetId() .. "/" .. (file_name or "supermod.xml")
+	local supermod_path = mod:GetPath() .. (file_name or "supermod.xml")
 
 	-- Attempt to read the mod defintion file
 	local file = io.open(supermod_path)
@@ -17,14 +17,16 @@ function BLTSuperMod.try_load(mod, file_name)
 
 		-- Parse it
 		local xml = blt.parsexml(file_contents)
+		if not xml then
+			return
+		end
+
 		xml._doc = {
 			filename = supermod_path
 		}
 
 		return BLTSuperMod:new(mod, xml)
 	end
-
-	return nil
 end
 
 function BLTSuperMod:init(mod, xml)
@@ -77,7 +79,7 @@ function BLTSuperMod:_add_hooks(xml, parent_scope)
 			self:_run_entry_script(tag, scope, "hooks", "post")
 		end,
 		wildcard = function(tag, scope)
-			BLT:Log(LogLevel.WARN, "TODO implement wildcard")
+			BLT:Log(LogLevel.ERROR, "Wildcard hooks are not implemented yet!")
 		end,
 	})
 end
@@ -107,17 +109,16 @@ function BLTSuperMod:_add_native_module(tag, scope)
 	end
 
 	if not blt.load_native or not blt.blt_info then
-		BLT:Log(LogLevel.ERROR, "[BLT] Cannot load native module for mod " .. self._mod:GetId()
-			.. " as such functionality is not available in this version of the SuperBLT DLL/SO")
+		BLT:Log(LogLevel.ERROR, string.format("[BLT] Cannot load native module for '%s' (functionality missing)", self._mod:GetName()))
 		return
 	end
 
 	if blt.blt_info().platform ~= scope.platform then
-		BLT:Log(LogLevel.ERROR, "[BLT] Incorrect platform for native module for " .. self._mod:GetId())
+		BLT:Log(LogLevel.ERROR, string.format("[BLT] Incorrect platform for native module for '%s'", self._mod:GetName()))
 		return
 	end
 
-	BLT:Log(LogLevel.INFO, "[BLT] Loading native module for " .. self._mod:GetId())
+	BLT:Log(LogLevel.INFO, string.format("[BLT] Loading native module for '%s'", self._mod:GetName()))
 	blt.load_native(self._mod:GetPath() .. scope.filename)
 end
 
@@ -126,7 +127,7 @@ function BLTSuperMod:_replace_includes(xml)
 		tag._doc = xml._doc
 
 		if tag.name == ":include" then
-			local file_path = "mods/" .. self._mod:GetId() .. "/" .. tag.params.src
+			local file_path = self._mod:GetPath() .. tag.params.src
 
 			-- Attempt to read the mod defintion file
 			local file = io.open(file_path)
@@ -138,14 +139,15 @@ function BLTSuperMod:_replace_includes(xml)
 
 			-- Parse it
 			local included = blt.parsexml(file_contents)
-			assert(included, "Parsed file " .. file_path .. " resolves to nil. Is it valid?")
-			included._doc = {
-				filename = file_path
-			}
+			if included then
+				included._doc = {
+					filename = file_path
+				}
 
-			-- Substitute it in
-			tag = included
-			xml[i] = included
+				-- Substitute it in
+				tag = included
+				xml[i] = included
+			end
 		end
 
 		self:_replace_includes(tag)

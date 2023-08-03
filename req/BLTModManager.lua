@@ -1,13 +1,10 @@
----@class BLTModManager
+---@class BLTModManager : BLTModule
 ---@field new fun(self):BLTModManager
 BLTModManager = blt_class(BLTModule)
 BLTModManager.__type = "BLTModManager"
 
 function BLTModManager:init()
 	BLTModManager.super.init(self)
-
-	Hooks:Register("BLTOnSaveData")
-	Hooks:Register("BLTOnLoadData")
 end
 
 ---Returns all mods managed by BLT
@@ -18,7 +15,7 @@ end
 
 ---Returns the mod with the given name
 ---@param name string @The name of the mod
----@return BLTMod? @The mod instance, or ``nil`` if not found
+---@return BLTMod? @The mod instance, or `nil` if not found
 function BLTModManager:GetModByName(name)
 	for _, mod in pairs(self:Mods()) do
 		if mod:GetName() == name then
@@ -29,7 +26,7 @@ end
 
 ---Returns the mod with the given ID
 ---@param id string @The ID of the mod
----@return BLTMod? @The mod instance, or ``nil`` if not found
+---@return BLTMod? @The mod instance, or `nil` if not found
 function BLTModManager:GetMod(id)
 	for _, mod in ipairs(self:Mods()) do
 		if mod:GetId() == id then
@@ -40,7 +37,7 @@ end
 
 ---Returns the mod of which the given file is a part of
 ---@param file string @The path (relative to payday2_win32_release.exe) of the file
----@return BLTMod? @The mod instance, or ``nil`` if not found
+---@return BLTMod? @The mod instance, or `nil` if not found
 function BLTModManager:GetModOwnerOfFile(file)
 	for _, mod in pairs(self:Mods()) do
 		if string.find(file, mod:GetPath(), 1, true) == 1 then
@@ -53,8 +50,33 @@ function BLTModManager:SetModsList(mods_list)
 	-- Set mods
 	self.mods = mods_list
 
-	-- Load data
-	self:Load()
+	-- Check saved mod data
+	local mods = BLT.save_data.mods
+	if mods then
+		for i, mod in ipairs(self.mods) do
+			if mods[mod:GetId()] then
+				local data = mods[mod:GetId()]
+
+				mod:SetEnabled(data.enabled, true)
+				mod:SetSafeModeEnabled(data.safe)
+
+				local updates = data.updates
+				if updates then
+					for update_id, enabled in pairs(updates) do
+						local update = mod:GetUpdate(update_id)
+						if update then
+							update:SetEnabled(enabled)
+						end
+					end
+				end
+			end
+		end
+	end
+
+	-- Setup mods
+	for i, mod in ipairs(self.mods) do
+		mod:Setup()
+	end
 end
 
 function BLTModManager:IsExcludedDirectory(directory)
@@ -153,91 +175,33 @@ function BLTModManager:clbk_got_update(update, required, reason)
 	end
 end
 
---------------------------------------------------------------------------------
--- Saving and Loading
-
-function BLTModManager:Load()
-	-- Load data
-	local saved_data = io.load_as_json(BLTModManager.Constants:ModManagerSaveFile()) or {}
-
-	-- Process mods
-	if saved_data["mods"] then
-		for index, mod in ipairs(self.mods) do
-			if saved_data["mods"][mod:GetId()] then
-				local data = saved_data["mods"][mod:GetId()]
-
-				mod:SetEnabled(data["enabled"], true)
-				mod:SetSafeModeEnabled(data["safe"])
-
-				local updates = data["updates"]
-				if updates then
-					for update_id, enabled in pairs(updates) do
-						local update = mod:GetUpdate(update_id)
-						if update then
-							update:SetEnabled(enabled)
-						end
-					end
-				end
-			end
-		end
-	end
-
-	-- Setup mods
-	for index, mod in ipairs(self.mods) do
-		mod:Setup()
-	end
-
-	-- Call load hook
-	Hooks:Call("BLTOnLoadData", saved_data)
-
-	-- Stash it for use later
-	self._saved_data = saved_data
-end
-
-function BLTModManager:Save()
-	BLT:Log(LogLevel.INFO, "[BLT] Performing save...")
-
-	local save_data = {}
-
-	-- Write mod/updates data
-	save_data["mods"] = {}
-	for index, mod in ipairs(self.mods) do
-		-- Save mod updates enabled data
-		local updates = {}
-		for index, update in ipairs(mod:GetUpdates()) do
-			updates[update:GetId()] = update:IsEnabled()
-		end
-
-		save_data["mods"][mod:GetId()] = {
-			["enabled"] = mod:IsEnabled(),
-			["safe"] = mod:IsSafeModeEnabled(),
-			["updates"] = updates
-		}
-	end
-
-	-- Hook to allow modules to save data
-	Hooks:Call("BLTOnSaveData", save_data)
-
-	self._saved_data = save_data
-
-	local success = io.save_as_json(save_data, BLTModManager.Constants:ModManagerSaveFile())
-	BLT:Log(LogLevel.INFO, "[BLT] Save complete? " .. tostring(success))
+Hooks:Add("BLTOnSaveData", "BLTOnSaveData.BLTModManager", function(save_data)
+	save_data.mods = {}
 
 	-- Save a Wren-readable list of disabled mods - it doesn't have a JSON parser so it
 	-- can't load our normal file, and it needs to know what's enabled before any Lua code runs.
-	local wren_file = io.open(BLTModManager.Constants:ModManagerWrenDisabledModsFile(), "wb")
-	for _, mod in ipairs(self.mods) do
-		-- Write the item even if the mod doesn't have a supermod file - maybe it will after an update, and there's
-		-- no harm in writing extra items here.
+	local wren_file = io.open(BLTModManager.Constants:ModManagerWrenDisabledModsFile(BLT:IsVr()), "wb")
+
+	for _, mod in pairs(BLT.Mods:Mods()) do
+		-- Save mod updates enabled data
+		local updates = {}
+		for _, update in pairs(mod:GetUpdates()) do
+			updates[update:GetId()] = update:IsEnabled()
+		end
+
+		save_data.mods[mod:GetId()] = {
+			enabled = mod:IsEnabled(),
+			safe = mod:IsSafeModeEnabled(),
+			updates = updates
+		}
+
 		if not mod:IsEnabled() then
-			local supermod_path = mod.path .. "supermod.xml"
-			wren_file:write(supermod_path .. "\n")
+			wren_file:write(mod.path .. "supermod.xml" .. "\n")
 		end
 	end
-	wren_file:close()
 
-	return success
-end
+	wren_file:close()
+end)
 
 --------------------------------------------------------------------------------
 -- Constants
@@ -284,12 +248,20 @@ function BLTModManager.Constants:SavesDirectory()
 	return self["mods_directory"] .. self["saves_directory"]
 end
 
-function BLTModManager.Constants:ModManagerSaveFile()
-	return self:SavesDirectory() .. "blt_data.txt"
+function BLTModManager.Constants:ModManagerSaveFile(is_vr)
+	if is_vr then
+		return self:SavesDirectory() .. "blt_data_vr.txt"
+	else
+		return self:SavesDirectory() .. "blt_data.txt"
+	end
 end
 
-function BLTModManager.Constants:ModManagerWrenDisabledModsFile()
-	return self:SavesDirectory() .. "blt_wren_disabled_mods.txt"
+function BLTModManager.Constants:ModManagerWrenDisabledModsFile(is_vr)
+	if is_vr then
+		return self:SavesDirectory() .. "blt_wren_disabled_mods_vr.txt"
+	else
+		return self:SavesDirectory() .. "blt_wren_disabled_mods.txt"
+	end
 end
 
 function BLTModManager.Constants:LuaModsMenuID()

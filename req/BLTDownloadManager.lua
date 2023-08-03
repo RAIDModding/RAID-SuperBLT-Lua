@@ -1,9 +1,11 @@
----@class BLTDownloadManager
+---@class BLTDownloadManager : BLTModule
 ---@field new fun(self):BLTDownloadManager
 BLTDownloadManager = BLTDownloadManager or blt_class(BLTModule)
 BLTDownloadManager.__type = "BLTDownloadManager"
 
 function BLTDownloadManager:init()
+	BLTDownloadManager.super.init(self)
+
 	self._pending_downloads = {}
 	self._downloads = {}
 end
@@ -130,9 +132,17 @@ function BLTDownloadManager:start_download(update)
 	return true
 end
 
-function BLTDownloadManager:clbk_download_finished(data, http_id)
+function BLTDownloadManager:clbk_download_finished(data, http_id, request_info)
 	local download = self:get_download_from_http_id(http_id)
-	BLT:Log(LogLevel.INFO, string.format("[Downloads] Finished download of %s (%s)", download.update:GetName(), download.update:GetParentMod():GetName()))
+	local download_name = download.update:GetName()
+
+	if not request_info.querySucceeded or string.is_nil_or_empty(data) then
+		BLT:Log(LogLevel.ERROR, string.format("[Downloads] Download of '%s' failed", download_name))
+		download.state = "failed"
+		return
+	end
+
+	BLT:Log(LogLevel.INFO, string.format("[Downloads] Finished download of '%s'", download_name))
 
 	-- Holy shit this is hacky, but to make sure we can update the UI correctly to reflect whats going on, we run this in a coroutine
 	-- that we start through a UI animation
@@ -147,30 +157,19 @@ function BLTDownloadManager:clbk_download_finished(data, http_id)
 			end
 		end
 
-		local install_dir = download.update:GetInstallDirectory()
-		local temp_dir = Application:nice_path(install_dir .. "_temp")
-		if install_dir == BLTModManager.Constants:ModsDirectory() then
-			temp_dir = Application:nice_path(BLTModManager.Constants:DownloadsDirectory() .. "_temp")
-		end
-
 		local file_path = Application:nice_path(BLTModManager.Constants:DownloadsDirectory() .. tostring(download.update:GetId()) .. ".zip")
-		local temp_install_dir = Application:nice_path(temp_dir .. "/" .. download.update:GetInstallFolder())
+		local temp_install_dir = Application:nice_path(BLTModManager.Constants:DownloadsDirectory() .. tostring(http_id))
 		local install_path = Application:nice_path(download.update:GetInstallDirectory() .. download.update:GetInstallFolder())
-		local extract_path = Application:nice_path(temp_install_dir .. "/" .. download.update:GetInstallFolder())
 
-		local cleanup = function()
-			SystemFS:delete_file(temp_install_dir)
+		local cleanup = function(full)
+			io.remove_directory_and_files(temp_install_dir)
+			if full then
+				os.remove(file_path)
+			end
 		end
-
-		wait()
-
-		-- Prepare
-		SystemFS:make_dir(temp_dir) -- we dont wanna delete the temp dir at all, as it would not be thread safe. just make sure it exists.
-		SystemFS:delete_file(file_path)
-		cleanup()
 
 		-- Save download to disk
-		BLT:Log(LogLevel.INFO, "[Downloads] Saving to downloads...")
+		BLT:Log(LogLevel.INFO, string.format("[Downloads] Saving '%s' data to file...", download_name))
 		download.state = "saving"
 		wait()
 
@@ -179,24 +178,27 @@ function BLTDownloadManager:clbk_download_finished(data, http_id)
 		if f then
 			f:write(data)
 			f:close()
+		else
+			BLT:Log(LogLevel.ERROR, string.format("[Downloads] Failed to save '%s' data to file", download_name))
+			download.state = "failed"
+			cleanup()
+			return
 		end
 
 		-- Start download extraction
-		BLT:Log(LogLevel.INFO, "[Downloads] Extracting...")
+		BLT:Log(LogLevel.INFO, string.format("[Downloads] Extracting '%s'...", download_name))
 		download.state = "extracting"
 		wait()
 
 		unzip(file_path, temp_install_dir)
 
 		-- Update extract_path, in case user renamed mod's folder
-		local folders = SystemFS:list(temp_install_dir, true)
-		local extracted_folder_name = folders and #folders == 1 and folders[1]
-		if extracted_folder_name and extracted_folder_name ~= download.update:GetInstallFolder() then
-			extract_path = Application:nice_path(temp_install_dir .. "/" .. extracted_folder_name)
-		end
+		local folders = file.GetDirectories(temp_install_dir, true)
+		local extracted_folder_name = folders and #folders == 1 and folders[1] or download.update:GetInstallFolder()
+		local extract_path = Application:nice_path(temp_install_dir .. "/" .. extracted_folder_name)
 
 		-- Verify content hash with the server hash
-		BLT:Log(LogLevel.INFO, "[Downloads] Verifying...")
+		BLT:Log(LogLevel.INFO, string.format("[Downloads] Verifying '%s'...", download_name))
 		download.state = "verifying"
 		wait()
 
@@ -207,31 +209,32 @@ function BLTDownloadManager:clbk_download_finished(data, http_id)
 			if server_hash == local_hash then
 				passed_check = true
 			else
-				BLT:Log(LogLevel.ERROR, "[Downloads] Failed to verify hashes!")
+				BLT:Log(LogLevel.ERROR, string.format("[Downloads] Failed to verify hashes of '%s'", download_name))
 				BLT:Log(LogLevel.ERROR, "[Downloads] Server: ", server_hash)
 				BLT:Log(LogLevel.ERROR, "[Downloads]  Local: ", local_hash)
 			end
 		else
 			local mod_txt = extract_path .. "/mod.txt" -- Check the downloaded mod.txt (if it exists) to know we are downloading a valid mod with valid version.
-			if SystemFS:exists(mod_txt) then
+			if file.FileExists(mod_txt) then
 				local file = io.open(mod_txt, "r")
 				local mod_data = json.decode(file:read("*all"))
 				if mod_data then -- Is the data valid json?
 					local version = mod_data.version
 					local server_version = download.update:GetServerVersion()
-					if server_version == version then
+					-- Server version may be nil for simple URL based dependencies
+					if server_version == nil or server_version == version then
 						passed_check = true
 					else -- Versions don't match
-						BLT:Log(LogLevel.ERROR, "[Downloads] Failed to verify versions!")
+						BLT:Log(LogLevel.ERROR, string.format("[Downloads] Failed to verify versions of '%s'", download_name))
 						BLT:Log(LogLevel.ERROR, "[Downloads] Server: ", server_version)
 						BLT:Log(LogLevel.ERROR, "[Downloads]  Local: ", version)
 					end
 				else
-					BLT:Log(LogLevel.ERROR, "[Downloads] Could not read mod data of downloaded mod!")
+					BLT:Log(LogLevel.ERROR, string.format("[Downloads] Could not read mod data of '%s' (invalid json)", download_name))
 				end
 				file:close()
 			else
-				BLT:Log(LogLevel.ERROR, "[Downloads] Downloaded mod is not a valid mod!")
+				BLT:Log(LogLevel.ERROR, string.format("[Downloads] Could not read mod data of '%s' (no mod.txt found)", download_name))
 			end
 		end
 		if not passed_check then
@@ -243,38 +246,31 @@ function BLTDownloadManager:clbk_download_finished(data, http_id)
 		-- Remove old installation, unless we're installing a mod (via dependencies)
 		if not download.update:IsInstall() then
 			wait()
-			if SystemFS:exists(install_path) then
-				local old_install_path = install_path .. "_old"
-				BLT:Log(LogLevel.INFO, "[Downloads] Removing old installation...")
-				if not file.MoveDirectory(install_path, old_install_path) then
-					BLT:Log(LogLevel.ERROR, "[Downloads] Failed to rename old installation!")
-					download.state = "failed"
-					cleanup()
-					return
-				end
-
-				if not SystemFS:delete_file(old_install_path) then
-					BLT:Log(LogLevel.ERROR, "[Downloads] Failed to delete old installation!")
+			if file.DirectoryExists(install_path) then
+				BLT:Log(LogLevel.INFO, string.format("[Downloads] Removing old installation of '%s'...", download_name))
+				if not io.remove_directory_and_files(install_path) then
+					BLT:Log(LogLevel.ERROR, string.format("[Downloads] Failed to delete old installation of '%s'", download_name))
 					download.state = "failed"
 					cleanup()
 					return
 				end
 			end
+			wait()
 		end
 
 		-- Move the temporary installation
 		local move_success = file.MoveDirectory(extract_path, install_path)
 		if not move_success then
-			BLT:Log(LogLevel.ERROR, "[Downloads] Failed to move installation directory!")
+			BLT:Log(LogLevel.ERROR, string.format("[Downloads] Failed to move installation directory of '%s'", download_name))
 			download.state = "failed"
 			cleanup()
 			return
 		end
 
 		-- Mark download as complete
-		BLT:Log(LogLevel.INFO, "[Downloads] Complete!")
+		BLT:Log(LogLevel.INFO, string.format("[Downloads] Finished '%s'", download_name))
 		download.state = "complete"
-		cleanup()
+		cleanup(true)
 	end
 
 	download.coroutine:animate(save)
@@ -288,8 +284,6 @@ function BLTDownloadManager:clbk_download_progress(http_id, bytes, total_bytes)
 end
 
 function BLTDownloadManager:flush_complete_downloads()
-	BLT:Log(LogLevel.INFO, "[Downloads] Flushing complete downloads...")
-
 	for i = #self._downloads, 0, -1 do
 		local download = self._downloads[i]
 		if download and download.state == "complete" then

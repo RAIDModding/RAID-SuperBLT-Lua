@@ -52,7 +52,7 @@ function Hooks:UnregisterHook(key)
 end
 
 ---Removes a hook, so that it will not call any functions  
---Functionaly the same as `Hooks:UnregisterHook`
+---Functionally the same as `Hooks:UnregisterHook`
 ---@param key string @Name of the hook to remove
 function Hooks:Unregister(key)
 	self:UnregisterHook(key)
@@ -74,7 +74,7 @@ end
 
 ---Calls a specified hook, and all of its hooked functions
 ---@param key string @Name of the hook to call
----@vararg any @Arguments to pass to the hooked functions
+---@param ... any @Arguments to pass to the hooked functions
 function Hooks:Call(key, ...)
 	if not self._registered_hooks[key] then
 		return
@@ -89,10 +89,10 @@ function Hooks:Call(key, ...)
 	end
 end
 
----Calls a specified hook and returns the first non-nil value returned by a hooked function
+---Calls a specified hook and returns the first non nil value(s) returned by a hooked function
 ---@param key string @Name of the hook to call
----@vararg any @Arguments to pass to the hooked functions
----@return any @The first non-nil value returned by a hooked function
+---@param ... any @Arguments to pass to the hooked functions
+---@return any ... @The value(s) returned by a hooked function
 function Hooks:ReturnCall(key, ...)
 	if not self._registered_hooks[key] then
 		return
@@ -101,7 +101,7 @@ function Hooks:ReturnCall(key, ...)
 	for k, v in pairs(self._registered_hooks[key]) do
 		if v then
 			if type(v.func) == "function" then
-				local r = {v.func(...)}
+				local r = { v.func(...) }
 				if next(r) == 1 then
 					return unpack(r)
 				end
@@ -216,6 +216,14 @@ function Hooks:GetFunction(object, func)
 	end
 end
 
+---Returns the return value(s) of the currently running hook
+---@return any ... @Any amount of return values of the current hook
+function Hooks:GetReturn()
+	if self._current_function_hook and self._current_function_hook.returns then
+		return unpack(Hooks._current_function_hook.returns)
+	end
+end
+
 -- Shared function to log hook errors
 function Hooks:_PrePostHookError(func, id)
 	BLT:Log(LogLevel.ERROR, string.format("[Hooks] Could not hook function '%s' (%s)", tostring(func), tostring(id)))
@@ -240,30 +248,39 @@ function Hooks:_ChkCreateTableStructure(object, func)
 	}
 
 	object[func] = function(...)
-		local hooked_func = self._function_hooks[object][func]
-		local r = {}
-		local _r
+		local function_hook = self._function_hooks[object][func]
+		local hook_return
 
-		for k, v in ipairs(hooked_func.overrides.pre) do
-			_r = {v.func(...)}
-			if next(_r) then
-				r = _r
+		-- Call prehooks
+		for k, v in ipairs(function_hook.overrides.pre) do
+			self._current_function_hook = function_hook
+			hook_return = { v.func(...) }
+			if next(hook_return) then
+				function_hook.returns = hook_return
 			end
 		end
 
-		_r = {hooked_func.original(...)}
-		if next(_r) then
-			r = _r
+		-- Call original function
+		hook_return = { function_hook.original(...) }
+		if next(hook_return) then
+			function_hook.returns = hook_return
 		end
 
-		for k, v in ipairs(hooked_func.overrides.post) do
-			_r = {v.func(...)}
-			if next(_r) then
-				r = _r
+		-- Call posthooks
+		for k, v in ipairs(function_hook.overrides.post) do
+			self._current_function_hook = function_hook
+			hook_return = { v.func(...) }
+			if next(hook_return) then
+				function_hook.returns = hook_return
 			end
 		end
 
-		return unpack(r)
+		if function_hook.returns then
+			hook_return = function_hook.returns
+			function_hook.returns = nil
+
+			return unpack(hook_return)
+		end
 	end
 
 	return true

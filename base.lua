@@ -1,10 +1,3 @@
-local DEBUG_MODE = false
-
--- Create console
-if false then
-	console.CreateConsole()
-end
-
 -- Only run if we have the global table
 if not _G then
 	return
@@ -25,31 +18,21 @@ _G.LogLevel = {
 }
 
 _G.LogLevelPrefix = {
-	[LogLevel.ERROR] = "[ERROR] ",
-	[LogLevel.WARN] = "[WARNING] ",
-	[LogLevel.INFO] = "[INFO] "
+	[LogLevel.ERROR] = "[ERROR]",
+	[LogLevel.WARN] = "[WARN]",
+	[LogLevel.INFO] = "[INFO]"
 }
 
 -- BLT Global table
-_G.BLT = {version = 2.0, DEBUG_MODE = DEBUG_MODE, LOG_LEVEL = LogLevel.ALL}
+_G.BLT = { version = 2.0 }
 _G.BLT.Base = {}
-
-_G.print = function(...)
-	local s = ""
-	for i, str in ipairs({...}) do
-		if type(str) == "string" then
-			str = string.gsub(str, "%%", "%%%%%")
-		end
-		s = string.format("%s%s%s", s, i > 1 and "\t" or "", tostring(str))
-	end
-	log(s)
-end
 
 -- Load modules
 _G.BLT._PATH = "mods/base/"
 function BLT:Require(path)
 	dofile(string.format("%s%s", BLT._PATH, path .. ".lua"))
 end
+
 BLT:Require("req/utils/UtilsClass")
 BLT:Require("req/utils/UtilsCore")
 BLT:Require("req/utils/UtilsIO")
@@ -73,19 +56,22 @@ BLT:Require("req/BLTKeybindsManager")
 BLT:Require("req/BLTAssetManager")
 BLT:Require("req/xaudio/XAudio")
 
----Writes a message to the log file  
+---Writes a message to the log file
 ---Multiple arguments can be passed to the function and will be concatenated
 ---@param level integer @The log level of the message
 ---@param ... any @The message to log
 function BLT:Log(level, ...)
-	if level > self.LOG_LEVEL then
+	if level > BLTLogs.log_level then
 		return
 	end
-	local s = LogLevelPrefix[level] or ""
-	for _, v in pairs({...}) do
-		s = s .. tostring(v) .. " "
+
+	local out = {LogLevelPrefix[level] or "", ...}
+	local n = select("#", ...) -- allow nil holes
+	-- skip prefix, allow for n=0
+	for i = 2, n+1, 1 do
+		out[i] = tostring(out[i])
 	end
-	log(s)
+	log(table.concat(out, " "))
 end
 
 -- BLT base functions
@@ -103,8 +89,21 @@ function BLT:Initialize()
 	self:Setup()
 end
 
+function BLT:IsVr()
+	return _G.SystemInfo ~= nil and getmetatable(_G.SystemInfo).is_vr ~= nil and SystemInfo:is_vr()
+end
+
 function BLT:Setup()
-	self:Log(LogLevel.INFO, "[BLT] Setup...")
+	-- Load saved data
+	if BLT:IsVr() then
+		local save_file = BLTModManager.Constants:ModManagerSaveFile(true)
+		self.save_data = io.file_is_readable(save_file) and io.load_as_json(save_file)
+	end
+
+	if not self.save_data then
+		local save_file = BLTModManager.Constants:ModManagerSaveFile(false)
+		self.save_data = io.file_is_readable(save_file) and io.load_as_json(save_file) or {}
+	end
 
 	-- Setup modules
 	self.Logs = BLTLogs:new()
@@ -165,11 +164,15 @@ function BLT:RunHookTable(hooks_table, path)
 	end
 end
 
+function BLT:SetModGlobals(mod)
+	rawset(_G, BLTModManager.Constants.mod_path_global, mod and mod:GetPath() or false)
+	rawset(_G, BLTModManager.Constants.mod_instance_global, mod or false)
+end
+
 function BLT:RunHookFile(path, hook_data)
 	if not hook_data.game or hook_data.game == self:GetGame() then
 		rawset(_G, BLTModManager.Constants.required_script_global, path or false)
-		rawset(_G, BLTModManager.Constants.mod_path_global, hook_data.mod:GetPath() or false)
-		rawset(_G, BLTModManager.Constants.mod_instance_global, hook_data.mod or false)
+		self:SetModGlobals(hook_data.mod)
 		dofile(hook_data.mod:GetPath() .. hook_data.script)
 	end
 end
@@ -184,7 +187,7 @@ function BLT:OverrideRequire()
 
 	-- Override require function to run hooks
 	_G.require = function(...)
-		local args = {...}
+		local args = { ... }
 		local path = args[1]
 		local path_lower = path:lower()
 		local require_result = nil
@@ -202,11 +205,10 @@ function BLT:OverrideRequire()
 end
 
 function BLT:FindMods()
-	self:Log(LogLevel.INFO, "[BLT] Loading mods for state: " .. tostring(_G))
-
 	-- Get all folders in mods directory
 	local mods_list = {}
-	local folders = file.GetDirectories(BLTModManager.Constants.mods_directory)
+	local mods_directory = BLTModManager.Constants.mods_directory
+	local folders = file.GetDirectories(mods_directory)
 
 	-- If we didn't get any folders then return an empty mods list
 	if not folders then
@@ -216,33 +218,27 @@ function BLT:FindMods()
 	for index, directory in pairs(folders) do
 		-- Check if this directory is excluded from being checked for mods (logs, saves, etc.)
 		if not self.Mods:IsExcludedDirectory(directory) then
-			self:Log(LogLevel.INFO, "[BLT] Loading mod: " .. tostring(directory))
-
-			local mod_path = "mods/" .. directory .. "/"
-			local mod_defintion = mod_path .. "mod.txt"
+			local mod_path = mods_directory .. directory .. "/"
 
 			-- Attempt to read the mod defintion file
-			local file = io.open(mod_defintion)
+			local file = io.open(mod_path .. "mod.txt")
 			if file then
 				-- Read the file contents
 				local file_contents = file:read("*all")
 				file:close()
 
-				-- Convert json data in a pcall so any errors won't crash the game
-				local mod_content = nil
-				local json_success = pcall(function()
-					mod_content = json.decode(file_contents)
-				end)
-
 				-- Create a BLT mod from the loaded data
-				if json_success and mod_content then
-					local new_mod = BLTMod:new(directory, mod_content)
-					table.insert(mods_list, new_mod)
+				local mod_content = json.decode(file_contents)
+				if mod_content then
+					local new_mod, valid = BLTMod:new(directory, mod_content, mod_path)
+					if valid then
+						table.insert(mods_list, new_mod)
+					end
 				else
 					self:Log(LogLevel.ERROR, "[BLT] An error occured while loading mod.txt from: " .. tostring(mod_path))
 				end
 			else
-				self:Log(LogLevel.WARN, "[BLT] Could not read or find mod.txt in " .. tostring(directory))
+				self:Log(LogLevel.WARN, "[BLT] Could not read or find mod.txt in " .. tostring(mod_path))
 			end
 		end
 	end

@@ -5,18 +5,15 @@ _G.json = {}
 ---@return table @Decoded data
 function json.decode(data)
 	-- Attempt to use 1.0 json module first
-	local value = nil
-	local passed = pcall(function()
-		value = json10.decode(data)
-	end)
+	local passed, value = pcall(json10.decode, data)
 
 	if not passed then
 		-- If it fails, then try using the old json module to load malformatted json files
 		BLT:Log(LogLevel.WARN, string.format("Found a json error, attempting to use old json loader!"))
-		value = json09.decode(data)
+		passed, value = pcall(json09.decode, data)
 	end
 
-	return value
+	return passed and value
 end
 
 ---Converts a Lua table to a JSON string

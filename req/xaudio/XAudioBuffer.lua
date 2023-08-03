@@ -18,11 +18,7 @@ function C:init(input)
 end
 
 function C:close(force)
-	if force and type(force) ~= "boolean" then
-		error("Bad 'force' type " .. tostring(force) .. " - must be nil or boolean")
-	end
-
-	self._buffer:close(force or false)
+	self._buffer:close(force and true or false)
 end
 
 function C:get_length()

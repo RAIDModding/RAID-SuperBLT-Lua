@@ -4,41 +4,37 @@ BLTModItem = BLTModItem or blt_class()
 
 local padding = 10
 
-local massive_font = tweak_data.menu.pd2_massive_font
-local large_font = tweak_data.menu.pd2_large_font
 local medium_font = tweak_data.menu.pd2_medium_font
 local small_font = tweak_data.menu.pd2_small_font
 
-local massive_font_size = tweak_data.menu.pd2_massive_font_size
-local large_font_size = tweak_data.menu.pd2_large_font_size
 local medium_font_size = tweak_data.menu.pd2_medium_font_size
 local small_font_size = tweak_data.menu.pd2_small_font_size
 
-local function make_fine_text(text)
-	local x, y, w, h = text:text_rect()
-	text:set_size(w, h)
-	text:set_position(math.round(text:x()), math.round(text:y()))
-end
-
 BLTModItem.layout = {
 	x = 4,
-	y = 4
+	y = 2
 }
 BLTModItem.image_size = 108
 
 function BLTModItem:init(panel, index, mod, show_icon)
 	local w = (panel:w() - (self.layout.x + 1) * padding) / self.layout.x
-	local h = show_icon and 256 or 128
+	local h = ((panel:h() - (self.layout.y + 1) * padding) / self.layout.y) * (show_icon and 1 or 0.5) - (show_icon and 0 or padding * 0.5)
 	local column, row = self:_get_col_row(index)
 	local icon_size = 32
 
 	self._mod = mod
 
 	local bg_color = mod:GetColor()
-	local text_color = tweak_data.screen_colors.title
+	local text_color = Color.white
 	if mod:LastError() then
 		bg_color = tweak_data.screen_colors.important_1
 		text_color = tweak_data.screen_colors.important_1
+	elseif not mod:IsUndisablable() and mod:IsEnabled() and not mod:WasEnabledAtStart() then
+		bg_color = Color.yellow
+		text_color = Color.yellow
+	elseif not mod:IsEnabled() then
+		bg_color = Color(0.15, 0.15, 0.15)
+		text_color = Color(0.25, 0.25, 0.25)
 	end
 
 	-- Main panel
@@ -53,7 +49,7 @@ function BLTModItem:init(panel, index, mod, show_icon)
 	-- Background
 	self._background = self._panel:rect({
 		color = bg_color,
-		alpha = mod:IsEnabled() and 0.2 or 0.05,
+		alpha = 0.2,
 		blend_mode = "add",
 		layer = -1
 	})
@@ -69,8 +65,6 @@ function BLTModItem:init(panel, index, mod, show_icon)
 		valign = "scale"
 	})
 
-	local alpha = mod:IsEnabled() and 1 or 0.5
-
 	-- Mod name
 	local mod_name = self._panel:text({
 		name = "mod_name",
@@ -79,18 +73,18 @@ function BLTModItem:init(panel, index, mod, show_icon)
 		layer = 10,
 		blend_mode = "add",
 		color = text_color,
-		alpha = alpha,
 		text = mod:GetName(),
 		align = "center",
 		vertical = "top",
 		wrap = true,
 		word_wrap = true
 	})
-	make_fine_text(mod_name)
 	local name_padding = show_icon and padding or (icon_size + 4 + padding)
 	mod_name:set_x(name_padding)
 	mod_name:set_width(self._panel:w() - mod_name:x() - name_padding)
-	mod_name:set_top(self._panel:h() * (show_icon and 0.5 or 0.1))
+	mod_name:set_top(math.round(self._panel:h() * (show_icon and 0.5 or 0.1)))
+	local _, _, _, th = mod_name:text_rect()
+	mod_name:set_h(th)
 
 	-- Mod description
 	local mod_desc = self._panel:text({
@@ -100,7 +94,6 @@ function BLTModItem:init(panel, index, mod, show_icon)
 		layer = 10,
 		blend_mode = "add",
 		color = text_color,
-		alpha = alpha,
 		text = string.sub(mod:GetDescription(), 1, 120),
 		align = "left",
 		vertical = "top",
@@ -108,9 +101,10 @@ function BLTModItem:init(panel, index, mod, show_icon)
 		word_wrap = true,
 		w = self._panel:w() - padding * 2
 	})
-	make_fine_text(mod_desc)
-	mod_desc:set_center_x(self._panel:w() * 0.5)
-	mod_desc:set_top(mod_name:bottom() + 5)
+	mod_desc:set_top(math.round(mod_name:bottom()) + 5)
+	local _, _, tw, th = mod_desc:text_rect()
+	mod_desc:set_size(tw, math.min(th, self._panel:h() - mod_desc:y() - padding))
+	mod_desc:set_center_x(math.round(self._panel:w() * 0.5))
 
 	-- Mod image
 	local image_path
@@ -123,7 +117,7 @@ function BLTModItem:init(panel, index, mod, show_icon)
 			name = "image",
 			texture = image_path,
 			color = Color.white,
-			alpha = alpha,
+			alpha = mod:IsEnabled() and 1 or 0.25,
 			layer = 10,
 			w = BLTModItem.image_size,
 			h = BLTModItem.image_size
@@ -132,9 +126,10 @@ function BLTModItem:init(panel, index, mod, show_icon)
 		image:set_top(padding)
 	elseif show_icon then
 		local no_image_panel = self._panel:panel({
+			name = "no_image_panel",
 			w = BLTModItem.image_size,
 			h = BLTModItem.image_size,
-			alpha = alpha,
+			alpha = mod:IsEnabled() and 1 or 0.5,
 			layer = 10
 		})
 		no_image_panel:set_center_x(self._panel:w() * 0.5)
@@ -142,13 +137,12 @@ function BLTModItem:init(panel, index, mod, show_icon)
 
 		BoxGuiObject:new(no_image_panel, {sides = {1, 1, 1, 1}})
 
-		local no_image_text = no_image_panel:text({
+		no_image_panel:text({
 			name = "no_image_text",
 			font_size = small_font_size,
 			font = small_font,
 			layer = 10,
 			blend_mode = "add",
-			color = tweak_data.screen_colors.title,
 			text = managers.localization:to_upper_text("blt_no_image"),
 			align = "center",
 			vertical = "center",
@@ -160,49 +154,18 @@ function BLTModItem:init(panel, index, mod, show_icon)
 	-- Mod settings
 	local icon_y = padding
 
-	if not mod:IsUndisablable() then
-		local icon, rect = tweak_data.hud_icons:get_icon_data("csb_locks")
-		local icon_enabled = self._panel:bitmap({
-			name = "",
-			texture = icon,
-			texture_rect = rect,
-			color = Color.white,
-			alpha = 1,
-			layer = 10,
-			w = icon_size,
-			h = icon_size
-		})
-		icon_enabled:set_left(padding)
-		icon_enabled:set_top(icon_y)
-		icon_y = icon_y + icon_size + 4
-
-		if mod:WasEnabledAtStart() then
-			icon_enabled:set_alpha(mod:IsEnabled() and 1 or 0.2)
-		else
-			icon_enabled:set_alpha(mod:IsEnabled() and 1 or 0.2)
-			icon_enabled:set_color(mod:IsEnabled() and Color.yellow or Color.white)
-		end
-	end
-
 	if mod:HasUpdates() then
 		local icon, rect = tweak_data.hud_icons:get_icon_data("csb_pagers")
 		local icon_updates = self._panel:bitmap({
-			name = "",
 			texture = icon,
 			texture_rect = rect,
-			color = Color.white,
 			alpha = mod:AreUpdatesEnabled() and 1 or 0.2,
 			layer = 10,
 			w = icon_size,
 			h = icon_size
 		})
-		if show_icon then
-			icon_updates:set_left(padding)
-			icon_updates:set_top(icon_y)
-		else
-			icon_updates:set_right(self._panel:w() - padding)
-			icon_updates:set_top(padding)
-		end
+		icon_updates:set_left(padding)
+		icon_updates:set_top(icon_y)
 
 		-- Animate the icon. When the update is done, the animation ends and
 		-- sets the icon to the appropriate colour
@@ -270,7 +233,7 @@ end
 function BLTModItem:set_highlight(enabled, no_sound)
 	if self._enabled ~= enabled then
 		self._enabled = enabled
-		self._background:set_alpha(enabled and 0.4 or self._mod:IsEnabled() and 0.2 or 0.05)
+		self._background:set_alpha(enabled and 0.4 or 0.2)
 		if enabled and not no_sound then
 			managers.menu_component:post_event("highlight")
 		end

@@ -29,7 +29,7 @@ end
 
 ---Registers a new menu that can have items added to it
 ---@param menu_id string @Unique ID to use for this menu
----@return any @The newly created menu
+---@return table @The newly created menu
 function MenuHelper:NewMenu(menu_id)
 	self.menus = self.menus or {}
 
@@ -42,7 +42,7 @@ end
 
 ---Returns a registered menu
 ---@param menu_id string @ID of the menu to get
----@return any @Menu with `menu_id`
+---@return table @Menu with `menu_id`
 function MenuHelper:GetMenu(menu_id)
 	local menu = (self.menus or {})[menu_id]
 	if menu == nil then
@@ -57,9 +57,24 @@ function MenuHelper:AddBackButton(menu_id)
 	MenuManager:add_back_button(menu)
 end
 
----Adds a button to the menu specified in the table `button_data`
----@param button_data table @Table containing data of the button to be added to the menu
----@return any @The created menu item
+---Adds a button to the menu specified in `button_data`
+---@param button_data table @Settings for the button to be added
+---```lua
+---button_data = {
+---	menu_id = "menu_id",
+---	id = "element_id",
+---	title = "My button",
+---	desc = "My button description",
+---	next_node = "next_menu_id",
+---	back_callback = "back_callback_func",
+---	callback = "changed_callback_func",
+---	disabled = false,
+---	disabled_color = Color(0.25, 1, 1, 1),
+---	localized = true,
+---	priority = 1
+---}
+---```
+---@return table @The created menu item
 function MenuHelper:AddButton(button_data)
 	local data = {
 		type = "CoreMenuItem.Item"
@@ -91,8 +106,17 @@ function MenuHelper:AddButton(button_data)
 	return item
 end
 
----Adds a divider to the menu specified in the table `divider_data`
----@param divider_data table @Table containing data of the divider to be added to the menu
+---Adds a divider to the menu specified in `divider_data`
+---@param divider_data table @Settings for the divider to be added
+---```lua
+---divider_data = {
+---	menu_id = "menu_id",
+---	id = "element_id",
+---	size = 8,
+---	no_text = true,
+---	priority = 1
+---}
+---```
 ---@return any @The created menu item
 function MenuHelper:AddDivider(divider_data)
 	local data = {
@@ -114,9 +138,23 @@ function MenuHelper:AddDivider(divider_data)
 	return item
 end
 
----Adds a toggle button to the menu specified in the table `toggle_data`
----@param toggle_data table @Table containing data of the toggle button to be added to the menu
----@return any @The created menu item
+---Adds a toggle button to the menu specified in `toggle_data`
+---@param toggle_data table @Settings for the toggle to be added
+---```lua
+---toggle_data = {
+---	menu_id = "menu_id",
+---	id = "element_id",
+---	title = "My toggle",
+---	desc = "My toggle description",
+---	icon_by_text = false,
+---	callback = "changed_callback_func",
+---	disabled = false,
+---	disabled_color = Color(0.25, 1, 1, 1),
+---	localized = true,
+---	priority = 1
+---}
+---```
+---@return table @The created menu item
 function MenuHelper:AddToggle(toggle_data)
 	local data = {
 		type = "CoreMenuItemToggle.ItemToggle",
@@ -176,16 +214,40 @@ function MenuHelper:AddToggle(toggle_data)
 	return item
 end
 
----Adds a slider to the menu specified in the table `slider_data`
----@param slider_data table @Table containing data of the slider to be added to the menu
----@return any @The created menu item
+---Adds a slider to the menu specified in `slider_data`
+---@param slider_data table @Settings for the slider to be added
+---```lua
+---slider_data = {
+---	menu_id = "menu_id",
+---	id = "element_id",
+---	title = "My slider",
+---	desc = "My slider description",
+---	min = 0,
+---	max = 10,
+---	step = 1,
+---	show_value = false,
+---	display_precision = 2,
+---	display_scale = 1,
+---	is_percentage = false,
+---	callback = "changed_callback_func",
+---	disabled = false,
+---	disabled_color = Color(0.25, 1, 1, 1),
+---	localized = true,
+---	priority = 1
+---}
+---```
+---@return table @The created menu item
 function MenuHelper:AddSlider(slider_data)
 	local data = {
 		type = "CoreMenuItemSlider.ItemSlider",
 		min = slider_data.min or 0,
 		max = slider_data.max or 10,
 		step = slider_data.step or 1,
-		show_value = slider_data.show_value or false
+		show_value = slider_data.show_value or false,
+		decimal_count = slider_data.display_precision or 2,
+		show_scale = slider_data.display_scale or 1,
+		is_scaled = slider_data.display_scale and slider_data.display_scale ~= 1,
+		is_percentage = slider_data.is_percentage or false
 	}
 
 	local params = {
@@ -213,15 +275,38 @@ function MenuHelper:AddSlider(slider_data)
 	return item
 end
 
----Adds a multiple choice item to the menu specified in the table `divider_data`
----@param multi_data table @Table containing data of the multiple choice item to be added to the menu
----@return any @The created menu item
+---Adds a multiple choice item to the menu specified in `multi_data`
+---@param multi_data table @Settings for the multiple choice item to be added
+---```lua
+---multi_data = {
+---	menu_id = "menu_id",
+---	id = "element_id",
+---	title = "My multi choice",
+---	desc = "My multi choice description",
+---	items = { "First", "Second", "Third" },
+---	item_values = { 1, 2, 3 },
+---	value = 1,
+---	callback = "changed_callback_func",
+---	disabled = false,
+---	disabled_color = Color(0.25, 1, 1, 1),
+---	localized = true,
+---	localized_items = true,
+---	priority = 1
+---}
+---```
+---@return table @The created menu item
 function MenuHelper:AddMultipleChoice(multi_data)
 	local data = {
 		type = "MenuItemMultiChoice"
 	}
-	for k, v in ipairs(multi_data.items or {}) do
-		table.insert(data, {_meta = "option", text_id = v, value = k})
+	local values = multi_data.item_values or {}
+	for i, v in ipairs(multi_data.items or {}) do
+		table.insert(data, {
+			_meta = "option",
+			text_id = v,
+			value = values[i] == nil and i or values[i],
+			localize = multi_data.localized_items
+		})
 	end
 
 	local params = {
@@ -237,7 +322,7 @@ function MenuHelper:AddMultipleChoice(multi_data)
 	local menu = self:GetMenu(multi_data.menu_id)
 	local item = menu:create_item(data, params)
 	item._priority = multi_data.priority
-	item:set_value(multi_data.value or 1)
+	item:set_value(multi_data.value or values[1] == nil and 1 or values[1])
 
 	if multi_data.disabled then
 		item:set_enabled(not multi_data.disabled)
@@ -249,9 +334,23 @@ function MenuHelper:AddMultipleChoice(multi_data)
 	return item
 end
 
----Adds a customizable keybinding to the menu specified in the table `bind_data`
----@param bind_data table @Table containing data of the keybinding to be added to the menu
----@return any @The created menu item
+---Adds a customizable keybinding to the menu specified in `bind_data`
+---@param bind_data table @Settings for the keybinding to be added
+---```lua
+---bind_data = {
+---	menu_id = "menu_id",
+---	id = "element_id",
+---	title = "My keybinding",
+---	desc = "My keybinding description",
+---	connection_name = "keybind_id",
+---	binding = "left shift",
+---	button = "left shift",
+---	callback = "changed_callback_func",
+---	localized = true,
+---	priority = 1
+---}
+---```
+---@return table @The created menu item
 function MenuHelper:AddKeybinding(bind_data)
 	local data = {
 		type = "MenuItemCustomizeController"
@@ -280,9 +379,22 @@ function MenuHelper:AddKeybinding(bind_data)
 	return item
 end
 
----Adds an input box to the menu specified in the table `input_data`
----@param input_data table @Table containing data of the input box to be added to the menu
----@return any @The created menu item
+---Adds an input box to the menu specified in `input_data`
+---@param input_data table @Settings for the input box to be added
+---```lua
+---input_data = {
+---	menu_id = "menu_id",
+---	id = "element_id",
+---	title = "My input",
+---	desc = "My input description",
+---	callback = "changed_callback_func",
+---	disabled = false,
+---	disabled_color = Color(0.25, 1, 1, 1),
+---	localized = true,
+---	priority = 1
+---}
+---```
+---@return table @The created menu item
 function MenuHelper:AddInput(input_data)
 	local data = {
 		type = "MenuItemInput"
@@ -312,7 +424,7 @@ end
 ---Sets up and returns a menu so that it can be added to the in-game menus
 ---@param menu_id string @ID of the menu to build
 ---@param data? table @Table containing extra data which this menu should be built with
----@return table? @The built menu or ``nil`` if the menu could not be built
+---@return table? @The built menu or `nil` if the menu could not be built
 function MenuHelper:BuildMenu(menu_id, data)
 	-- Check menu exists
 	local menu = self.menus[menu_id]
@@ -349,13 +461,6 @@ function MenuHelper:BuildMenu(menu_id, data)
 		end
 		for k, item in pairs(nonpriority_items) do
 			menu:add_item(item)
-		end
-
-		-- Slider dirty callback fix
-		for k, item in pairs(menu._items) do
-			if item._type == "slider" or item._parameters.type == "CoreMenuItemSlider.ItemSlider" then
-				item.dirty_callback = nil
-			end
 		end
 
 		-- Back callback
@@ -414,7 +519,7 @@ end
 ---@return any @The created menu item
 function MenuHelper:AddMenuItem(parent_menu, child_menu, name, desc, menu_position, subposition)
 	if parent_menu == nil then
-		BLT:Log(LogLevel.WARN, string.gsub("[Menus][Warning] Parent menu for child '{1}' is null, ignoring...", "{1}", child_menu))
+		BLT:Log(LogLevel.WARN, string.format("[Menus] Parent menu for child '%s' is null, ignoring...", child_menu))
 		return
 	end
 
@@ -455,7 +560,7 @@ end
 
 ---Loads a json-formatted text file and automatically parses and converts into a usable menu
 ---@param file_path string @Path of the file to load and convert into a menu
----@param parent_class any @Class of which all keybind functions and data will be loaded and saved to
+---@param parent_class any @Unused
 ---@param data_table table @Table containing the data keys which various menu items can load their value from
 function MenuHelper:LoadFromJsonFile(file_path, parent_class, data_table)
 	local file = io.open(file_path, "r")
@@ -548,7 +653,10 @@ function MenuHelper:LoadFromJsonFile(file_path, parent_class, data_table)
 						min = item.min or 0,
 						max = item.max or 1,
 						step = item.step or 0.1,
-						show_value = true,
+						show_value = item.show_value == nil and true or item.show_value,
+						display_precision = item.display_precision,
+						display_scale = item.display_scale,
+						is_percentage = item.is_percentage,
 						menu_id = menu_id,
 						priority = priority,
 						localized = localized
@@ -606,10 +714,12 @@ function MenuHelper:LoadFromJsonFile(file_path, parent_class, data_table)
 						desc = desc,
 						callback = callback,
 						items = item.items,
+						item_values = item.item_values,
 						value = value,
 						menu_id = menu_id,
 						priority = priority,
-						localized = localized
+						localized = localized,
+						localized_items = item.localized_items
 					})
 				end
 
@@ -628,7 +738,7 @@ function MenuHelper:LoadFromJsonFile(file_path, parent_class, data_table)
 			end
 		end)
 	else
-		BLT:Log(LogLevel.ERROR, "Could not load file: " .. file_path)
+		BLT:Log(LogLevel.ERROR, string.format("Could not load file '%s'", file_path))
 	end
 end
 
@@ -663,39 +773,37 @@ function MenuHelper:ResetItemsToDefaultValue(item, items_table, value)
 	managers.viewport:resolution_changed()
 end
 
---[[
-	Registers a new BLTCustomComponent
-
-	Please note you still need to set up your component in BLTMenuNodes
-
-	This does the following:
-	- adds a method named name_gui to MenuComponentManager
-	- adds a method named create_name_gui to MenuComponentManager
-	- adds a method named close_name_gui to MenuComponentManager
-	- Sets up managers.component._active_components to refer to the create and close functions
-
-	In other words, calling AddComponent("mycmp", MyCmp) will result in:
-
-	function MenuComponentManager:mycmp_gui()
-		return self._mycmp
-	end
-
-	function MenuComponentManager:create_mycmp_gui(node)
-		if not node then
-			return
-		end
-		self._mycmp = self._mycmp or MyCmp:new(self._ws, self._fullscreen_ws, node)
-		self:register_component("mycmp_gui", self._mycmp)
-	end
-
-	function MenuComponentManager:close_mycmp_gui()
-		if self._mycmp then
-			self._mycmp:close()
-			self._mycmp = nil
-			self:unregister_component("mycmp_gui")
-		end
-	end
-]]
+---Registers a new BLTCustomComponent  
+---Note that you still need to set up your component in BLTMenuNodes
+---
+---This does the following:
+--- - adds a method named name_gui to MenuComponentManager
+--- - adds a method named create_name_gui to MenuComponentManager
+--- - adds a method named close_name_gui to MenuComponentManager
+--- - Sets up managers.component._active_components to refer to the create and close functions
+---
+---In other words, calling AddComponent("mycmp", MyCmp) will result in:
+---```lua
+---function MenuComponentManager:mycmp_gui()
+---	return self._mycmp
+---end
+---
+---function MenuComponentManager:create_mycmp_gui(node)
+---	if not node then
+---		return
+---	end
+---	self._mycmp = self._mycmp or MyCmp:new(self._ws, self._fullscreen_ws, node)
+---	self:register_component("mycmp_gui", self._mycmp)
+---end
+---
+---function MenuComponentManager:close_mycmp_gui()
+---	if self._mycmp then
+---		self._mycmp:close()
+---		self._mycmp = nil
+---		self:unregister_component("mycmp_gui")
+---	end
+---end
+---```
 function MenuHelper:AddComponent(name, clss)
 	local function add(component)
 		local c_name = name .. "_gui"

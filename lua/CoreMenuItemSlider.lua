@@ -1,30 +1,22 @@
+local Hooks = Hooks
+local tweak_data = tweak_data
+
 core:module("CoreMenuItemSlider")
-local CloneClass = _G.CloneClass
-local tweak_data = _G.tweak_data
 
-CloneClass(ItemSlider)
-
-function ItemSlider.setup_gui(self, node, row_item)
-	local r = self.orig.setup_gui(self, node, row_item)
+Hooks:PostHook(ItemSlider, "setup_gui", "BLT.ItemSlider.setup_gui", function (self, node, row_item)
 	row_item.gui_slider_text:set_font_size(tweak_data.menu.stats_font_size)
-	return r
-end
+end)
 
-function ItemSlider.set_value(self, value)
-	self._value = math.min(math.max(self._min, value), self._max)
-	self:dirty()
-end
-
-function ItemSlider.reload(self, row_item, node)
-	local r = self.orig.reload(self, row_item, node)
-	if row_item then
-		local value
-		if self:show_value() then
-			value = string.format("%.2f", math.round_with_precision(self:value(), 2))
-		else
-			value = string.format("%.0f", self:percentage()) .. "%"
-		end
-		row_item.gui_slider_text:set_text(value)
+Hooks:PreHook(ItemSlider, "reload", "BLT.ItemSlider.reload", function (self, row_item)
+	if not row_item then
+		return
 	end
-	return r
-end
+
+	local disabled = not self:enabled()
+
+	row_item.gui_text:set_color(disabled and row_item.disabled_color or row_item.color)
+	row_item.gui_slider_text:set_color(disabled and row_item.disabled_color or row_item.color)
+
+	self:set_slider_color(disabled and row_item.disabled_color or tweak_data.screen_colors.button_stage_3)
+	self:set_slider_highlighted_color(disabled and row_item.disabled_color or tweak_data.screen_colors.button_stage_2)
+end)

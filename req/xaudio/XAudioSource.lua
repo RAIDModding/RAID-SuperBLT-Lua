@@ -141,11 +141,32 @@ function C:set_direction(...)
 	self._source:setdirection(process_vector(...))
 end
 
+function C:set_min_distance(distance)
+	if distance < 0 then
+		BLT:Log(LogLevel.ERROR, "[Xaudio] Source distance must be positive")
+		return
+	end
+
+	self._source:setmindis(distance)
+end
+
+function C:set_max_distance(distance)
+	if distance < 0 then
+		BLT:Log(LogLevel.ERROR, "[Xaudio] Source distance must be positive")
+		return
+	end
+
+	self._source:setmaxdis(distance)
+end
+
 function C:set_volume(gain)
+	if gain < 0 then
+		BLT:Log(LogLevel.ERROR, "[Xaudio] Source volume must be positive")
+		return
+	end
+
 	if gain > 1 then
-		log("Cannot set gain to more than 1")
-	elseif gain < 0 then
-		log("Cannot set gain to less than 0")
+		BLT:Log(LogLevel.WARN, "[XAudio] Source volume larger than 1")
 	end
 
 	self._gain = gain
@@ -154,9 +175,10 @@ end
 function C:set_type(typ)
 	if typ == C.SOUND_EFFECT or typ == C.MUSIC then
 		self._type = typ
-	else
-		error("Audio type can only be set to XAudioSource.SOUND_EFFECT and XAudioSource.MUSIC")
+		return
 	end
+
+	BLT:Log(LogLevel.ERROR, "[Xaudio] Audio type can only be set to XAudio.Source.SOUND_EFFECT and XAudio.Source.MUSIC")
 end
 
 function C:set_looping(looping)

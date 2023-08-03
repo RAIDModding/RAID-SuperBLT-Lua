@@ -6,7 +6,6 @@ end
 mt.__declared = {}
 function mt.__newindex(t, n, v)
 	if not mt.__declared[n] then
-		local info = debug.getinfo(2, "S")
 		mt.__declared[n] = true
 	end
 	rawset(t, n, v)

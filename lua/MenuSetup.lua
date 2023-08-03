@@ -1,13 +1,9 @@
-CloneClass(MenuSetup)
-
 Hooks:RegisterHook("MenuUpdate")
-function MenuSetup.update(self, t, dt)
-	self.orig.update(self, t, dt)
+Hooks:PostHook(MenuSetup, "update", "BLT.MenuSetup.update", function(self, t, dt)
 	Hooks:Call("MenuUpdate", t, dt)
-end
+end)
 
 Hooks:RegisterHook("SetupOnQuit")
-function MenuSetup.quit(self)
+Hooks:PreHook(MenuSetup, "quit", "BLT.MenuSetup.quit", function(self)
 	Hooks:Call("SetupOnQuit", self)
-	return self.orig.quit(self)
-end
+end)

@@ -59,7 +59,7 @@
 	"blt_download_manager_help" : "Uppdatera dina BLT-moddar.\nFör guds skull uppdatera dina moddar.",
 	"blt_download_ready" : "Redo att laddas ner",
 	"blt_download_waiting" : "Väntar...",
-	"blt_download_downloading" : "Laddar ner... $bytes;b/$total_bytes;b",
+	"blt_download_downloading" : "Laddar ner... $current; $unit; / $total; $unit;",
 	"blt_download_saving" : "Sparar till disk...",
 	"blt_download_extracting" : "Extraherar...",
 	"blt_download_verifying" : "Verifierar...",

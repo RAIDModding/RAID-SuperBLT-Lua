@@ -1,11 +1,17 @@
 ---@class BLTModDependency
----@field new fun(self, parent_mod: BLTMod, id: string, download_data: table):BLTModDependency
+---@field new fun(self, parent_mod: BLTMod, id: string, download_data: table):BLTModDependency, boolean
 BLTModDependency = BLTModDependency or blt_class()
 
 function BLTModDependency:init(parent_mod, id, download_data)
+	if not parent_mod or not id or not download_data or not download_data.meta and not download_data.download_url then
+		return false
+	end
+
 	self._id = id
 	self._parent_mod = parent_mod
 	self._download_data = download_data
+
+	return true
 end
 
 function BLTModDependency:GetId()
@@ -21,7 +27,7 @@ function BLTModDependency:GetServerData()
 end
 
 function BLTModDependency:GetServerName()
-	return self:GetServerData() and self:GetServerData().name or self._id
+	return self._server_data and self._server_data.name or self._download_data.name or self._id
 end
 
 function BLTModDependency:GetName()
@@ -37,55 +43,62 @@ function BLTModDependency:DisallowsUpdate()
 end
 
 function BLTModDependency:GetInstallDirectory()
-	return "mods/"
+	return self._server_data and self._server_data.install_dir or self._download_data.install_dir or BLTModManager.Constants.mods_directory
 end
 
 function BLTModDependency:Retrieve(clbk)
-	-- Don't run twice at the same time
 	if self._retrieving then
 		return
 	end
 
-	-- Flag this as already retrieving data
-	self._retrieving = true
-
-	-- Perform the request from the server
-	-- TODO custom server URLs
-	local url = "http://api.paydaymods.com/updates/retrieve/?mod[0]=" .. self:GetId()
-	dohttpreq(url, function(json_data, http_id)
-		self:clbk_got_data(clbk, json_data, http_id)
-	end)
+	-- If a download url is provided use it, otherwise get the url from a meta file
+	if self._download_data.download_url then
+		-- Need to wrap this in a coroutine to prevent crashing when called from main thread
+		local co = coroutine.create(function()
+			clbk(self, true)
+		end)
+		coroutine.resume(co)
+	else
+		self._retrieving = true
+		dohttpreq(self._download_data.meta, function(json_data, http_id, request_info)
+			self:clbk_got_data(clbk, json_data, http_id, request_info)
+		end)
+	end
 end
 
 function BLTModDependency:GetDownloadURL()
-	-- Allow the use of custom download URLs
-	if self._download_data and self._download_data.download_url then
-		return self._download_data.download_url
-	end
-
-	return "http://download.paydaymods.com/download/latest/" .. self:GetId()
+	return self._server_data and self._server_data.download_url or self._download_data.download_url
 end
 
-function BLTModDependency:clbk_got_data(clbk, json_data, http_id)
+function BLTModDependency:clbk_got_data(clbk, json_data, http_id, request_info)
 	self._retrieving = false
 
-	if json_data:is_nil_or_empty() then
-		BLT:Log(LogLevel.ERROR, "Could not connect to the downloads server!")
-		return self:_run_update_callback(clbk, false, "Could not connect to the downloads server.")
+	if not request_info.querySucceeded or string.is_nil_or_empty(json_data) then
+		BLT:Log(LogLevel.ERROR, string.format("[Dependencies] Could not retrieve update data for '%s'", self:GetId()))
+		return self:_run_update_callback(clbk, false, "Could not retrieve update data.")
 	end
 
 	local server_data = json.decode(json_data)
 	if server_data then
-		for idx, data in pairs(server_data) do
+		for _, data in pairs(server_data) do
 			if data.ident == self:GetId() then
-				BLT:Log(LogLevel.INFO, string.format("[Dependencies] Received server data for '%s'", data.ident))
+				BLT:Log(LogLevel.INFO, string.format("[Dependencies] Received update data for '%s'", self:GetId()))
 				self._server_data = data
 				break
 			end
 		end
 	end
 
-	clbk(self, self._server_data ~= nil)
+	if not self._server_data then
+		BLT:Log(LogLevel.ERROR, string.format("[Dependencies] No matching update data found for '%s'", self:GetId()))
+		return self:_run_update_callback(clbk, false, "Could not find dependency data.")
+	end
+
+	clbk(self, self._server_data and self._server_data.download_url)
+end
+
+function BLTModDependency:GetPatchNotes()
+	return self._server_data and self._server_data.patchnotes
 end
 
 function BLTModDependency:ViewPatchNotes()
@@ -97,13 +110,21 @@ function BLTModDependency:IsCritical()
 end
 
 function BLTModDependency:GetInstallFolder()
-	return self._server_data.name
+	return self:GetServerName()
 end
 
 function BLTModDependency:GetServerHash()
-	return self._server_data.hash
+	return self._server_data and self._server_data.hash
+end
+
+function BLTModDependency:GetServerVersion()
+	return self._server_data and self._server_data.version
 end
 
 function BLTModDependency:IsInstall()
 	return true
+end
+
+function BLTModDependency:UsesHash()
+	return self._server_data and self._server_data.hash and true
 end

@@ -1,4 +1,5 @@
 import "base/native" for Logger, IO, XML
+import "base/native/Environment_001" for Environment
 
 /**
  * XML Tweak Applier
@@ -100,7 +101,7 @@ class XMLTweakApplier {
 		find_tweaks(tweak_path, name, ext, tweaks)
 
 		// As with pairs() in Lua, Wren makes no guarantees about the iteration order of maps
-		// (see http://wren.io/maps.html#iterating-over-the-contents). Fortunately, tweaks is a
+		// (see https://wren.io/maps.html#iterating-over-the-contents). Fortunately, tweaks is a
 		// list (since new elements are appended with .add() in handle_tweak_element() below),
 		// so iteration order should be consistent enough to be tracked this way (or if need be,
 		// indexing it like an array within a range loop)
@@ -331,6 +332,15 @@ class XMLLoader {
 		// (note it would be really nice to use the 'continue' keyword here, but older
 		//  versions of the DLL might not have it yet)
 		var disabled_mods_path = "mods/saves/blt_wren_disabled_mods.txt"
+
+		// Create a fiber to check if we are running in VR to prevent crashes with outdated dll versions
+		(Fiber.new {
+			var disabled_mods_path_vr = "mods/saves/blt_wren_disabled_mods_vr.txt"
+			if (Environment.is_vr && IO.info(disabled_mods_path_vr) == "file") {
+				disabled_mods_path = disabled_mods_path_vr
+			}
+		}).try()
+
 		var disabled_mods = []
 		if (IO.info(disabled_mods_path) == "file") {
 			var data = IO.read(disabled_mods_path)

@@ -49,33 +49,6 @@ function LuaNetworking:LocalPeerID()
 	return managers.network:session():local_peer():id() or 0
 end
 
----Converts a table to a string representation
----@param tbl table @Table to convert into a string
----@return string @String representation of `tbl`
-function LuaNetworking:TableToString(tbl)
-	local str = ""
-	for k, v in pairs(tbl) do
-		if str ~= "" then
-			str = str .. ","
-		end
-		str = str .. string.format("%s|%s", tostring(k), tostring(v))
-	end
-	return str
-end
-
----Converts the string representation of a table to a table
----@param str string @String representation of a table
----@return table @Table created from `str`
-function LuaNetworking:StringToTable(str)
-	local tbl = {}
-	local tblPairs = string.split(str, "[,]")
-	for k, v in pairs(tblPairs) do
-		local pairData = string.split(v, "[|]")
-		tbl[pairData[1]] = pairData[2]
-	end
-	return tbl
-end
-
 ---Returns the name of the player associated with the specified peer ID
 ---@param id integer @Peer ID of the player to get the name from
 ---@return string @Name of the player with peer ID `id`, or `"No Name"` if the player could not be found
@@ -200,30 +173,83 @@ function LuaNetworking:ProcessExceptPeer(sender, message, color, icon)
 	end
 end
 
--- Extensions
-LuaNetworking._networked_colour_string = "r:%.4g|g:%.4g|b:%.4g|a:%.4g"
+-- Utility functions to convert types into strings
+
+---Converts a table to a string representation
+---@param tbl table @Table to convert into a string
+---@return string @String representation of `tbl`
+function LuaNetworking:TableToString(tbl)
+	local str = ""
+	for k, v in pairs(tbl) do
+		if str ~= "" then
+			str = str .. ","
+		end
+		str = str .. string.format("%s|%s", tostring(k), tostring(v))
+	end
+	return str
+end
+
+---Converts the string representation of a table to a table
+---@param str string @String representation of a table
+---@return table @Table created from `str`
+function LuaNetworking:StringToTable(str)
+	local tbl = {}
+	local tblPairs = string.split(str, "[,]")
+	for k, v in pairs(tblPairs) do
+		local pairData = string.split(v, "[|]")
+		tbl[pairData[1]] = pairData[2]
+	end
+	return tbl
+end
 
 ---Creates a string representation of a color
 ---@param col any
 ---@return string
 function LuaNetworking:ColourToString(col)
-	return LuaNetworking._networked_colour_string:format(col.r, col.g, col.b, col.a)
+	return string.format("r:%.4f|g:%.4f|b:%.4f|a:%.4f", col.r, col.g, col.b, col.a)
 end
 
 ---Converts a string representation of a color to a color
 ---@param str string
 ---@return any
 function LuaNetworking:StringToColour(str)
-	local data = string.split(str, "[|]")
-	if #data < 4 then
-		return nil
+	local r, g, b, a = str:match("r:([0-9.]+)|g:([0-9.]+)|b:([0-9.]+)|a:([0-9.]+)")
+	r, g, b, a = tonumber(r), tonumber(g), tonumber(b), tonumber(a)
+	if r and g and b and a then
+		return Color(a, r, g, b)
 	end
+end
 
-	local split_str = "[:]"
-	local r = tonumber(string.split(data[1], split_str)[2])
-	local g = tonumber(string.split(data[2], split_str)[2])
-	local b = tonumber(string.split(data[3], split_str)[2])
-	local a = tonumber(string.split(data[4], split_str)[2])
+---Creates a string representation of a Vector3
+---@param v Vector3 @The Vector3 to convert to a formatted string
+---@return string @A formatted string containing the data of the Vector3
+function LuaNetworking:Vector3ToString(v)
+	return string.format("%08f,%08f,%08f", v.x, v.y, v.z)
+end
 
-	return Color(a, r, g, b)
+---Converts a string representation of a Vector3 to a Vector3
+---@param string string @The string to convert to a Vector3
+---@return Vector3? @A Vector3 of the converted string or `nil` if no conversion could be made
+function LuaNetworking:StringToVector3(string)
+	local x, y, z = string:match("([-0-9.]+),([-0-9.]+),([-0-9.]+)")
+	x, y, z = tonumber(x), tonumber(y), tonumber(z)
+	if x and y and z then
+		return Vector3(x, y, z)
+	end
+end
+
+
+
+-- DEPRECATED FUNCTIONALITY --
+
+---@deprecated @Use `LuaNetworking:VectorToString` instead
+function Vector3.ToString(v)
+	BLT:Log(LogLevel.WARN, "Vector3.ToString is deprecated and will be removed in a future version\n" .. debug.traceback())
+	return LuaNetworking:Vector3ToString(v)
+end
+
+---@deprecated @Use `LuaNetworking:StringToVector` instead
+function string.ToVector3(string)
+	BLT:Log(LogLevel.WARN, "string.ToVector3 is deprecated and will be removed in a future version\n" .. debug.traceback())
+	return LuaNetworking:StringToVector3(string)
 end

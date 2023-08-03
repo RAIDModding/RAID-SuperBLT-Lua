@@ -62,7 +62,7 @@
 	"blt_download_manager_help" : "Zaktualizuj twoje mody BLT.\nZawsze aktualizuj twoje mody BLT.",
 	"blt_download_ready" : "Gotowy do pobrania",
 	"blt_download_waiting" : "Oczekiwanie...",
-	"blt_download_downloading" : "Pobieranie... $bytes;b/$total_bytes;b",
+	"blt_download_downloading" : "Pobieranie... $current; $unit; / $total; $unit;",
 	"blt_download_saving" : "Zapisywanie na dysk...",
 	"blt_download_extracting" : "Wypakowywanie...",
 	"blt_download_verifying" : "Weryfikowanie...",

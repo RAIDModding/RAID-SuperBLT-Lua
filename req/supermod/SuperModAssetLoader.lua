@@ -158,7 +158,7 @@ function c:FreeAssetGroup(group_name)
 end
 
 local function convert_xml_asset(params)
-	BLT:Log(LogLevel.INFO, "[BLT] Converting " .. tostring(params.path) .. " into " .. tostring(params.built_path))
+	BLT:Log(LogLevel.INFO, string.format("[BLT] Converting '%s' into '%s'", tostring(params.path), tostring(params.built_path)))
 	-- Read the source file
 	local input_str
 	do
@@ -234,16 +234,7 @@ _flush_assets = function(dres)
 			dres:load(ext, dbpath, asset._targeted_package, function()
 				-- This is called when the asset is done loading.
 				-- Should we wait for these to all be called?
-
 				_currently_loading_assets[asset] = nil
-
-				if BLT.DEBUG_MODE then
-					BLT:Log(LogLevel.INFO, "[BLT] Assets remaining to load:")
-					for spec, info in pairs(_currently_loading_assets) do
-						BLT:Log(LogLevel.INFO, "\t" .. spec.dbpath)
-					end
-					BLT:Log(LogLevel.INFO, "\tEnd of asset list")
-				end
 			end)
 
 			-- Warn the user if a file has not loaded in the last fifteen seconds

@@ -1,32 +1,29 @@
-CloneClass(LocalizationManager)
-
 LocalizationManager._custom_localizations = LocalizationManager._custom_localizations or {}
 
 Hooks:RegisterHook("LocalizationManagerPostInit")
-function LocalizationManager.init(self)
-	self.orig.init(self)
+Hooks:PostHook(LocalizationManager, "init", "BLT.LocalizationManager.init", function(self)
 	Hooks:Call("LocalizationManagerPostInit", self)
+end)
+
+local exists = LocalizationManager.exists
+function LocalizationManager:exists(str, ...)
+	return self._custom_localizations[str] and true or exists(self, str, ...)
 end
 
-function LocalizationManager:exists(str)
-	if self._custom_localizations[str] then
-		return true
-	end
-
-	return self.orig.exists(self, str)
-end
-
-function LocalizationManager:text(str, macros)
+local text = LocalizationManager.text
+function LocalizationManager:text(str, macros, ...)
 	local custom_loc = self._custom_localizations[str]
 	if custom_loc then
 		macros = type(macros) == "table" and macros or {}
 
-		local str =custom_loc:gsub("($([%w_-]+);?)", function(full_match, macro_name)
+		custom_loc = custom_loc:gsub("($([%w_-]+);?)", function(full_match, macro_name)
 			return macros[macro_name] or self._default_macros[macro_name] or full_match
 		end)
-		return str
+
+		return custom_loc
 	end
-	return self.orig.text(self, str, macros)
+
+	return text(self, str, macros, ...)
 end
 
 function LocalizationManager:add_localized_strings(string_table, overwrite)

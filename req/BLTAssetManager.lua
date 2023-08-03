@@ -1,8 +1,11 @@
----@class BLTAssetManager
+---@class BLTAssetManager : BLTModule
 ---@field new fun(self):BLTAssetManager
-BLTAssetManager = BTLAssetManager or blt_class()
+BLTAssetManager = BLTAssetManager or blt_class(BLTModule)
+BLTAssetManager.__type = "BLTAssetManager"
 
 function BLTAssetManager:init()
+	BLTAssetManager.super.init(self)
+
 	self._recode = {}
 	self._loaded_defaults = false
 end

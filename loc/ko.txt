@@ -63,7 +63,7 @@
 	"blt_download_manager_help" : "BLT 모드를 업데이트합니다.\n가능한 한 업데이트를 권장합니다.",
 	"blt_download_ready" : "준비 완료",
 	"blt_download_waiting" : "대기 중...",
-	"blt_download_downloading" : "다운로드 중... $bytes;b/$total_bytes;b",
+	"blt_download_downloading" : "다운로드 중... $current; $unit; / $total; $unit;",
 	"blt_download_saving" : "저장 중...",
 	"blt_download_extracting" : "압축 해제 중...",
 	"blt_download_verifying" : "검증 중...",

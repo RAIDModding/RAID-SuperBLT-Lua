@@ -44,7 +44,7 @@ function BLTKeybind:_SetKey(idx, key)
 	if not idx then
 		return false
 	end
-	BLT:Log(LogLevel.INFO, string.format("[Keybind] Bound %s to %s", tostring(self:Id()), tostring(key)))
+	BLT:Log(LogLevel.INFO, string.format("[Keybind] Bound '%s' to %s", tostring(self:Id()), tostring(key)))
 	self._key[idx] = key
 end
 
@@ -116,6 +116,7 @@ function BLTKeybind:CanExecuteInState(state)
 end
 
 function BLTKeybind:Execute()
+	BLT:SetModGlobals(self:ParentMod())
 	if self:File() then
 		local path = Application:nice_path(self:ParentMod():GetPath() .. "/" .. self:File(), false)
 		dofile(path)
@@ -136,22 +137,36 @@ end
 
 --------------------------------------------------------------------------------
 
----@class BLTKeybindsManager
+---@class BLTKeybindsManager : BLTModule
 ---@field new fun(self):BLTKeybindsManager
 BLTKeybindsManager = BLTKeybindsManager or blt_class(BLTModule)
 BLTKeybindsManager.__type = "BLTKeybindsManager"
 
 function BLTKeybindsManager:init()
 	BLTKeybindsManager.super.init(self)
+
 	self._keybinds = {}
 	self._potential_keybinds = {}
+
+	local keybinds = BLT.save_data.keybinds
+	if keybinds then
+		for _, bind_data in ipairs(keybinds) do
+			local bind = self:get_keybind(bind_data.id)
+			if bind then
+				self:_restore_keybind(bind_data)
+			else
+				-- Store the bind so that we can restore it to any mods that are loaded later
+				table.insert(self._potential_keybinds, bind_data)
+			end
+		end
+	end
 end
 
 function BLTKeybindsManager:register_keybind(mod, parameters)
 	-- Create the mod
 	local bind = BLTKeybind:new(mod, parameters)
 	table.insert(self._keybinds, bind)
-	BLT:Log(LogLevel.INFO, "[Keybind] Registered keybind " .. tostring(bind))
+	BLT:Log(LogLevel.INFO, string.format("[Keybind] Registered keybind '%s'", bind:Id()))
 
 	-- Check through the potential keybinds for the added bind and restore it's key
 	for i, bind_data in ipairs(self._potential_keybinds) do
@@ -246,6 +261,7 @@ function BLTKeybindsManager:update(t, dt, state)
 	for _, bind in ipairs(self:keybinds()) do
 		if bind:IsActive() and bind:HasKey() and bind:CanExecuteInState(state) then
 			local key = bind:Key()
+			local key_pressed
 			if string.find(key, "mouse ") == 1 then
 				if not string.find(key, "wheel") then
 					key = key:sub(7)
@@ -269,39 +285,6 @@ Hooks:Add("GameSetupUpdate", "Base_Keybinds_GameStateUpdate", function(t, dt)
 	BLT.Keybinds:update(t, dt, BLTKeybind.StateGame)
 end)
 
---------------------------------------------------------------------------------
--- Save/Load for the manager
-
-function BLTKeybindsManager:save(cache)
-	cache.keybinds = {}
-
-	for _, bind in ipairs(self:keybinds()) do
-		if bind:Key() ~= "" then
-			local data = {
-				id = bind:Id()
-			}
-			for id, key in pairs(bind:Keys()) do
-				data[id] = key
-			end
-			table.insert(cache.keybinds, data)
-		end
-	end
-end
-
-function BLTKeybindsManager:load(cache)
-	if cache.keybinds then
-		for _, bind_data in ipairs(cache.keybinds) do
-			local bind = self:get_keybind(bind_data.id)
-			if bind then
-				self:_restore_keybind(bind_data)
-			else
-				-- Store the bind so that we can restore it to any mods that are loaded later
-				table.insert(self._potential_keybinds, bind_data)
-			end
-		end
-	end
-end
-
 function BLTKeybindsManager:_restore_keybind(bind_data)
 	local bind = self:get_keybind(bind_data.id)
 	if bind then
@@ -315,12 +298,20 @@ function BLTKeybindsManager:_restore_keybind(bind_data)
 	return false
 end
 
-Hooks:Add("BLTOnSaveData", "BLTOnSaveData.BLTKeybindsManager", function(cache)
-	BLT.Keybinds:save(cache)
-end)
+Hooks:Add("BLTOnSaveData", "BLTOnSaveData.BLTKeybindsManager", function(save_data)
+	save_data.keybinds = {}
 
-Hooks:Add("BLTOnLoadData", "BLTOnLoadData.BLTKeybindsManager", function(cache)
-	BLT.Keybinds:load(cache)
+	for _, bind in pairs(BLT.Keybinds:keybinds()) do
+		if bind:Key() ~= "" then
+			local data = {
+				id = bind:Id()
+			}
+			for id, key in pairs(bind:Keys()) do
+				data[id] = key
+			end
+			table.insert(save_data.keybinds, data)
+		end
+	end
 end)
 
 --------------------------------------------------------------------------------

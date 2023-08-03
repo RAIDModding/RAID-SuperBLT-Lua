@@ -3,7 +3,7 @@
 	"description" : "The collection of Lua files that allow the BLT hook to function.",
 	"author" : "ZNix, James Wilkinson",
 	"contact" : "znix@znix.xyz",
-	"version" : "1.3.4",
+	"version" : "1.4.0",
 	"blt_version" : 2,
 	"priority" : 1001,
 	"image" : "blt.png",
@@ -14,9 +14,7 @@
 		{
 			"identifier" : "payday2blt",
 			"host": {
-				"meta": "https://znix.xyz/paydaymods/updates/meta.php?id=payday2blt",
-				"download": "https://znix.xyz/paydaymods/download/get.php?src=mod&id=payday2blt",
-				"patchnotes": "https://znix.xyz/paydaymods/patchnotes/view.php?id=payday2blt"
+				"meta": "https://sblt-update.znix.xyz/pd2update/updates/meta.php?id=payday2blt"
 			}
 		},
 		{
@@ -27,8 +25,7 @@
 			"present_func" : "blt_can_update_dll",
 			"critical" : true,
 			"host": {
-				"meta": "https://znix.xyz/paydaymods/updates/meta.php?id=payday2bltdll",
-				"patchnotes": "https://znix.xyz/paydaymods/patchnotes/view.php?id=payday2bltdll"
+				"meta": "https://sblt-update.znix.xyz/pd2update/updates/meta.php?id=payday2bltdll"
 			}
 		},
 		{
@@ -39,8 +36,7 @@
 			"present_func" : "blt_can_update_dll",
 			"critical" : true,
 			"host": {
-				"meta": "https://znix.xyz/paydaymods/updates/meta.php?id=payday2bltwsockdll",
-				"patchnotes": "https://znix.xyz/paydaymods/patchnotes/view.php?id=payday2bltwsockdll"
+				"meta": "https://sblt-update.znix.xyz/pd2update/updates/meta.php?id=payday2bltwsockdll"
 			}
 		}
 	],

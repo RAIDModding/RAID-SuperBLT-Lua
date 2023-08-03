@@ -8,6 +8,7 @@ BLTModsGui = BLTModsGui or blt_class(MenuGuiComponentGeneric)
 BLTModsGui.last_y_position = 0
 BLTModsGui.show_libraries = false
 BLTModsGui.show_mod_icons = true
+BLTModsGui.save_data_loaded = false
 
 local padding = 10
 
@@ -44,6 +45,13 @@ function BLTModsGui:init(ws, fullscreen_ws, node)
 	self._data = node:parameters().menu_component_data or {}
 	self._buttons = {}
 	self._custom_buttons = {}
+
+	local mods_gui = BLT.save_data.mods_gui
+	if mods_gui then
+		BLTModsGui.show_libraries = mods_gui.show_libraries
+		BLTModsGui.show_mod_icons = mods_gui.show_mod_icons
+	end
+	BLTModsGui.save_data_loaded = true
 
 	self:_setup()
 end
@@ -259,7 +267,7 @@ function BLTModsGui:update_visible_mods(scroll_position)
 		x = 0,
 		y = 0,
 		w = (self._scroll:canvas():w() - (BLTModItem.layout.x + 1) * padding) / BLTModItem.layout.x,
-		h = 256 + (BLTModsGui.show_mod_icons and 0 or padding),
+		h = (self._scroll:canvas():h() - (BLTModItem.layout.y + 1) * padding) / BLTModItem.layout.y,
 		title = title_text,
 		text = managers.localization:text("blt_download_manager_help"),
 		image = icon,
@@ -428,27 +436,15 @@ function BLTModsGui:mouse_wheel_down(x, y)
 	end
 end
 
--- Load and save settings from savefile
-local function load_data(cache)
-	local data = cache.mods_gui
-	if data then
-		BLTModsGui.show_libraries = data.show_libraries
-		BLTModsGui.show_mod_icons = data.show_mod_icons
-		BLT:Log(LogLevel.INFO, "Loading mod settings : " .. tostring(cache.show_libraries))
+Hooks:Add("BLTOnSaveData", "BLTOnSaveData.BLTModsGui", function(save_data)
+	-- Special case - if the user never entered the BLT mod manager but changed BLT settings via mod options menu
+	-- the data for BLTModsGui is not set from the save data, so only save mods gui data when it has been opened before
+	if BLTModsGui.save_data_loaded then
+		save_data.mods_gui = {
+			show_libraries = BLTModsGui.show_libraries,
+			show_mod_icons = BLTModsGui.show_mod_icons
+		}
 	end
-end
-Hooks:Add("BLTOnLoadData", "BLTOnLoadData.BLTModsGui", load_data)
-
--- If the data has already been loaded, use it now
-if BLT.Mods._saved_data then
-	load_data(BLT.Mods._saved_data)
-end
-
-Hooks:Add("BLTOnSaveData", "BLTOnSaveData.BLTModsGui", function(cache)
-	cache.mods_gui = {
-		show_libraries = BLTModsGui.show_libraries,
-		show_mod_icons = BLTModsGui.show_mod_icons
-	}
 end)
 
 --------------------------------------------------------------------------------

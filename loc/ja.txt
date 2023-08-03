@@ -63,7 +63,7 @@
 	"blt_download_manager_help" : "BLT MODをアップデートする。\nできるだけアップデートしてください。",
 	"blt_download_ready" : "準備完了",
 	"blt_download_waiting" : "待機中...",
-	"blt_download_downloading" : "ダウンロード中... $bytes;b/$total_bytes;b",
+	"blt_download_downloading" : "ダウンロード中... $current; $unit; / $total; $unit;",
 	"blt_download_saving" : "保存中...",
 	"blt_download_extracting" : "解凍中...",
 	"blt_download_verifying" : "検証中...",
