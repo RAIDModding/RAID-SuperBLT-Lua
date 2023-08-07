@@ -109,19 +109,21 @@ function BLTMod:LoadXML()
 
 		Utils.IO:ReplaceIncludesInXML(xml, self.path)
 
-		local loadTags = {}
+		local load_tags = {}
 
 		for tag, v in pairs(self._tags) do
 			if v == "load" or (type(v) == "table" and v.event == "load") then
 				local clbk = type(v) == "table" and v.xml_callback or self["_load_"..tag.."_xml"] or self["_load_"..tag]
 				if clbk then
-					loadTags[tag] = SimpleClbk(clbk, self)
+					load_tags[tag] = function(scope, tag)
+						clbk(self, scope, tag)
+					end
 				end
 			end
 		end
 
 		local scope = {}
-		Utils.IO:TraverseXML(xml, scope, loadTags, true)
+		Utils.IO:TraverseXML(xml, scope, load_tags, true)
 
 		self:LoadData(scope)
 
@@ -164,19 +166,25 @@ function BLTMod:PostInit()
 
 		if event == "post_init" then
 			if xml_clbk then
-				load_tags[tag] = SimpleClbk(xml_clbk, self)
+				load_tags[tag] = function(scope, tag)
+					xml_clbk(self, scope, tag)
+				end
 			end
 			if data_clbk and tag_data then
 				data_clbk(self, tag_data)
 			end
 		elseif event == "setup" then  -- Load them later in :Setup
 			if xml_clbk and event == "setup" then
-				load_tags[tag] = function(...)
-					table.insert(self._setup_callbacks, SimpleClbk(xml_clbk, self, ...))
+				load_tags[tag] = function(scope, tag)
+					table.insert(self._setup_callbacks, function()
+						xml_clbk(self, scope, tag)
+					end)
 				end
 			end
 			if data_clbk and tag_data then
-				table.insert(self._setup_callbacks, SimpleClbk(data_clbk, self, tag_data))
+				table.insert(self._setup_callbacks, function()
+					data_clbk(self, tag_data)
+				end)
 			end
 		end
 	end
