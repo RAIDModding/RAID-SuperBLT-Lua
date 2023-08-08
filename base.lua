@@ -210,41 +210,16 @@ function BLT:FindMods()
 		-- Check if this directory is excluded from being checked for mods (logs, saves, etc.)
 		if not self.Mods:IsExcludedDirectory(directory) then
 			local mod_path = mods_directory .. directory .. "/"
-
-			-- Attempt to read the mod defintion file
-			local json_file = io.open(mod_path .. "mod.txt")
-			local xml = file.FileExists(mod_path .. "supermod.xml")
-
-			if json_file or xml then
-				-- Read the file contents
-				local data
-
-				if json_file then
-					local file_contents = json_file:read("*all")
-					json_file:close()
-					if file_contents then
-						data = json.decode(file_contents)
-						if not data then
-							self:Log(LogLevel.ERROR, "[BLT] An error occured while loading mod.txt from: " .. tostring(mod_path))
-						end
-					end
-				end
-
-				local new_mod = BLTMod:new(directory, data, mod_path)
-				if xml then
-					new_mod:LoadXML()
-				end
-				if new_mod:isValid() then
+			-- If either mod.txt or supermod.xml exists, attempt to load
+			if file.FileExists(mod_path .. "mod.txt") or file.FileExists(mod_path .. "supermod.xml") then
+				local new_mod, valid = BLTMod:new(directory, nil, mod_path)
+				if valid then
 					table.insert(mods_list, new_mod)
 				else
 					self:Log(LogLevel.ERROR, "[BLT] Attempted to load mod.txt or supermod.xml, mod is invalid." .. tostring(mod_path))
 				end
 			end
 		end
-	end
-
-	for _, mod in pairs(mods_list) do
-		mod:PostInit()
 	end
 
 	return mods_list
@@ -255,6 +230,11 @@ function BLT:ProcessModsList(mods_list)
 	table.sort(mods_list, function(a, b)
 		return a:GetPriority() > b:GetPriority()
 	end)
+
+	-- After mods are sorted by priority, post Initialize them
+	for _, mod in pairs(mods_list) do
+		mod:PostInit()
+	end
 
 	return mods_list
 end

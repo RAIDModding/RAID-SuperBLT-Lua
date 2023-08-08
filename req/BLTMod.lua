@@ -1,5 +1,5 @@
 ---@class BLTMod
----@field new fun(self, identifier: string, data: table, path: string):BLTMod
+---@field new fun(self, identifier: string, data?: table, path: string):BLTMod, boolean
 BLTMod = blt_class()
 
 BLT:Require("req/ModAssetLoader")
@@ -21,16 +21,12 @@ BLTMod._tags = {
 
 function BLTMod:init(identifier, data, path)
 	if not identifier or not path then
-		return
+		return false
 	end
 
 	self._errors = {}
 	self._legacy_updates = {}
 	self._setup_callbacks = {}
-
-	--- Data doesn't have to be JSON so the name doesn't make sense
-	---@deprecated
-	self.json_data = data
 
 	-- Default values
 	self.id = identifier
@@ -50,24 +46,18 @@ function BLTMod:init(identifier, data, path)
 
 	self.path = path
 	self.data = data
+	self.json_data = data
 
 	self.updates = {}
 	self.hooks = {}
 
-	if (data) then
-		self:LoadData(data)
-		for tag, v in pairs(self._tags) do
-			local tag_data = data[tag]
-			if tag_data then
-				local clbk = type(v) == "table" and v.callback or self["_load_"..tag.."_data"] or self["_load_"..tag]
-				if clbk and (v == "init" or (type(v) == "table" and v.event == "init")) then
-					clbk(self, tag_data)
-				end
-			end
-		end
-	end
+	-- Attempt to load JSON or XML
+	self:LoadData()
+	self:LoadXML()
 
 	self._supermod = self
+
+	return self.data ~= nil or self._xml_data ~= nil
 end
 
 --- Let's you add your own custom tags (make sure to add them early on via scripts tag and high enough priority)
@@ -84,8 +74,49 @@ function BLTMod.AddTag(name, options)
 	table.insert(BLTMod._tags, options)
 end
 
+function BLTMod:LoadData()
+	if not self.data then -- If no data, try loading the json file
+		local mod_path = self:GetPath()
+		local json_file = io.open(mod_path .. "mod.txt")
+
+		if json_file then
+			local file_contents = json_file:read("*all")
+			json_file:close()
+			if file_contents then
+				local data = json.decode(file_contents)
+				if not data then
+					BLT:Log(LogLevel.ERROR, "[BLT] An error occured while loading mod.txt from: " .. tostring(mod_path))
+					return
+				end
+
+				--- Data doesn't have to be JSON so the name doesn't make sense
+				---@deprecated
+				self.json_data = data
+				self.data = data
+			end
+		end
+	end
+
+	if not self.data then
+		return
+	end
+
+	self:SetParams(self.data)
+
+	for tag, v in pairs(self._tags) do
+		local tag_data = self.data[tag]
+		if tag_data then
+			local clbk = type(v) == "table" and v.callback or self["_load_"..tag.."_data"] or self["_load_"..tag]
+			if clbk and (v == "init" or (type(v) == "table" and v.event == "init")) then
+				clbk(self, tag_data)
+			end
+		end
+	end
+end
+
 function BLTMod:LoadXML()
-	local supermod_path = self:GetPath() .. (self.data and self.data.supermod_definition or "supermod.xml")
+	local mod_path = self:GetPath()
+	local supermod_path = mod_path .. (self.data and self.data.supermod_definition or "supermod.xml")
 
 	-- Attempt to read the mod defintion file
 	local file = io.open(supermod_path)
@@ -98,6 +129,7 @@ function BLTMod:LoadXML()
 		-- Parse it
 		local xml = blt.parsexml(file_contents)
 		if not xml then
+			BLT:Log(LogLevel.ERROR, "[BLT] An error occured while loading supermod.xml from: " .. tostring(mod_path))
 			return
 		end
 
@@ -122,10 +154,8 @@ function BLTMod:LoadXML()
 			end
 		end
 
-		local scope = {}
-		Utils.IO.TraverseXML(xml, scope, load_tags, true)
-
-		self:LoadData(scope)
+		Utils.IO.TraverseXML(xml, {}, load_tags, true)
+		self:SetParams(xml.params)
 
 		self._xml_data = xml
 	end
@@ -174,7 +204,7 @@ function BLTMod:PostInit()
 				data_clbk(self, tag_data)
 			end
 		elseif event == "setup" then  -- Load them later in :Setup
-			if xml_clbk and event == "setup" then
+			if xml_clbk then
 				load_tags[tag] = function(scope, tag)
 					table.insert(self._setup_callbacks, function()
 						xml_clbk(self, scope, tag)
@@ -194,12 +224,7 @@ function BLTMod:PostInit()
 	end
 end
 
---- Retuns whether the mod is valid to run. 
-function BLTMod:isValid()
-	return self.data ~= nil or self._xml_data ~= nil
-end
-
-function BLTMod:LoadData(data)
+function BLTMod:SetParams(data)
 	local merge = {
 		name = data.name,
 		desc = data.description,
@@ -224,9 +249,8 @@ function BLTMod:LoadData(data)
 end
 
 function BLTMod:Setup()
-	BLT:Log(LogLevel.INFO, string.format("[BLT] Setting up mod '%s'", self:GetName()))
-
 	if self:IsEnabled() then
+		BLT:Log(LogLevel.INFO, string.format("[BLT] Setting up mod '%s'", self:GetName()))
 		for _, clbk in pairs(self._setup_callbacks) do
 			clbk()
 		end
