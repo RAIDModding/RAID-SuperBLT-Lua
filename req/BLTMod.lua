@@ -107,7 +107,7 @@ function BLTMod:LoadXML()
 			self._assets = BLTMod.AssetLoader:new(self)
 		end
 
-		Utils.IO:ReplaceIncludesInXML(xml, self.path)
+		Utils.IO.ReplaceIncludesInXML(xml, self.path)
 
 		local load_tags = {}
 
@@ -123,7 +123,7 @@ function BLTMod:LoadXML()
 		end
 
 		local scope = {}
-		Utils.IO:TraverseXML(xml, scope, load_tags, true)
+		Utils.IO.TraverseXML(xml, scope, load_tags, true)
 
 		self:LoadData(scope)
 
@@ -190,7 +190,7 @@ function BLTMod:PostInit()
 	end
 
 	if xml then
-		Utils.IO:TraverseXML(xml, {}, load_tags)
+		Utils.IO.TraverseXML(xml, {}, load_tags)
 	end
 end
 
@@ -711,7 +711,7 @@ function BLTMod:_load_keybinds_data(data)
 end
 
 function BLTMod:_load_keybinds_xml(scope, tag)
-	Utils.IO:TraverseXML(tag, scope, {
+	Utils.IO.TraverseXML(tag, scope, {
 		keybind = function(scope)
 			scope.run_in_menu = Utils:ToBoolean(scope.run_in_menu)
 			scope.run_in_game = Utils:ToBoolean(scope.run_in_game)
@@ -737,7 +737,7 @@ function BLTMod:_load_updates_data(data)
 end
 
 function BLTMod:_load_updates_xml(scope, tag)
-	Utils.IO:TraverseXML(tag, scope, {
+	Utils.IO.TraverseXML(tag, scope, {
 		update = function(scope)
 			scope.disallow_update = Utils:ToBoolean(scope.disallow_update)
 			scope.critical = Utils:ToBoolean(scope.critical)
@@ -764,7 +764,7 @@ function BLTMod:_load_hooks_data()
 end
 
 function BLTMod:_load_hooks_xml(scope, tag)
-	Utils.IO:TraverseXML(tag, scope, {
+	Utils.IO.TraverseXML(tag, scope, {
 		pre = function(scope)
 			self:AddHook("hooks", scope.hook_id, scope.script_path, BLT.hook_tables.pre)
 		end,
@@ -809,7 +809,7 @@ function BLTMod:_load_scripts_data(data)
 end
 
 function BLTMod:_load_scripts_xml(scope, tag)
-	Utils.IO:TraverseXML(tag, scope, {
+	Utils.IO.TraverseXML(tag, scope, {
 		script = function(scope)
 			if scope.script_path then
 				dofile(self:GetPath() .. scope.script_path)
