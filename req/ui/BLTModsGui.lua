@@ -262,7 +262,6 @@ function BLTModsGui:update_visible_mods(scroll_position)
 		title_text = title_text .. " (" .. managers.experience:cash_string(downloads_count, "") .. ")"
 	end
 
-	local icon, rect = tweak_data.hud_icons:get_icon_data("csb_pagers")
 	local button = BLTUIButton:new(self._scroll:canvas(), {
 		x = 0,
 		y = 0,
@@ -270,9 +269,8 @@ function BLTModsGui:update_visible_mods(scroll_position)
 		h = (self._scroll:canvas():h() - (BLTModItem.layout.y + 1) * padding) / BLTModItem.layout.y,
 		title = title_text,
 		text = managers.localization:text("blt_download_manager_help"),
-		image = icon,
+		image = "guis/blt/updates",
 		image_size = 108,
-		texture_rect = rect,
 		callback = callback(self, self, "clbk_open_download_manager")
 	})
 	table.insert(self._buttons, button)

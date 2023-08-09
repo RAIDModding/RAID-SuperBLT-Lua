@@ -155,10 +155,8 @@ function BLTModItem:init(panel, index, mod, show_icon)
 	local icon_y = padding
 
 	if mod:HasUpdates() then
-		local icon, rect = tweak_data.hud_icons:get_icon_data("csb_pagers")
 		local icon_updates = self._panel:bitmap({
-			texture = icon,
-			texture_rect = rect,
+			texture = "guis/blt/updates",
 			alpha = mod:AreUpdatesEnabled() and 1 or 0.2,
 			layer = 10,
 			w = icon_size,

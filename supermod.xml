@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<mod>
+    <assets base_path="assets/">
+        <group name="guis/blt/">
+            <file :name="check_updates.png"/>
+            <file :name="download.png"/>
+            <file :name="enable.png"/>
+            <file :name="updates.png"/>
+        </group>
+    </assets> 
+</mod>

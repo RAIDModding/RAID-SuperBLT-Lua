@@ -300,7 +300,6 @@ function BLTViewModGui:_setup_buttons(mod)
 	local next_row_height
 
 	if not mod:IsUndisablable() then
-		local icon, rect = tweak_data.hud_icons:get_icon_data("csb_locks")
 		btn = BLTUIButton:new(buttons_panel, {
 			x = 0,
 			y = 0,
@@ -308,9 +307,8 @@ function BLTViewModGui:_setup_buttons(mod)
 			h = button_h,
 			title = managers.localization:text("blt_mod_state_enabled"),
 			text = managers.localization:text("blt_mod_state_enabled_desc"),
-			image = icon,
+			image = "guis/blt/enable",
 			image_size = 96,
-			texture_rect = rect,
 			callback = callback(self, self, "clbk_toggle_enable_state")
 		})
 		table.insert(self._buttons, btn)
@@ -319,7 +317,6 @@ function BLTViewModGui:_setup_buttons(mod)
 	end
 
 	if self._mod:HasUpdates() then
-		local icon, rect = tweak_data.hud_icons:get_icon_data("csb_pagers")
 		btn = BLTUIButton:new(buttons_panel, {
 			x = 0,
 			y = next_row_height or 0,
@@ -327,15 +324,13 @@ function BLTViewModGui:_setup_buttons(mod)
 			h = button_h,
 			title = managers.localization:text("blt_mod_updates_enabled"),
 			text = managers.localization:text("blt_mod_updates_enabled_help"),
-			image = icon,
+			image = "guis/blt/updates",
 			image_size = 96,
-			texture_rect = rect,
 			callback = callback(self, self, "clbk_toggle_updates_state")
 		})
 		table.insert(self._buttons, btn)
 		self._updates_button = btn
 
-		local icon, rect = tweak_data.hud_icons:get_icon_data("csb_stamina")
 		btn = BLTUIButton:new(buttons_panel, {
 			x = button_w + padding,
 			y = next_row_height or 0,
@@ -343,9 +338,8 @@ function BLTViewModGui:_setup_buttons(mod)
 			h = button_h,
 			title = managers.localization:text("blt_mod_check_for_updates"),
 			text = managers.localization:text("blt_mod_check_for_updates_desc"),
-			image = icon,
+			image = "guis/blt/check_updates",
 			image_size = 96,
-			texture_rect = rect,
 			callback = callback(self, self, "clbk_check_for_updates")
 		})
 		table.insert(self._buttons, btn)

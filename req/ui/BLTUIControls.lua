@@ -192,11 +192,9 @@ function BLTDownloadControl:init(panel, parameters)
 		valign = "scale"
 	})
 
-	local icon, rect = tweak_data.hud_icons:get_icon_data("csb_pagers")
 	local image = self._download_panel:bitmap({
 		name = "image",
-		texture = icon,
-		texture_rect = rect,
+		texture = "guis/blt/updates",
 		color = Color.white,
 		layer = 10,
 		x = padding,

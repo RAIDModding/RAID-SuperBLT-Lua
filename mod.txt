@@ -6,7 +6,7 @@
 	"version" : "1.4.0",
 	"blt_version" : 2,
 	"priority" : 1001,
-	"image" : "blt.png",
+	"image" : "assets/guis/blt/icon.png",
 	"color" : "255 0 255",
 	"undisablable" : true,
 	"disable_safe_mode" : true,

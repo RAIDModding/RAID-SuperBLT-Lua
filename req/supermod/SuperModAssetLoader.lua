@@ -195,6 +195,11 @@ local function convert_xml_asset(params)
 	end
 end
 
+local known_types = {
+	png = "texture",
+	tga = "texture"
+}
+
 -- Asset system - independent of any object
 _flush_assets = function(dres)
 	dres = dres or (managers and managers.dyn_resource)
@@ -204,7 +209,7 @@ _flush_assets = function(dres)
 
 	local i = 1
 	for id, asset in pairs(_dynamic_unloaded_assets) do
-		local ext = Idstring(asset.extension)
+		local ext = Idstring(known_types[asset.extension] or asset.extension)
 		local dbpath = Idstring(asset.dbpath)
 		local path = asset.file
 

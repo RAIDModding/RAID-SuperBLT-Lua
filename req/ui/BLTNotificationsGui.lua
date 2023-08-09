@@ -114,10 +114,8 @@ function BLTNotificationsGui:_setup()
 		layer = 100
 	})
 
-	local texture, rect = tweak_data.hud_icons:get_icon_data("csb_throwables")
 	self._downloads_panel:bitmap({
-		texture = texture,
-		texture_rect = rect,
+		texture = "guis/blt/download",
 		w = self._downloads_panel:w(),
 		h = self._downloads_panel:h(),
 		color = Color.red
