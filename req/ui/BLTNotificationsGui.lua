@@ -1,6 +1,6 @@
 ---@class BLTNotificationsGui
 ---@field new fun(self, ws, fullscreen_ws, node):BLTNotificationsGui
-BLTNotificationsGui = BLTNotificationsGui or blt_class(MenuGuiComponentGeneric)
+BLTNotificationsGui = BLTNotificationsGui or blt_class(BLTCustomComponent)
 
 local padding = 10
 
@@ -13,6 +13,9 @@ local BAR_X = (SPOT_W - BAR_W) / 2
 local BAR_Y = 0
 local TIME_PER_PAGE = 6
 local CHANGE_TIME = 0.5
+
+local is_pd2 = BLT:GetGame() == "pd2"
+local shared_lines = is_pd2 and "guis/textures/pd2/shared_lines" or nil
 
 function BLTNotificationsGui:init(ws, fullscreen_ws, node)
 	self._ws = ws
@@ -94,7 +97,7 @@ function BLTNotificationsGui:_setup()
 
 	-- Setup notification buttons
 	self._bar =self._buttons_panel:bitmap({
-		texture = "guis/textures/pd2/shared_lines",
+		texture = shared_lines,
 		halign = "grow",
 		valign = "grow",
 		wrap_mode = "wrap",
@@ -300,7 +303,10 @@ function BLTNotificationsGui:_update_bars()
 	for i = 1, self._notifications_count do
 		local page_button = self._buttons_panel:bitmap({
 			name = tostring(i),
-			texture = "guis/textures/pd2/ad_spot",
+			texture = is_pd2 and "guis/textures/pd2/ad_spot" or nil,
+			w = 32,
+			h = 8,
+			alpha = not is_pd2 and 0.25 or nil
 		})
 		page_button:set_center_x(( i / (self._notifications_count + 1)) * self._buttons_panel:w() / 2 + self._buttons_panel:w() / 4)
 		page_button:set_center_y((self._buttons_panel:h() - page_button:h()) / 2)
@@ -309,7 +315,7 @@ function BLTNotificationsGui:_update_bars()
 
 	-- Add the time bar
 	self._bar = self._buttons_panel:bitmap({
-		texture = "guis/textures/pd2/shared_lines",
+		texture = shared_lines,
 		halign = "grow",
 		valign = "grow",
 		wrap_mode = "wrap",
@@ -478,13 +484,13 @@ function BLTNotificationsGui:mouse_moved(o, x, y)
 	end
 end
 
-function BLTNotificationsGui:mouse_pressed(button, x, y)
+function BLTNotificationsGui:_mouse_pressed(button, x, y)
 	if not self._enabled or button ~= Idstring("0") then
 		return
 	end
 
 	if alive(self._downloads_panel) and self._downloads_panel:visible() and self._downloads_panel:inside(x, y) then
-		managers.menu:open_node("blt_download_manager")
+		MenuHelper:OpenMenu("blt_download_manager")
 		return true
 	end
 
@@ -493,7 +499,7 @@ function BLTNotificationsGui:mouse_pressed(button, x, y)
 		if current and current.callback then
 			current.callback(current.id)
 		else
-			managers.menu:open_node("blt_mods")
+			MenuHelper:OpenMenu("blt_mods")
 		end
 		return true
 	end

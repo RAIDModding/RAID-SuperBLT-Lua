@@ -27,7 +27,9 @@ function MenuManager:show_download_progress(mod_name)
 	managers.system_menu:show_download_progress(dialog_data)
 end
 
-if BLT:GetGame() == "pd2" then
+local game = BLT:GetGame()
+
+if game == "pd2" then
 	-- Add menus
 	Hooks:Add("MenuManagerPostInitialize", "MenuManagerPostInitialize_Base", function(menu_manager)
 		local success, err = pcall(function()
@@ -59,32 +61,31 @@ if BLT:GetGame() == "pd2" then
 			BLT:Log(LogLevel.ERROR, tostring(err))
 		end
 	end)
-end
 
-function MenuManager:_base_process_menu(menu_names, parent_menu_name, parent_menu_button, setup_hook, populate_hook, build_hook)
-	for k, v in pairs(menu_names) do
-		local menu = self._registered_menus[v]
-		if menu then
-			local nodes = menu.logic._data._nodes
-			local hook_id_setup = setup_hook or "MenuManagerSetupCustomMenus"
-			local hook_id_populate = populate_hook or "MenuManagerPopulateCustomMenus"
-			local hook_id_build = build_hook or "MenuManagerBuildCustomMenus"
+	function MenuManager:_base_process_menu(menu_names, parent_menu_name, parent_menu_button, setup_hook, populate_hook, build_hook)
+		for k, v in pairs(menu_names) do
+			local menu = self._registered_menus[v]
+			if menu then
+				local nodes = menu.logic._data._nodes
+				local hook_id_setup = setup_hook or "MenuManagerSetupCustomMenus"
+				local hook_id_populate = populate_hook or "MenuManagerPopulateCustomMenus"
+				local hook_id_build = build_hook or "MenuManagerBuildCustomMenus"
 
-			if BLT:GetGame() == "pd2" then
 				MenuHelper:SetupMenu(nodes, parent_menu_name or "video")
 				MenuHelper:SetupMenuButton(nodes, parent_menu_button or "options", not parent_menu_button and "sound")
+
+				Hooks:RegisterHook(hook_id_setup)
+				Hooks:RegisterHook(hook_id_populate)
+				Hooks:RegisterHook(hook_id_build)
+
+				Hooks:Call(hook_id_setup, self, nodes)
+				Hooks:Call(hook_id_populate, self, nodes)
+				Hooks:Call(hook_id_build, self, nodes)
 			end
-
-			Hooks:RegisterHook(hook_id_setup)
-			Hooks:RegisterHook(hook_id_populate)
-			Hooks:RegisterHook(hook_id_build)
-
-			Hooks:Call(hook_id_setup, self, nodes)
-			Hooks:Call(hook_id_populate, self, nodes)
-			Hooks:Call(hook_id_build, self, nodes)
 		end
 	end
 end
+
 
 -- Create this function if it doesn't exist
 function MenuCallbackHandler:can_toggle_chat()

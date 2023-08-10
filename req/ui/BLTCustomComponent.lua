@@ -166,11 +166,21 @@ function BLTCustomComponent:check_items()
 	end
 end
 
+function BLTCustomComponent:_mouse_pressed(button, x, y)
+
+end
+
 --[[
 	Handle mouse pressed events
 ]]
-function BLTCustomComponent:mouse_pressed(button, x, y)
-	if managers.menu_scene and managers.menu_scene:input_focus() then
+function BLTCustomComponent:mouse_pressed(o, button, x, y)
+	if tonumber(button) then -- Handle RAID difference
+		y = x
+		x = button
+		button = o
+	end
+
+	if managers.menu_scene and managers.menu_component:input_focus() then
 		return false
 	end
 
@@ -203,16 +213,39 @@ function BLTCustomComponent:mouse_pressed(button, x, y)
 		end
 	end
 
+	if not result then
+		-- Shouldn't happen in PD2 since it already does it beforehand, missing in RAID.
+		if button == Idstring("mouse wheel down") then
+            self:mouse_wheel_down(x, y)
+        elseif button == Idstring("mouse wheel up") then
+            self:mouse_wheel_up(x, y)
+        else
+            self:_mouse_pressed(button, x, y)
+        end
+	end
+
 	return result
+end
+
+function BLTCustomComponent:_mouse_released(o, x, y)
 end
 
 --[[
 	Handle mouse released events
 ]]
-function BLTCustomComponent:mouse_released(o, x, y)
+function BLTCustomComponent:mouse_released(o, button, x, y)
+	if tonumber(button) then -- Handle RAID difference
+		y = x
+		x = button
+		button = o
+	end
+
 	if alive(self._scroll) then
 		self._scroll:mouse_released(o, x, y)
 	end
+
+	self:_mouse_released(button, x, y)
+
 	self._used, self._pointer = nil, nil --not grabbing anything anymore.
 end
 

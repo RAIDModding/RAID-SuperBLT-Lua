@@ -37,7 +37,7 @@ function BLTViewModGui:setup()
 	-- Automatically added by BLTCustomComponent
 
 	-- Create page info
-	self._mod = managers.menu_component:blt_mods_gui() and managers.menu_component:blt_mods_gui():inspecting_mod()
+	self._mod = managers.menu_component._inspecting_blt_mod
 	if self._mod then
 		self:_setup_mod_info(self._mod)
 		self:_setup_dev_info(self._mod)
@@ -244,7 +244,7 @@ function BLTViewModGui:_setup_dev_info(mod)
 		w = self._panel:w() * 0.5 - padding * 2,
 		h = (self._panel:h() - self._title:bottom() + padding) * 0.5 - padding * 2
 	})
-	dev_panel:set_bottom(self._panel:h() - padding)
+	dev_panel:set_bottom(self._panel:h() - padding * 4)
 	BoxGuiObject:new(dev_panel:panel({layer = 100}), {sides = {1, 1, 1, 1}})
 	self._dev_panel = dev_panel
 
@@ -362,27 +362,25 @@ end
 
 --------------------------------------------------------------------------------
 
-function BLTViewModGui:mouse_pressed(o, x, y)
+function BLTViewModGui:_mouse_pressed(button, x, y)
 	if alive(self._info_scroll) then
-		if self._info_scroll:mouse_pressed(o, x, y) then
+		if self._info_scroll:mouse_pressed(button, x, y) then
 			return true
 		end
 	end
 	if alive(self._dev_scroll) then
-		if self._dev_scroll:mouse_pressed(o, x, y) then
+		if self._dev_scroll:mouse_pressed(button, x, y) then
 			return true
 		end
 	end
-	return BLTViewModGui.super.mouse_pressed(self, o, x, y)
 end
 
-function BLTViewModGui:mouse_released(o, x, y)
-	BLTViewModGui.super.mouse_released(self, o, x, y)
+function BLTViewModGui:_mouse_released(button, x, y)
 	if alive(self._info_scroll) then
-		self._info_scroll:mouse_released(o, x, y)
+		self._info_scroll:mouse_released(button, x, y)
 	end
 	if alive(self._dev_scroll) then
-		self._dev_scroll:mouse_released(o, x, y)
+		self._dev_scroll:mouse_released(button, x, y)
 	end
 end
 
@@ -509,7 +507,7 @@ function BLTViewModGui:clbk_check_for_updates_finished(cache)
 end
 
 function BLTViewModGui:clbk_goto_download_manager()
-	managers.menu:open_node("blt_download_manager")
+	MenuHelper:OpenMenu("blt_download_manager")
 end
 
 function BLTViewModGui:clbk_toggle_dev_info()

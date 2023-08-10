@@ -804,7 +804,7 @@ end
 ---	end
 ---end
 ---```
-function MenuHelper:AddComponent(name, clss)
+function MenuHelper:AddComponent(name, clss, args)
 	local function add(component)
 		local c_name = name .. "_gui"
 		local u_name = "_" .. name
@@ -821,7 +821,7 @@ function MenuHelper:AddComponent(name, clss)
 			if not node then
 				return
 			end
-			self[u_name] = self[u_name] or clss:new(self._ws, self._fullscreen_ws, node)
+			self[u_name] = self[u_name] or clss:new(self._ws, self._fullscreen_ws, node, name, args)
 			if self.register_component then
 				self:register_component(c_name, self[u_name])
 			end
@@ -845,6 +845,16 @@ function MenuHelper:AddComponent(name, clss)
 			create = callback(component, component, create),
 			close = callback(component, component, close)
 		}
+
+		if BLT:GetGame() == "raid" then
+			if clss.update then
+				Hooks:Add("MenuComponentManagerUpdate", name..".MenuComponentManagerUpdate", function(self, t, dt)
+					if component[name] then
+						component[name]:update(t, dt)
+					end
+				end)
+			end
+		end
 	end
 
 	-- If the component manager is already loaded then set everything up now,
@@ -853,5 +863,13 @@ function MenuHelper:AddComponent(name, clss)
 		add(managers.component)
 	else
 		Hooks:Add("MenuComponentManagerInitialize", name .. ".MenuComponentManagerInitialize", add)
+	end
+end
+
+function MenuHelper:OpenMenu(name)
+	if BLT:GetGame() == "pd2" then
+		MenuHelper:OpenMenu(name)
+	else
+		managers.raid_menu:open_menu(name)
 	end
 end

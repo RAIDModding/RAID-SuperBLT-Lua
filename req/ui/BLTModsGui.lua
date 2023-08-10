@@ -4,7 +4,7 @@ BLT:Require("req/ui/BLTViewModGui")
 
 ---@class BLTModsGui
 ---@field new fun(self, ws, fullscreen_ws, node):BLTModsGui
-BLTModsGui = BLTModsGui or blt_class(MenuGuiComponentGeneric)
+BLTModsGui = BLTModsGui or blt_class(BLTCustomComponent)
 BLTModsGui.last_y_position = 0
 BLTModsGui.show_libraries = false
 BLTModsGui.show_mod_icons = true
@@ -159,17 +159,16 @@ function BLTModsGui:_setup()
 		text = managers.localization:to_upper_text("blt_libraries", {count = libs_count}),
 		color = tweak_data.screen_colors.text
 	}))
-
 	-- Shift the show and hide buttons to the left of the libraries label
 	make_fine_text_aligning(libraries_text)
 	params.width = libraries_text:x() - params.x - 4 -- 4px padding
 
 	self._libraries_show_button = self._panel:text(customize({
-		text = managers.localization:to_upper_text("menu_button_show")
+		text = managers.localization:to_upper_text("blt_mod_state_disabled")
 	}))
 
 	self._libraries_hide_button = self._panel:text(customize({
-		text = managers.localization:to_upper_text("menu_button_hide")
+		text = managers.localization:to_upper_text("blt_mod_state_enabled")
 	}))
 
 	make_fine_text_aligning(self._libraries_show_button)
@@ -204,11 +203,11 @@ function BLTModsGui:_setup()
 	params.width = icons_text:x() - params.x - 4 -- 4px padding
 
 	self._mod_icons_show_button = self._panel:text(customize({
-		text = managers.localization:to_upper_text("menu_button_show")
+		text = managers.localization:to_upper_text("blt_mod_state_disabled")
 	}))
 
 	self._mod_icons_hide_button = self._panel:text(customize({
-		text = managers.localization:to_upper_text("menu_button_hide")
+		text = managers.localization:to_upper_text("blt_mod_state_enabled")
 	}))
 
 	make_fine_text_aligning(self._mod_icons_show_button)
@@ -317,13 +316,13 @@ function BLTModsGui:inspecting_mod()
 end
 
 function BLTModsGui:clbk_open_download_manager()
-	managers.menu:open_node("blt_download_manager")
+	MenuHelper:OpenMenu("blt_download_manager")
 end
 
 --------------------------------------------------------------------------------
 
 function BLTModsGui:mouse_moved(button, x, y)
-	if managers.menu_scene and managers.menu_scene:input_focus() then
+	if managers.menu_scene and managers.menu_component:input_focus() then
 		return false
 	end
 
@@ -363,7 +362,7 @@ function BLTModsGui:mouse_moved(button, x, y)
 end
 
 function BLTModsGui:mouse_clicked(o, button, x, y)
-	if managers.menu_scene and managers.menu_scene:input_focus() then
+	if managers.menu_scene and managers.menu_component:input_focus() then
 		return false
 	end
 
@@ -372,8 +371,8 @@ function BLTModsGui:mouse_clicked(o, button, x, y)
 	end
 end
 
-function BLTModsGui:mouse_pressed(button, x, y)
-	if managers.menu_scene and managers.menu_scene:input_focus() then
+function BLTModsGui:_mouse_pressed(button, x, y)
+	if managers.menu_scene and managers.menu_component:input_focus() then
 		return false
 	end
 
@@ -394,7 +393,8 @@ function BLTModsGui:mouse_pressed(button, x, y)
 				if item:inside(x, y) then
 					if item.mod then
 						self._inspecting = item:mod()
-						managers.menu:open_node("view_blt_mod")
+						managers.menu_component._inspecting_blt_mod = self._inspecting
+						MenuHelper:OpenMenu("view_blt_mod")
 						managers.menu_component:post_event("menu_enter")
 					elseif item.parameters then
 						local clbk = item:parameters().callback
@@ -412,8 +412,8 @@ function BLTModsGui:mouse_pressed(button, x, y)
 	return result
 end
 
-function BLTModsGui:mouse_released(button, x, y)
-	if managers.menu_scene and managers.menu_scene:input_focus() then
+function BLTModsGui:_mouse_released(button, x, y)
+	if managers.menu_scene and managers.menu_component:input_focus() then
 		return false
 	end
 

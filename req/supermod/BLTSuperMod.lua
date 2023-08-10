@@ -91,7 +91,7 @@ function BLTSuperMod:_add_hook(tag, scope, data_key, destination)
 	assert(hook_id, "missing parameter hook_id" .. tag._doc.filename)
 	assert(script_path, "missing parameter script_path in " .. tag._doc.filename)
 
-	self._mod:AddHook(data_key, hook_id, script_path, BLT.hook_tables[destination])
+	self._mod:AddHook(data_key, hook_id, script_path, BLT.hook_tables[destination], nil, scope.game)
 end
 
 function BLTSuperMod:_run_entry_script(tag, scope, data_key, destination)

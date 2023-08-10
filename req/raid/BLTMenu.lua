@@ -1,9 +1,3 @@
---They are defined but the PD2 files don't actually exist so we'll just swap them with raid ones.
-tweak_data.menu.pd2_massive_font = "ui/fonts/pf_din_text_comp_pro_medium_42_mf"
-tweak_data.menu.pd2_large_font = "ui/fonts/pf_din_text_comp_pro_medium_32_mf"
-tweak_data.menu.pd2_medium_font = "ui/fonts/pf_din_text_comp_pro_medium_24_mf"
-tweak_data.menu.pd2_small_font = "ui/fonts/pf_din_text_comp_pro_medium_18_mf"
-
 function RaidExperienceManager:cash_string(cash, cash_sign)
 	local sign = ""
 
@@ -39,7 +33,6 @@ function BLTMenu:init(ws, fullscreen_ws, node, name, args)
     self._fullscreen_panel = self._fullscreen_ws:panel():panel({})
     self._panel = self._ws:panel():panel({})
     self._all_ctrls = {}
-    --do we need a name..? hard without a decomp :/
     BLTMenu.super.init(self, ws, fullscreen_ws, node, name or "")
     self._root_panel.ctrls = self._root_panel.ctrls or {}
     if self.PreInit then
@@ -304,7 +297,7 @@ function BLTMenu:CreateSimpleLabel(typ, params)
     params.callback = nil
     params.x_offset = params.x_offset or self.default_label_x_offset or 1
     params.y_offset = params.y_offset or self.default_label_y_offset or 1
-    params.text = NotNil(params.text, false)
+    params.text = Utils:FirstNonNil(params.text, false)
     local label = BLTMenu.CreateSimple(self, typ, params, {no_clone = true})
     label._params.align_item = true
     return label
