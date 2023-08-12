@@ -6,6 +6,7 @@
             <file :name="download.png"/>
             <file :name="enable.png"/>
             <file :name="updates.png"/>
+            <file :name="scrollbar_arrows.texture"/>
         </group>
     </assets>
 
