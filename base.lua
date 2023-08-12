@@ -152,7 +152,7 @@ end
 ---Returns the current running game
 ---@return '"raid"'|'"pd2"' @The game
 function BLT:GetGame()
-	return Application:short_game_name() == "RAID WW2" and "raid" or "pd2"
+	return blt.blt_info().game
 end
 
 function BLT:RunHookTable(hooks_table, path)
