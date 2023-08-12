@@ -54,6 +54,7 @@ function BLTNotificationsGui:_setup()
 
 	-- Create panels
 	self._panel =self._ws:panel():panel({
+		layer = 50,
 		x = profile_panel and profile_panel:x() or 0,
 		w = profile_panel and profile_panel:w() or 524,
 		h = 128
@@ -75,7 +76,7 @@ function BLTNotificationsGui:_setup()
 	local bg_rect =self._content_panel:rect({
 		name = "background",
 		color = Color.black,
-		alpha = 0.4,
+		alpha = is_pd2 and 0.4 or 0,
 		layer = -1,
 		halign = "scale",
 		valign = "scale"
