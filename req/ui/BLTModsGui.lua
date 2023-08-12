@@ -143,7 +143,11 @@ function BLTModsGui:_setup()
 	}
 
 	local function customize(changes)
-		return table.map_append(table.map_copy(params), changes)
+		local copy = table.map_copy(params)
+		for k, v in pairs(changes) do
+			copy[k] = v
+		end
+		return copy
 	end
 
 	-- Count the number of libraries installed
