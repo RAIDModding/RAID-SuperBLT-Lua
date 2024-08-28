@@ -97,6 +97,45 @@ function MenuCallbackHandler:can_toggle_chat()
 	end
 end
 
+core:import("CoreMenuData")
+core:import("CoreMenuLogic")
+core:import("CoreMenuInput")
+core:import("CoreMenuRenderer")
+function MenuManager:register_menu_new(menu)
+	if menu.name and self._registered_menus[menu.name] then
+		return
+	end
+
+	menu.data = CoreMenuData.Data:new()
+	menu.data:_load_data(menu.config, menu.id or menu.name)
+	menu.data:set_callback_handler(menu.callback_handler)
+
+	menu.logic = CoreMenuLogic.Logic:new(menu.data)
+	menu.logic:register_callback("menu_manager_menu_closed", callback(self, self, "_menu_closed", menu.name))
+	menu.logic:register_callback("menu_manager_select_node", callback(self, self, "_node_selected", menu.name))
+
+	-- Input
+	if not menu.input then
+		menu.input = CoreMenuInput.MenuInput:new(menu.logic, menu.name)
+	else
+		menu.input = loadstring("return " .. menu.input)()
+		menu.input = menu.input:new(menu.logic, menu.name)
+	end
+
+	-- Renderer
+	if not menu.renderer then
+		menu.renderer = CoreMenuRenderer.Renderer:new(menu.logic)
+	else
+		menu.renderer = loadstring("return " .. menu.renderer)()
+		menu.renderer = menu.renderer:new(menu.logic)
+	end
+	menu.renderer:preload()
+
+	if menu.name then
+		self._registered_menus[menu.name] = menu
+	end
+end
+
 --------------------------------------------------------------------------------
 -- Add BLT save function
 
