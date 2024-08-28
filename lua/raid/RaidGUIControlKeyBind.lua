@@ -37,7 +37,7 @@ function RaidGuiControlKeyBind:_key_press(text, key, input_id, ...)
 	end
 
 	local key_name = "" .. (input_id == "mouse" and Input:mouse():button_name_str(key) or Input:keyboard():button_name_str(key))
-	if not no_add and input_id == "mouse" then
+	if input_id == "mouse" then
 		key_name = "mouse " .. key_name or key_name
 	end
 

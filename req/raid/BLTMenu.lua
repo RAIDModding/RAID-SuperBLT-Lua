@@ -212,7 +212,7 @@ function BLTMenu:BasicItemData(params, no_clone, typ)
     params.parent = params.parent or self._root_panel
     params.is_blt = true
     params.ignore_align = not not params.ignore_align
-    params.w = params.w or 512 + (typ == "slider" and 64 or 0)
+    params.w = (params.w or 512) + (typ == "slider" and 64 or 0)
     params.h = params.h or 32
     params.x_offset = params.x_offset or self.default_x_offset or 6
     params.y_offset = params.y_offset or self.default_y_offset or 6
@@ -435,7 +435,7 @@ function BLTMenu:ColorButton(params)
         h = 24,
         x = -26,
         rotation = 360,
-        texture = "ui/atlas/raid_atlas_menu",
+        texture = "ui/atlas/menu/raid_atlas_menu",
         texture_rect = {765, 679, 33, 33},
         color = params.value
     })

@@ -360,12 +360,6 @@ class XMLLoader {
 				load_supermod_file("mods/%(mod)", mod_data, false)
 			}
 		}
-
-		if (IO.info("assets/mod_overrides") == "dir") {
-			for (mod in IO.listDirectory("assets/mod_overrides", true)) {
-				load_supermod_file("assets/mod_overrides/%(mod)", null, true)
-			}
-		}
 	}
 
 	static exec_wren_scripts() {

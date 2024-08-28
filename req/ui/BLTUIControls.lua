@@ -373,7 +373,7 @@ function BLTDownloadControl:mouse_moved(button, x, y)
 	local inside_download = self._download_panel:inside(x, y)
 	if self._highlight_download ~= inside_download then
 		self._background:set_color(inside_download and tweak_data.screen_colors.button_stage_2 or (self:parameters().color or tweak_data.screen_colors.button_stage_3))
-		if inside_download and not no_sound then
+		if inside_download then
 			managers.menu_component:post_event("highlight")
 		end
 		self._highlight_download = inside_download
@@ -382,7 +382,7 @@ function BLTDownloadControl:mouse_moved(button, x, y)
 	local inside_patch = self._patch_panel:inside(x, y)
 	if self._highlight_patch ~= inside_patch then
 		self._patch_background:set_color(inside_patch and tweak_data.screen_colors.button_stage_2 or (self:parameters().color or tweak_data.screen_colors.button_stage_3))
-		if inside_patch and not no_sound then
+		if inside_patch then
 			managers.menu_component:post_event("highlight")
 		end
 		self._highlight_patch = inside_patch

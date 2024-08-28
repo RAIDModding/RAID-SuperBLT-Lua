@@ -92,7 +92,7 @@
 		},
 		{ 
 			"hook_id" : "core/lib/managers/menu/coremenulogic",
-			"script_path" : "lua/CoreMenuLogic.lua",
+			"script_path" : "lua/CoreMenuLogic.lua"
 		},
 		{ 
 			"hook_id" : "lib/managers/chatmanager",

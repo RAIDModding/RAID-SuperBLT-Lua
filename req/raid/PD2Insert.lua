@@ -451,7 +451,7 @@ function ScrollablePanel:reset_scroll_indicator_alphas()
 end
 
 function ScrollablePanel:_default_update(dt)
-	local element, step = nil
+	local element, step = nil, nil
 
 	for element_name, data in pairs(self._alphas) do
 		step = dt == -1 and 1 or dt * data.speed
