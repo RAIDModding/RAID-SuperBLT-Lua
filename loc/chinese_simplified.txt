@@ -1,5 +1,5 @@
 {
-	"blt_options_menu_blt_mods" : "BLT 模组",
+	"blt_options_menu_blt_mods" : "(S)BLT 模组",
 	"blt_options_menu_blt_mods_desc" : "更新与管理您已安装的 BLT 模组",
 	"blt_options_menu_lua_mod_options" : "模组选项",
 	"blt_options_menu_lua_mod_options_desc" : "个性化定制您已安装的 BLT 模组。",
@@ -82,26 +82,6 @@
 
 	"blt_settings" : "BLT设置",
 	"blt_settings_desc" : "改变 BLT 的设置",
-
-	"blt_language_select" : "语言",
-	"blt_language_select_desc" : "选择 BLT 的显示语言。",
-	"blt_language_cs" : "捷克语",
-	"blt_language_en" : "英语",
-	"blt_language_es" : "西班牙语",
-	"blt_language_sv" : "瑞典语",
-	"blt_language_cht" : "中文 （繁体）",
-	"blt_language_de" : "德语",
-	"blt_language_fr" : "法语",
-	"blt_language_ru" : "俄语",
-	"blt_language_tr" : "土耳其语",
-	"blt_language_id" : "印度尼西亚语",
-	"blt_language_it" : "意大利语",
-	"blt_language_ja" : "日语",
-	"blt_language_ko" : "韩语",
-	"blt_language_chs" : "中文 （简体）",
-	"blt_language_pl" : "波兰语",
-	"blt_language_nl" : "荷兰语",
-	"blt_language_pt-br" : "巴西葡萄牙语",
 
 	"blt_log_level_select" : "日志纪录级别",
 	"blt_log_level_select_desc" : "选择 BLT 日志纪录的信息的最低级别",

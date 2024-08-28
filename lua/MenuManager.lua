@@ -156,12 +156,6 @@ end
 --------------------------------------------------------------------------------
 -- Add settings callbacks
 
-function MenuCallbackHandler:blt_choose_language(item)
-	if BLT.Localization then
-		BLT.Localization:set_language(item:value())
-	end
-end
-
 function MenuCallbackHandler:blt_choose_log_level(item)
 	BLTLogs.log_level = math.clamp(item:value(), _G.LogLevel.NONE, _G.LogLevel.ALL)
 end
