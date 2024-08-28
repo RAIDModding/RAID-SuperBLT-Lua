@@ -20,8 +20,9 @@ function BLTKeybind:init(parent_mod, parameters)
 		self._show_in_menu = true
 	end
 	self._name = parameters.name or false
-	self._desc = parameters.desc or false
+	self._desc = parameters.desc or parameters.description	or false
 	self._localize = parameters.localize or false
+	self._localize_desc = parameters.localize_desc or false
 end
 
 function BLTKeybind:ParentMod()
@@ -87,7 +88,7 @@ function BLTKeybind:Description()
 	if not self._desc then
 		return managers.localization:text("blt_no_desc")
 	end
-	if self:IsLocalized() then
+	if self:IsDescriptionLocalized() then
 		return managers.localization:text(self._desc)
 	else
 		return self._desc
@@ -98,6 +99,9 @@ function BLTKeybind:IsLocalized()
 	return self._localize
 end
 
+function BLTKeybind:IsDescriptionLocalized()
+	return self._localize_desc
+end
 function BLTKeybind:AllowExecutionInMenu()
 	return self._allow_menu
 end
