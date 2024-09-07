@@ -29,6 +29,8 @@ function BLTKeybindsMenu:Init(root)
                 keybind_id = bind:Id(),
                 x_offset = 10,
                 localize = false,
+				desc = bind:Description(),
+				localize_desc = false
             })
 
             last_mod = bind:ParentMod()

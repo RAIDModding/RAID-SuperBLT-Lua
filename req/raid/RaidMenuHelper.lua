@@ -288,7 +288,5 @@ function RaidMenuHelper:RegisterMenu(menu)
 
 	if menu.name then
 		m_menu._registered_menus[menu.name] = menu
-	else
-		Application:error("Manager:register_menu(): Menu '" .. menu.id .. "' is missing a name, in '" .. menu.content_file .. "'")
 	end
 end

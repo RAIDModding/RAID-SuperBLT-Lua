@@ -2,14 +2,14 @@
 ---@field new fun(self):BLTLocalization
 BLTLocalization = BLTLocalization or blt_class(BLTModule)
 BLTLocalization.__type = "BLTLocalization"
-BLTLocalization.default_language_code = "en"
+BLTLocalization.default_language_code = "english"
 BLTLocalization.directory = "mods/base/loc/"
 
 function BLTLocalization:init()
 	BLTLocalization.super.init(self)
 
 	self._languages = {}
-	self._current = "en"
+	self._current = "english"
 end
 
 function BLTLocalization:_init_legacy_support()
@@ -64,7 +64,7 @@ function BLTLocalization:load_languages()
 
 	self._languages_loaded = true
 
-	local lang_code = BLT.save_data.language
+	local lang_code = Steam:current_language()
 	if lang_code then
 		self:set_language(lang_code)
 	end
@@ -123,13 +123,6 @@ function BLTLocalization:load_localization(loc_manager)
 		BLT:Log(LogLevel.ERROR, "Could not load localization file for language: " .. tostring(self._current))
 	end
 end
-
-Hooks:Add("BLTOnSaveData", "BLTOnSaveData.BLTLocalization", function(save_data)
-	local lang = BLT.Localization:get_language()
-	if lang then
-		save_data.language = lang.language
-	end
-end)
 
 --------------------------------------------------------------------------------
 -- Load languages once the game's localization manager has been created

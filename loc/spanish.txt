@@ -1,5 +1,5 @@
 {
-	"blt_options_menu_blt_mods" : "Mods BLT",
+	"blt_options_menu_blt_mods" : "(S)Mods BLT",
 	"blt_options_menu_blt_mods_desc" : "Actualizar y administrar tus mods BLT instalados",
 	"blt_options_menu_lua_mod_options" : "Ajustes de mods",
 	"blt_options_menu_lua_mod_options_desc" : "Configurar y personalizar tus mods BLT instalados",
@@ -82,26 +82,6 @@
 	
 	"blt_settings" : "Ajustes de BLT",
 	"blt_settings_desc" : "Configurar y personalizar los ajustes de BLT",
-	
-	"blt_language_select" : "Idioma",
-	"blt_language_select_desc" : "Elegir el idioma de BLT",
-	"blt_language_cs" : "Checo",
-	"blt_language_en" : "Inglés",
-	"blt_language_es" : "Español",
-	"blt_language_sv" : "Sueco",
-	"blt_language_cht" : "Chino (Tradicional)",
-	"blt_language_de" : "Aleman",
-	"blt_language_fr" : "Francés",
-	"blt_language_ru" : "Ruso",
-	"blt_language_tr" : "Turco",
-	"blt_language_id" : "Indonesio",
-	"blt_language_it" : "Italiano",
-	"blt_language_ja" : "Japonés",
-	"blt_language_ko" : "Coreano",
-	"blt_language_chs" : "Chino (Simplificado)",
-	"blt_language_pl" : "Polaco",
-	"blt_language_nl" : "Holandés",
-	"blt_language_pt-br" : "Portugués brasileño",
 	
 	"blt_log_level_select" : "Nivel de registro",
 	"blt_log_level_select_desc" : "Elegir qué se debe incluir en los archivos de registro (Logs) generados por BLT",

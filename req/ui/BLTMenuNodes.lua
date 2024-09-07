@@ -150,23 +150,6 @@ local function add_blt_settings_node(menu)
 		}
 	}
 
-	local menu_item_language = {
-		_meta = "item",
-		type = "MenuItemMultiChoice",
-		name = "blt_localization_choose",
-		text_id = "blt_language_select",
-		help_id = "blt_language_select_desc",
-		callback = "blt_choose_language",
-		value_func = function() return BLT.Localization:get_language().language end
-	}
-	for _, lang in ipairs(BLT.Localization:languages()) do
-		table.insert(menu_item_language, {
-			_meta = "option",
-			text_id = "blt_language_" .. tostring(lang.language),
-			value = tostring(lang.language)
-		})
-	end
-
 	local menu_item_divider = {
 		_meta = "item",
 		name = "blt_divider",
@@ -209,7 +192,6 @@ local function add_blt_settings_node(menu)
 		})
 	end
 
-	table.insert(new_node, menu_item_language)
 	table.insert(new_node, menu_item_divider)
 	table.insert(new_node, menu_item_log_level)
 	table.insert(new_node, menu_item_log_lifetime)

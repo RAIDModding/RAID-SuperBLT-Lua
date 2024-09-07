@@ -42,6 +42,7 @@ function DelayedCalls:Add(id, time, func)
 		timeToWait = time,
 		currentTime = 0
 	}
+	self._remove_queue[id] = nil -- fix: prevents newly added call from instantly getting deleted, if it WAS queued just before adding a new one
 	self._calls[id] = queuedFunc
 end
 

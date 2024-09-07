@@ -1,5 +1,5 @@
 {
-	"blt_options_menu_blt_mods" : "BLT Mods",
+	"blt_options_menu_blt_mods" : "(S)BLT Mods",
 	"blt_options_menu_blt_mods_desc" : "Update and manage your installed BLT mods",
 	"blt_options_menu_lua_mod_options" : "Mod Options",
 	"blt_options_menu_lua_mod_options_desc" : "Configure and customize your installed BLT mods",
@@ -82,26 +82,6 @@
 
 	"blt_settings" : "BLT settings",
 	"blt_settings_desc" : "Change BLT basemod settings",
-
-	"blt_language_select" : "Language",
-	"blt_language_select_desc" : "Select the language to display BLT in",
-	"blt_language_cs" : "Czech",
-	"blt_language_en" : "English",
-	"blt_language_es" : "Spanish",
-	"blt_language_sv" : "Swedish",
-	"blt_language_cht" : "Chinese (Traditional)",
-	"blt_language_de" : "German",
-	"blt_language_fr" : "French",
-	"blt_language_ru" : "Russian",
-	"blt_language_tr" : "Turkish",
-	"blt_language_id" : "Indonesian",
-	"blt_language_it" : "Italian",
-	"blt_language_ja" : "Japanese",
-	"blt_language_ko" : "Korean",
-	"blt_language_chs" : "Chinese (Simplified)",
-	"blt_language_pl" : "Polish",
-	"blt_language_nl" : "Dutch",
-	"blt_language_pt-br" : "Brazilian Portuguese",
 
 	"blt_log_level_select" : "Logging level",
 	"blt_log_level_select_desc" : "Select the verbosity of BLT logs",

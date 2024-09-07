@@ -17,7 +17,7 @@ function LuaNetworking:IsMultiplayer()
 	if not managers.network then
 		return false
 	end
-	return managers.network:session()
+	return managers.network:session() ~= nil
 end
 
 ---Checks if the local player is the host of the multiplayer game session  
