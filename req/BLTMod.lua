@@ -31,7 +31,6 @@ function BLTMod:init(identifier, data, path)
 	self.disable_safe_mode = data.disable_safe_mode or false
 	self.undisablable = data.undisablable or false
 	self.library = data.is_library or false
-	self.vr_disabled = data.vr_disabled or false
 	self.desktop_disabled = data.desktop_disabled or false
 
 	-- Updates data
@@ -53,9 +52,8 @@ function BLTMod:init(identifier, data, path)
 		end
 	end
 
-	-- Return wether the mod is valid (allowed to run in VR/Non-VR)
-	local is_vr = BLT:IsVr()
-	return is_vr and not self.vr_disabled or not is_vr and not self.desktop_disabled
+	-- Return wether the mod is valid
+	return not self.desktop_disabled
 end
 
 function BLTMod:Setup()
