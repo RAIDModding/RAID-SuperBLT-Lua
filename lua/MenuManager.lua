@@ -145,9 +145,9 @@ function MenuCallbackHandler:perform_blt_save()
 
 	Hooks:Call("BLTOnSaveData", BLT.save_data)
 
-	local success = io.save_as_json(BLT.save_data, BLTModManager.Constants:ModManagerSaveFile(BLT:IsVr()))
+	local success = io.save_as_json(BLT.save_data, BLTModManager.Constants:ModManagerSaveFile())
 	if not success then
-		BLT:Log(LogLevel.ERROR, "[BLT] Could not save file " .. BLTModManager.Constants:ModManagerSaveFile(BLT:IsVr()))
+		BLT:Log(LogLevel.ERROR, "[BLT] Could not save file " .. BLTModManager.Constants:ModManagerSaveFile())
 	end
 end
 

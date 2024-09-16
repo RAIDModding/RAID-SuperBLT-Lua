@@ -3,6 +3,7 @@
 BLTKeybind = BLTKeybind or blt_class()
 BLTKeybind.StateMenu = 1
 BLTKeybind.StateGame = 2
+BLTKeybind.StatePausedGame = 3
 
 function BLTKeybind:init(parent_mod, parameters)
 	self._mod = parent_mod
@@ -14,6 +15,7 @@ function BLTKeybind:init(parent_mod, parameters)
 
 	self._allow_menu = parameters.allow_menu or false
 	self._allow_game = parameters.allow_game or false
+	self._allow_paused_game = parameters.run_in_paused_game or false
 
 	self._show_in_menu = parameters.show_in_menu
 	if self._show_in_menu == nil then
@@ -34,11 +36,7 @@ function BLTKeybind:Id()
 end
 
 function BLTKeybind:SetKey(key, force)
-	if force then
-		self:_SetKey(force, key)
-	else
-		self:_SetKey("pc", key)
-	end
+	self:_SetKey(force or "pc", key)
 end
 
 function BLTKeybind:_SetKey(idx, key)
@@ -110,11 +108,17 @@ function BLTKeybind:AllowExecutionInGame()
 	return self._allow_game
 end
 
+function BLTKeybind:AllowExecutionInPausedGame()
+	return self._allow_paused_game
+end
+
 function BLTKeybind:CanExecuteInState(state)
 	if state == BLTKeybind.StateMenu then
 		return self:AllowExecutionInMenu()
 	elseif state == BLTKeybind.StateGame then
 		return self:AllowExecutionInGame()
+	elseif state == BLTKeybind.StatePausedGame then
+		return self:AllowExecutionInPausedGame()
 	end
 	return false
 end
@@ -287,6 +291,10 @@ end)
 
 Hooks:Add("GameSetupUpdate", "Base_Keybinds_GameStateUpdate", function(t, dt)
 	BLT.Keybinds:update(t, dt, BLTKeybind.StateGame)
+end)
+
+Hooks:Add("GameSetupPausedUpdate", "BLT.Keybinds.PausedUpdate", function(t, dt)
+	BLT.Keybinds:update(t, dt, BLTKeybind.StatePausedGame)
 end)
 
 function BLTKeybindsManager:_restore_keybind(bind_data)

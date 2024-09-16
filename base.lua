@@ -89,19 +89,10 @@ function BLT:Initialize()
 	self:Setup()
 end
 
-function BLT:IsVr()
-	return _G.SystemInfo ~= nil and getmetatable(_G.SystemInfo).is_vr ~= nil and SystemInfo:is_vr()
-end
-
 function BLT:Setup()
 	-- Load saved data
-	if BLT:IsVr() then
-		local save_file = BLTModManager.Constants:ModManagerSaveFile(true)
-		self.save_data = io.file_is_readable(save_file) and io.load_as_json(save_file)
-	end
-
 	if not self.save_data then
-		local save_file = BLTModManager.Constants:ModManagerSaveFile(false)
+		local save_file = BLTModManager.Constants:ModManagerSaveFile()
 		self.save_data = io.file_is_readable(save_file) and io.load_as_json(save_file) or {}
 	end
 

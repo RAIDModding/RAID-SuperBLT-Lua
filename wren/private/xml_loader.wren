@@ -333,14 +333,6 @@ class XMLLoader {
 		//  versions of the DLL might not have it yet)
 		var disabled_mods_path = "mods/saves/blt_wren_disabled_mods.txt"
 
-		// Create a fiber to check if we are running in VR to prevent crashes with outdated dll versions
-		(Fiber.new {
-			var disabled_mods_path_vr = "mods/saves/blt_wren_disabled_mods_vr.txt"
-			if (Environment.is_vr && IO.info(disabled_mods_path_vr) == "file") {
-				disabled_mods_path = disabled_mods_path_vr
-			}
-		}).try()
-
 		var disabled_mods = []
 		if (IO.info(disabled_mods_path) == "file") {
 			var data = IO.read(disabled_mods_path)
