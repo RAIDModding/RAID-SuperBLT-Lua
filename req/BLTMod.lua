@@ -164,11 +164,6 @@ end
 --- Called once the mod has been loaded with its data. Used to load tags with enabled check.
 function BLTMod:PostInit()
 	-- The mod isn't enabled for the current platform
-	local is_vr = BLT:IsVr()
-	if (is_vr and self.vr_disabled) or (not is_vr and self.desktop_disabled) then
-		self:SetEnabled(false, true)
-	end
-
 	-- Check dependencies are installed for this mod
 	if not self:AreDependenciesInstalled() then
 		table.insert(self._errors, "blt_mod_missing_dependencies")

@@ -29,7 +29,7 @@ function c:FromXML(scope, tag)
 	scope.name = nil
 
 	-- Recurse over the XML, and find all the <file/> tags
-	BLTMod._recurse_xml(tag, scope, {
+	Utils.IO.TraverseXML(tag, scope, {
 		file = function(...) self:_asset_from_xml(...) end,
 		xml = function(...) self:_converted_xml_file(...) end,
 	})
@@ -41,13 +41,13 @@ function c:LoadAssets(assets)
 	end
 end
 
-function c:_asset_from_xml(tag, scope)
+function c:_asset_from_xml(scope, tag)
 	local name = scope.name
 	local path = scope.path or (scope.base_path .. name)
-	self:LoadAsset(scope.name, path, scope)
+	self:LoadAsset(name, path, scope)
 end
 
-function c:_converted_xml_file(tag, scope)
+function c:_converted_xml_file(scope, tag)
 	local name = scope.name
 	local path = scope.path or (scope.base_path .. name)
 	local built_path = path .. ".sblt_autoconvert"
