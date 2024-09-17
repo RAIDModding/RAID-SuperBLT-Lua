@@ -54,7 +54,6 @@ BLT:Require("req/BLTNotificationsManager")
 BLT:Require("req/BLTPersistScripts")
 BLT:Require("req/BLTKeybindsManager")
 BLT:Require("req/BLTAssetManager")
-BLT:Require("req/xaudio/XAudio")
 
 ---Writes a message to the log file
 ---Multiple arguments can be passed to the function and will be concatenated
