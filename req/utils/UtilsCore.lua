@@ -264,6 +264,12 @@ function Utils:ToggleItemToBoolean(item)
 	return item:value() == "on" and true or false
 end
 
+--- Converts any value to boolean value. The check is strict so if the value isn't 'true' it will be false
+---@param val any The value to convert
+function Utils:ToBoolean(val)
+	return val == true or val == "true"
+end
+
 ---Escapes special characters in a URL to turn it into a usable URL
 ---@param input_url string @The url to escape the characters of
 ---@return string @A url string with escaped characters

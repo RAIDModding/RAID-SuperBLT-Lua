@@ -174,7 +174,7 @@ function BLTDownloadManager:clbk_download_finished(data, http_id, request_info)
 		wait()
 
 		-- Save file to downloads
-		local f = io.open(file_path, "wb+")
+		local f = io.open(file_path, "w+b")
 		if f then
 			f:write(data)
 			f:close()

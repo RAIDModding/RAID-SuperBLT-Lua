@@ -40,7 +40,6 @@ BLT:Require("req/utils/json-1.0")
 BLT:Require("req/utils/json-0.9")
 BLT:Require("req/utils/json")
 BLT:Require("req/core/Hooks")
-BLT:Require("req/supermod/BLTSuperMod")
 BLT:Require("req/BLTMod")
 BLT:Require("req/BLTUpdate")
 BLT:Require("req/BLTUpdateCallbacks")
@@ -206,30 +205,18 @@ function BLT:FindMods()
 		return {}
 	end
 
-	for index, directory in pairs(folders) do
+	for _, directory in pairs(folders) do
 		-- Check if this directory is excluded from being checked for mods (logs, saves, etc.)
 		if not self.Mods:IsExcludedDirectory(directory) then
 			local mod_path = mods_directory .. directory .. "/"
-
-			-- Attempt to read the mod defintion file
-			local file = io.open(mod_path .. "mod.txt")
-			if file then
-				-- Read the file contents
-				local file_contents = file:read("*all")
-				file:close()
-
-				-- Create a BLT mod from the loaded data
-				local mod_content = json.decode(file_contents)
-				if mod_content then
-					local new_mod, valid = BLTMod:new(directory, mod_content, mod_path)
-					if valid then
-						table.insert(mods_list, new_mod)
-					end
+			-- If either mod.txt or supermod.xml exists, attempt to load
+			if file.FileExists(mod_path .. "mod.txt") or file.FileExists(mod_path .. "supermod.xml") then
+				local new_mod, valid = BLTMod:new(directory, nil, mod_path)
+				if valid then
+					table.insert(mods_list, new_mod)
 				else
-					self:Log(LogLevel.ERROR, "[BLT] An error occured while loading mod.txt from: " .. tostring(mod_path))
+					self:Log(LogLevel.ERROR, "[BLT] Attempted to load mod.txt or supermod.xml, mod is invalid." .. tostring(mod_path))
 				end
-			else
-				self:Log(LogLevel.WARN, "[BLT] Could not read or find mod.txt in " .. tostring(mod_path))
 			end
 		end
 	end
@@ -242,6 +229,11 @@ function BLT:ProcessModsList(mods_list)
 	table.sort(mods_list, function(a, b)
 		return a:GetPriority() > b:GetPriority()
 	end)
+
+	-- After mods are sorted by priority, post Initialize them
+	for _, mod in pairs(mods_list) do
+		mod:PostInit()
+	end
 
 	return mods_list
 end

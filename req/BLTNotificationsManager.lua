@@ -1,7 +1,7 @@
 ---@class BLTNotificationsManager : BLTModule
 ---@field new fun(self):BLTNotificationsManager
 BLTNotificationsManager = BLTNotificationsManager or blt_class(BLTModule)
-BLTModule.__type = "BLTNotificationsManager"
+BLTNotificationsManager.__type = "BLTNotificationsManager"
 
 function BLTNotificationsManager:init()
 	BLTNotificationsManager.super.init(self)

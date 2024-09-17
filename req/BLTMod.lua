@@ -1,97 +1,275 @@
 ---@class BLTMod
----@field new fun(self, identifier: string, data: table, path: string):BLTMod, boolean
+---@field new fun(self, identifier: string, data?: table, path: string):BLTMod, boolean
 BLTMod = blt_class()
+
+BLT:Require("req/ModAssetLoader")
+
 BLTMod.enabled = true
 BLTMod._enabled = true
 BLTMod.safe_mode = true
+BLTMod._tags = {
+	updates = "init",
+	hooks = "setup",
+	assets = "setup",
+	persist_scripts = "setup",
+	keybinds = "setup",
+	scripts = "post_init",
+	native_module = "setup",
+	wren = '',
+	tweak = '',
+}
 
 function BLTMod:init(identifier, data, path)
-	if not identifier or not data or not path then
+	if not identifier or not path then
 		return false
 	end
 
 	self._errors = {}
 	self._legacy_updates = {}
+	self._setup_callbacks = {}
 
-	-- Mod information
+	-- Default values
 	self.id = identifier
-	self.json_data = data
+	self.name = "Unnamed BLT Mod"
+	self.desc = "No description"
+	self.version = "1.0"
+	self.blt_version = "1.0"
+	self.author = "Unknown"
+	self.contact = "N/A"
+	self.priority = 0
+	self.dependencies = {}
+	self.disable_safe_mode = false
+	self.undisablable = false
+	self.library = false
+	self.vr_disabled = false
+	self.desktop_disabled = false
+
 	self.path = path
+	self.data = data
+	self.json_data = data
 
-	self.name = data.name or "Unnamed BLT Mod"
-	self.desc = data.description or "No description"
-	self.version = data.version or "1.0"
-	self.blt_version = data.blt_version or "1.0"
-	self.author = data.author or "Unknown"
-	self.contact = data.contact or "N/A"
-	self.priority = tonumber(data.priority) or 0
-	self.dependencies = data.dependencies or {}
-	self.color = data.color or nil
-	self.image_path = data.image or nil
-	self.disable_safe_mode = data.disable_safe_mode or false
-	self.undisablable = data.undisablable or false
-	self.library = data.is_library or false
-	self.desktop_disabled = data.desktop_disabled or false
-
-	-- Updates data
 	self.updates = {}
-	if data.updates then
-		for i, update_data in ipairs(data.updates) do
-			if not update_data.host then
-				-- Old PaydayMods update, server is gone so don't update those
-				-- Do keep track of what we have installed though, for dependencies
-				if update_data.identifier then -- sanity check
-					self._legacy_updates[update_data.identifier] = true
+	self.hooks = {}
+
+	-- Attempt to load JSON or XML
+	self:LoadData()
+	self:LoadXML()
+
+	self._supermod = self
+
+	return self.data ~= nil or self._xml_data ~= nil
+end
+
+--- Let's you add your own custom tags (make sure to add them early on via scripts tag and high enough priority)
+--- If string is given, the tag will load on that event on the BLTMod class. Leave empty to only register the tag (Like wren tags)
+--- The current events: 
+--- init - When the XML is first loaded. You must handle enabled state! 
+--- post_init - After init, runs only if enabled.
+--- setup - When the mod gets setup. The mod is enabled by then.
+--- If you wish to run a callback function instead, define it as a table as shown on the prop doc
+--- callback - Runs on both table and XML data, data_callback - Runs on table only, xml_callback - Runs on XML only
+--- If not defined, it will try to look up on BLTMod class - LoadTagXML, LoadTagData, LoadTagShared
+--- @param options string|{ event: string, callback: function, data_callback: function, xml_callback: function }
+function BLTMod.AddTag(name, options)
+	table.insert(BLTMod._tags, options)
+end
+
+function BLTMod:LoadData()
+	if not self.data then -- If no data, try loading the json file
+		local mod_path = self:GetPath()
+		local json_file = io.open(mod_path .. "mod.txt")
+
+		if json_file then
+			local file_contents = json_file:read("*all")
+			json_file:close()
+			if file_contents then
+				local data = json.decode(file_contents)
+				if not data then
+					BLT:Log(LogLevel.ERROR, "[BLT] An error occured while loading mod.txt from: " .. tostring(mod_path))
+					return
 				end
-			else
-				local new_update, valid = BLTUpdate:new(self, update_data)
-				if valid and new_update:IsPresent() then
-					table.insert(self.updates, new_update)
-				end
+
+				--- Data doesn't have to be JSON so the name doesn't make sense
+				---@deprecated
+				self.json_data = data
+				self.data = data
 			end
 		end
 	end
 
-	-- Return wether the mod is valid
-	return not self.desktop_disabled
+	if not self.data then
+		return
+	end
+
+	self:SetParams(self.data)
+
+	for tag, v in pairs(self._tags) do
+		local tag_data = self.data[tag]
+		if tag_data then
+			local clbk = type(v) == "table" and v.callback or self["_load_"..tag.."_data"] or self["_load_"..tag]
+			if clbk and (v == "init" or (type(v) == "table" and v.event == "init")) then
+				clbk(self, tag_data)
+			end
+		end
+	end
 end
 
-function BLTMod:Setup()
-	BLT:Log(LogLevel.INFO, string.format("[BLT] Setting up mod '%s'", self:GetName()))
+function BLTMod:LoadXML()
+	local mod_path = self:GetPath()
+	local supermod_path = mod_path .. (self.data and self.data.supermod_definition or "supermod.xml")
+
+	-- Attempt to read the mod defintion file
+	local file = io.open(supermod_path)
+	if file then
+
+		-- Read the file contents
+		local file_contents = file:read("*all")
+		file:close()
+
+		-- Parse it
+		local xml = blt.parsexml(file_contents)
+		if not xml then
+			BLT:Log(LogLevel.ERROR, "[BLT] An error occured while loading supermod.xml from: " .. tostring(mod_path))
+			return
+		end
+
+		xml._doc = { filename = supermod_path }
+
+		if self:IsEnabled() then
+			self._assets = BLTMod.AssetLoader:new(self)
+		end
+
+		Utils.IO.ReplaceIncludesInXML(xml, self.path)
+
+		local load_tags = {}
+
+		for tag, v in pairs(self._tags) do
+			if v == "load" or (type(v) == "table" and v.event == "load") then
+				local clbk = type(v) == "table" and v.xml_callback or self["_load_"..tag.."_xml"] or self["_load_"..tag]
+				if clbk then
+					load_tags[tag] = function(scope, tag)
+						clbk(self, scope, tag)
+					end
+				end
+			end
+		end
+
+		Utils.IO.TraverseXML(xml, {}, load_tags, true)
+		self:SetParams(xml.params)
+
+		self._xml_data = xml
+	end
+end
+
+--- Called once the mod has been loaded with its data. Used to load tags with enabled check.
+function BLTMod:PostInit()
+	-- The mod isn't enabled for the current platform
+	local is_vr = BLT:IsVr()
+	if (is_vr and self.vr_disabled) or (not is_vr and self.desktop_disabled) then
+		self:SetEnabled(false, true)
+	end
 
 	-- Check dependencies are installed for this mod
 	if not self:AreDependenciesInstalled() then
 		table.insert(self._errors, "blt_mod_missing_dependencies")
 		self:RetrieveDependencies()
 		self:SetEnabled(false, true)
+	end
+
+	if not self:IsEnabled() then
 		return
 	end
 
-	-- Hooks data
-	self.hooks = {}
-	self:AddHooks("hooks", BLT.hook_tables.post, BLT.hook_tables.wildcards)
-	self:AddHooks("pre_hooks", BLT.hook_tables.pre, BLT.hook_tables.wildcards)
+	local xml = self._xml_data
+	local load_tags = {}
+	for tag, v in pairs(self._tags) do
+		local tag_data = self.data and self.data[tag]
 
-	-- Keybinds
-	if BLT.Keybinds then
-		for i, keybind_data in ipairs(self.json_data.keybinds or {}) do
-			BLT.Keybinds:register_keybind_json(self, keybind_data)
+		local xml_clbk = type(v) == "table" and v.xml_callback or self["_load_"..tag.."_xml"] or self["_load_"..tag]
+		local data_clbk = type(v) == "table" and v.data_callback or self["_load_"..tag.."_data"] or self["_load_"..tag]
+
+		local event = v or (type(v) == "table" and v.event) or nil
+
+		if event ~= "post_init" then
+			load_tags[tag] = function() end
+		end
+
+		if event == "post_init" then
+			if xml_clbk then
+				load_tags[tag] = function(scope, tag)
+					xml_clbk(self, scope, tag)
+				end
+			end
+			if data_clbk and tag_data then
+				data_clbk(self, tag_data)
+			end
+		elseif event == "setup" then  -- Load them later in :Setup
+			if xml_clbk then
+				load_tags[tag] = function(scope, tag)
+					table.insert(self._setup_callbacks, function()
+						xml_clbk(self, scope, tag)
+					end)
+				end
+			end
+			if data_clbk and tag_data then
+				table.insert(self._setup_callbacks, function()
+					data_clbk(self, tag_data)
+				end)
+			end
 		end
 	end
 
-	-- Persist Scripts
-	for i, persist_data in ipairs(self.json_data.persist_scripts or {}) do
-		if persist_data and persist_data.global and persist_data.script_path then
-			self:AddPersistScript(persist_data.global, persist_data.script_path)
+	if xml then
+		Utils.IO.TraverseXML(xml, {}, load_tags)
+	end
+end
+
+function BLTMod:SetParams(data)
+	local merge = {
+		name = data.name,
+		desc = data.description,
+		version = data.version,
+		blt_version = data.blt_version,
+		author = data.author,
+		contact = data.contact ,
+		priority = tonumber(data.priority),
+		dependencies = data.dependencies,
+		color = data.color,
+		image_path = data.image,
+		disable_safe_mode = data.disable_safe_mode,
+		undisablable = data.undisablable,
+		library = data.is_library ,
+		vr_disabled = data.vr_disabled,
+		desktop_disabled = data.desktop_disabled,
+	}
+
+	for k, v in pairs(merge) do
+		self[k] = Utils:FirstNonNil(v, merge[k])
+	end
+end
+
+function BLTMod:Setup()
+	if self:IsEnabled() then
+		BLT:Log(LogLevel.INFO, string.format("[BLT] Setting up mod '%s'", self:GetName()))
+		for _, clbk in pairs(self._setup_callbacks) do
+			clbk()
 		end
 	end
+end
 
-	-- Set up the supermod instance
-	self.supermod = BLTSuperMod.try_load(self, self.json_data.supermod_definition)
+function BLTMod:AddKeybind(data)
+	BLT.Keybinds:register_keybind_json(self, data)
+end
+
+function BLTMod:AddUpdate(data)
+	local new_update, valid = BLTUpdate:new(self, data)
+	if valid and new_update:IsPresent() then
+		table.insert(self.updates, new_update)
+	end
 end
 
 function BLTMod:AddHooks(data_key, destination, wildcards_destination)
-	for i, hook_data in ipairs(self.json_data[data_key] or {}) do
+	for _, hook_data in ipairs(self.data[data_key] or {}) do
 		local hook_id = hook_data.hook_id and hook_data.hook_id:lower()
 		local script = hook_data.script_path
 		local game = hook_data.game
@@ -198,6 +376,7 @@ function BLTMod:GetDir()
 	return dir
 end
 
+--- @deprecated
 function BLTMod:GetJsonData()
 	return self.json_data
 end
@@ -520,8 +699,9 @@ function BLTMod:GetDeveloperInfo()
 	return str
 end
 
+---@deprecated
 function BLTMod:GetSuperMod()
-	return self.supermod
+	return self
 end
 
 function BLTMod:IsLibrary()
@@ -530,4 +710,138 @@ end
 
 function BLTMod:__tostring()
 	return string.format("[BLTMod %s (%s)]", self:GetName(), self:GetId())
+end
+
+function BLTMod:_load_persist_scripts_data()
+	for _, persist_data in ipairs(self.data.persist_scripts or {}) do
+		if persist_data.global and persist_data.script_path then
+			self:AddPersistScript(persist_data.global, persist_data.script_path)
+		end
+	end
+end
+
+function BLTMod:_Load_persist_scripts_xml(scope, tag)
+	Utils.IO.TraverseXML(tag, scope, {
+		script = function(scope)
+			if scope.global and scope.script_path then
+				self:AddPersistScript(scope.global, scope.script_path)
+			end
+		end
+	})
+end
+
+function BLTMod:_load_keybinds_data(data)
+	for _, data in ipairs(data or {}) do
+		self:AddKeybind(data)
+	end
+end
+
+function BLTMod:_load_keybinds_xml(scope, tag)
+	Utils.IO.TraverseXML(tag, scope, {
+		keybind = function(scope)
+			scope.run_in_menu = Utils:ToBoolean(scope.run_in_menu)
+			scope.run_in_game = Utils:ToBoolean(scope.run_in_game)
+			scope.show_in_menu = Utils:ToBoolean(scope.show_in_menu)
+			scope.localized = Utils:ToBoolean(scope.localized)
+			self:AddKeybind(scope)
+		end
+	})
+end
+
+function BLTMod:_load_updates_data(data)
+	for _, update_data in ipairs(data) do
+		if not update_data.host then
+			-- Old PaydayMods update, server is gone so don't update those
+			-- Do keep track of what we have installed though, for dependencies
+			if update_data.identifier then -- sanity check
+				self._legacy_updates[update_data.identifier] = true
+			end
+		else
+			self:AddUpdate(update_data)
+		end
+	end
+end
+
+function BLTMod:_load_updates_xml(scope, tag)
+	Utils.IO.TraverseXML(tag, scope, {
+		update = function(scope)
+			scope.disallow_update = Utils:ToBoolean(scope.disallow_update)
+			scope.critical = Utils:ToBoolean(scope.critical)
+			self:AddUpdate(scope)
+		end
+	})
+end
+
+function BLTMod:_load_assets_data(data)
+	if self._assets then
+		self._assets:LoadAssets(data)
+	end
+end
+
+function BLTMod:_load_assets_xml(scope, tag)
+	if self._assets then
+		self._assets:FromXML(scope, tag)
+	end
+end
+
+function BLTMod:_load_hooks_data()
+	self:AddHooks("hooks", BLT.hook_tables.post, BLT.hook_tables.wildcards)
+	self:AddHooks("pre_hooks", BLT.hook_tables.pre, BLT.hook_tables.wildcards)
+end
+
+function BLTMod:_load_hooks_xml(scope, tag)
+	Utils.IO.TraverseXML(tag, scope, {
+		pre = function(scope)
+			self:AddHook("hooks", scope.hook_id, scope.script_path, BLT.hook_tables.pre)
+		end,
+		post = function(scope)
+			self:AddHook("hooks", scope.hook_id, scope.script_path, BLT.hook_tables.post)
+		end,
+		entry = function(scope)
+			BLT:RunHookFile(scope.script_path, {
+				mod = self,
+				script = scope.script_path
+			})
+		end,
+		wildcard = function()
+			BLT:Log(LogLevel.ERROR, "Wildcard hooks are not implemented yet!")
+		end
+	})
+end
+
+function BLTMod:_load_native_module(data)
+	if data.loading_vector == "preload" then
+		return -- Uses Wren
+	end
+
+	if not blt.load_native or not blt.blt_info then
+		BLT:Log(LogLevel.ERROR, string.format("[BLT] Cannot load native module for '%s' (functionality missing)", self:GetName()))
+		return
+	end
+
+	if blt.blt_info().platform ~= data.platform then
+		BLT:Log(LogLevel.ERROR, string.format("[BLT] Incorrect platform for native module for '%s'", self:GetName()))
+		return
+	end
+
+	BLT:Log(LogLevel.INFO, string.format("[BLT] Loading native module for '%s'", self:GetName()))
+	blt.load_native(self:GetPath() .. data.filename)
+end
+
+function BLTMod:_load_scripts_data(data)
+	for _, data in ipairs(data.scripts or {}) do
+		dofile(self:GetPath() .. data.script_path)
+	end
+end
+
+function BLTMod:_load_scripts_xml(scope, tag)
+	Utils.IO.TraverseXML(tag, scope, {
+		script = function(scope)
+			if scope.script_path then
+				dofile(self:GetPath() .. scope.script_path)
+			else
+				BLT:Log(LogLevel.ERROR, string.format("[BLT] No script path given for script in the mod '%s'", self:GetName()))
+			end
+		end
+	})
 end
