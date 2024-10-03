@@ -867,9 +867,5 @@ function MenuHelper:AddComponent(name, clss, args)
 end
 
 function MenuHelper:OpenMenu(name)
-	if BLT:GetGame() == "pd2" then
-		MenuHelper:OpenMenu(name)
-	else
-		managers.raid_menu:open_menu(name)
-	end
+	managers.raid_menu:open_menu(name)
 end

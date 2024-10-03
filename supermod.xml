@@ -29,7 +29,6 @@
             <group :script_path="ui/">
                 <post hook_id="lib/managers/menu/menucomponentmanager" :script_path="BLTCustomComponent.lua"/>
                 <post hook_id="lib/managers/menu/menucomponentmanager" :script_path="BLTModsGui.lua"/>
-                <post hook_id="lib/managers/menu/menucomponentmanager" :script_path="BLTMenuNodes.lua" game="pd2"/>
                 <post hook_id="lib/managers/menu/menucomponentmanager" :script_path="BLTDownloadManagerGui.lua"/>
                 <post hook_id="lib/managers/menu/menucomponentmanager" :script_path="BLTNotificationsGui.lua"/>
             </group>

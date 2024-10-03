@@ -14,9 +14,6 @@ local BAR_Y = 0
 local TIME_PER_PAGE = 6
 local CHANGE_TIME = 0.5
 
-local is_pd2 = BLT:GetGame() == "pd2"
-local shared_lines = is_pd2 and "guis/textures/pd2/shared_lines" or nil
-
 function BLTNotificationsGui:init(ws, fullscreen_ws, node)
 	self._ws = ws
 	self._fullscreen_ws = fullscreen_ws
@@ -76,7 +73,7 @@ function BLTNotificationsGui:_setup()
 	local bg_rect =self._content_panel:rect({
 		name = "background",
 		color = Color.black,
-		alpha = is_pd2 and 0.4 or 0,
+		alpha = 0,
 		layer = -1,
 		halign = "scale",
 		valign = "scale"
@@ -98,7 +95,6 @@ function BLTNotificationsGui:_setup()
 
 	-- Setup notification buttons
 	self._bar =self._buttons_panel:bitmap({
-		texture = shared_lines,
 		halign = "grow",
 		valign = "grow",
 		wrap_mode = "wrap",
@@ -304,10 +300,9 @@ function BLTNotificationsGui:_update_bars()
 	for i = 1, self._notifications_count do
 		local page_button = self._buttons_panel:bitmap({
 			name = tostring(i),
-			texture = is_pd2 and "guis/textures/pd2/ad_spot" or nil,
 			w = 32,
 			h = 8,
-			alpha = not is_pd2 and 0.25 or nil
+			alpha = 0.25
 		})
 		page_button:set_center_x(( i / (self._notifications_count + 1)) * self._buttons_panel:w() / 2 + self._buttons_panel:w() / 4)
 		page_button:set_center_y((self._buttons_panel:h() - page_button:h()) / 2)
@@ -316,7 +311,6 @@ function BLTNotificationsGui:_update_bars()
 
 	-- Add the time bar
 	self._bar = self._buttons_panel:bitmap({
-		texture = shared_lines,
 		halign = "grow",
 		valign = "grow",
 		wrap_mode = "wrap",
@@ -535,14 +529,6 @@ Hooks:Add("CoreMenuData.LoadDataMenu", "BLTNotificationsGui.CoreMenuData.LoadDat
 		if node.name == "main" then
 			if node.menu_components then
 				node.menu_components = node.menu_components .. " blt_notifications"
-			else
-				if BLT:GetGame() == "pd2" then
-					if _G.CommunityChallengesGui then
-						node.menu_components = "player_profile menuscene_info new_heists game_installing debug_quicklaunch community_challenges blt_notifications"
-					else
-						node.menu_components = "player_profile menuscene_info new_heists game_installing debug_quicklaunch blt_notifications"
-					end
-				end
 			end
 		end
 	end
