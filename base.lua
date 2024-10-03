@@ -227,8 +227,6 @@ function BLT:FindMods()
 				else
 					self:Log(LogLevel.ERROR, "[BLT] An error occured while loading mod.txt from: " .. tostring(mod_path))
 				end
-			else
-				self:Log(LogLevel.WARN, "[BLT] Could not read or find mod.txt in " .. tostring(mod_path))
 			end
 		end
 	end
