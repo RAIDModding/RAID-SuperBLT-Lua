@@ -118,11 +118,6 @@
 		{
 			"hook_id" : "lib/managers/dynamicresourcemanager",
 			"script_path" : "lua/DynamicResourceManager.lua"
-		},
-
-		{
-			"hook_id" : "lib/units/beings/player/playermovement",
-			"script_path" : "req/xaudio/XAudioMovement.lua"
 		}
 	]
 }
