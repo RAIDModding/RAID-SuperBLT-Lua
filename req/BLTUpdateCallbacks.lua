@@ -5,5 +5,9 @@
 BLTUpdateCallbacks = {}
 
 function BLTUpdateCallbacks.blt_can_update_dll(update)
-	return io.file_is_readable(update.hash_file)
+	return io.file_is_readable(update.present_file)
+end
+
+function BLTUpdateCallbacks.blt_get_dll_version()
+	return (blt and blt.blt_version and blt.blt_version()) or "0.0.0.0"
 end

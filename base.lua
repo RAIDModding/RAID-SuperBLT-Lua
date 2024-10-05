@@ -251,5 +251,29 @@ function BLT:CheckDirectory(path)
 	end
 end
 
+function BLT:ToVersionTable(version)
+    local vt = {}
+    for num in version:gmatch("%d+") do
+        table.insert(vt, tonumber(num))
+    end
+    return vt
+end
+
+-- returns 1 if version 1 is newer, 2 if version 2 is newer, or 0 if versions are equal.
+function BLT:CompareVersions(version1, version2)
+    local v1 = self:ToVersionTable(tostring(version1))
+    local v2 = self:ToVersionTable(tostring(version2))
+    for i = 1, math.max(#v1, #v2) do
+        local num1 = v1[i] or 0
+        local num2 = v2[i] or 0
+        if num1 > num2 then
+            return 1
+        elseif num1 < num2 then
+            return 2
+        end
+    end
+    return 0
+end
+
 -- Perform startup
 BLT:Initialize()

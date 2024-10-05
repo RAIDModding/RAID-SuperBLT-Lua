@@ -37,7 +37,7 @@ function BLTMod:init(identifier, data, path)
 	self.updates = {}
 	if data.updates then
 		for i, update_data in ipairs(data.updates) do
-			if not update_data.host then
+			if not (update_data.host or update_data.provider) then
 				-- Old PaydayMods update, server is gone so don't update those
 				-- Do keep track of what we have installed though, for dependencies
 				if update_data.identifier then -- sanity check

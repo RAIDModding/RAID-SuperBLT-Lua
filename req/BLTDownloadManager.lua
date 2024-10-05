@@ -222,7 +222,7 @@ function BLTDownloadManager:clbk_download_finished(data, http_id, request_info)
 					local version = mod_data.version
 					local server_version = download.update:GetServerVersion()
 					-- Server version may be nil for simple URL based dependencies
-					if server_version == nil or server_version == version then
+					if server_version == nil or BLT:CompareVersions(version, server_version) ~= 2 then
 						passed_check = true
 					else -- Versions don't match
 						BLT:Log(LogLevel.ERROR, string.format("[Downloads] Failed to verify versions of '%s'", download_name))

@@ -12,31 +12,35 @@
 	"disable_safe_mode" : true,
 	"updates" : [
 		{
-			"identifier" : "payday2blt",
-			"host": {
-				"meta": "https://sblt-update.znix.xyz/pd2update/updates/meta.php?id=payday2blt"
+			"provider" : "modworkshop",
+			"identifier" : "49744"
+		},
+		{
+			"provider" : "modworkshop",
+			"identifier" : "49745",
+			"display_name" : "IPHLPAPI Hook DLL",
+			"disallow_update" : "blt_update_dll_dialog",
+			"present_file" : "./IPHLPAPI.dll",
+			"present_func" : "blt_can_update_dll",
+			"version_func" : "blt_get_dll_version",
+			"critical" : true,
+			"misc_data" : {
+				"patchnotes_url" : "https://modworkshop.net/mod/49744?tab=changelog",
+				"update_url" : "https://modworkshop.net/mod/49744"
 			}
 		},
 		{
-			"identifier" : "payday2bltdll",
-			"hash_file" : "./IPHLPAPI.dll",
-			"display_name" : "Payday 2 BLT IPHLPAPI Hook DLL",
+			"provider" : "modworkshop",
+			"identifier" : "49746",
+			"display_name" : "WSock Hook DLL",
 			"disallow_update" : "blt_update_dll_dialog",
+			"present_file" : "./WSOCK32.dll",
 			"present_func" : "blt_can_update_dll",
+			"version_func" : "blt_get_dll_version",
 			"critical" : true,
-			"host": {
-				"meta": "https://sblt-update.znix.xyz/pd2update/updates/meta.php?id=payday2bltdll"
-			}
-		},
-		{
-			"identifier" : "payday2bltwsockdll",
-			"hash_file" : "./WSOCK32.dll",
-			"display_name" : "Payday 2 BLT WSock Hook DLL",
-			"disallow_update" : "blt_update_dll_dialog",
-			"present_func" : "blt_can_update_dll",
-			"critical" : true,
-			"host": {
-				"meta": "https://sblt-update.znix.xyz/pd2update/updates/meta.php?id=payday2bltwsockdll"
+			"misc_data" : {
+				"patchnotes_url" : "https://modworkshop.net/mod/49744?tab=changelog",
+				"update_url" : "https://modworkshop.net/mod/49744"
 			}
 		}
 	],
