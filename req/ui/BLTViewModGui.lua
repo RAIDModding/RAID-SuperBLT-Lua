@@ -467,42 +467,45 @@ function BLTViewModGui:clbk_check_for_updates_finished(cache)
 
 	-- Show updates dialog
 	if error_reason then
-		local dialog_data = {}
-		dialog_data.title = managers.localization:text("blt_update_mod_title", {name = self._mod:GetName()})
-		dialog_data.text = managers.localization:text("blt_update_mod_error", {reason = error_reason})
-
-		local ok_button = {}
-		ok_button.text = managers.localization:text("dialog_ok")
-		ok_button.cancel_button = true
-
-		dialog_data.button_list = {ok_button}
-		managers.system_menu:show(dialog_data)
+		QuickMenu:new(
+			managers.localization:text("blt_update_mod_title", {name = self._mod:GetName()}),
+			managers.localization:text("blt_update_mod_error", {reason = error_reason}),
+			{
+				{
+					text = managers.localization:text("dialog_ok"),
+					is_cancel_button = true
+				}
+			},
+			true
+		)
 	elseif not requires_update then
-		local dialog_data = {}
-		dialog_data.title = managers.localization:text("blt_update_mod_title", {name = self._mod:GetName()})
-		dialog_data.text = managers.localization:text("blt_update_mod_up_to_date", {name = self._mod:GetName()})
-
-		local ok_button = {}
-		ok_button.text = managers.localization:text("dialog_ok")
-		ok_button.cancel_button = true
-
-		dialog_data.button_list = {ok_button}
-		managers.system_menu:show(dialog_data)
+		QuickMenu:new(
+			managers.localization:text("blt_update_mod_title", {name = self._mod:GetName()}),
+			managers.localization:text("blt_update_mod_up_to_date", {name = self._mod:GetName()}),
+			{
+				{
+					text = managers.localization:text("dialog_ok"),
+					is_cancel_button = true
+				}
+			},
+			true
+		)
 	else
-		local dialog_data = {}
-		dialog_data.title = managers.localization:text("blt_update_mod_title", {name = self._mod:GetName()})
-		dialog_data.text = managers.localization:text("blt_update_mod_available", {name = self._mod:GetName()})
-
-		local download_button = {}
-		download_button.text = managers.localization:text("blt_update_mod_goto_manager")
-		download_button.callback_func = callback(self, self, "clbk_goto_download_manager")
-
-		local ok_button = {}
-		ok_button.text = managers.localization:text("dialog_ok")
-		ok_button.cancel_button = true
-
-		dialog_data.button_list = {download_button, ok_button}
-		managers.system_menu:show(dialog_data)
+		QuickMenu:new(
+			managers.localization:text("blt_update_mod_title", {name = self._mod:GetName()}),
+			managers.localization:text("blt_update_mod_available", {name = self._mod:GetName()}),
+			{
+				{
+					text = managers.localization:text("blt_update_mod_goto_manager"),
+					callback = callback(self, self, "clbk_goto_download_manager")
+				},
+				{
+					text = managers.localization:text("dialog_ok"),
+					is_cancel_button = true
+				}
+			},
+			true
+		)
 	end
 end
 

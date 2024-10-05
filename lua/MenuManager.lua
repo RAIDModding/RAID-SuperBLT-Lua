@@ -103,22 +103,22 @@ end
 -- Add BLT dll update notification
 
 function MenuCallbackHandler:blt_update_dll_dialog(update)
-	local update_url = update:GetUpdateMiscData().update_url
-
-	local dialog_data = {}
-	dialog_data.title = managers.localization:text("blt_update_dll_title")
-	dialog_data.text = managers.localization:text("blt_update_dll_text")
-
-	local download_button = {}
-	download_button.text = managers.localization:text("blt_update_dll_goto_website")
-	download_button.callback_func = callback(self, self, "clbk_goto_paydaymods_download", update_url)
-
-	local ok_button = {}
-	ok_button.text = managers.localization:text("blt_update_later")
-	ok_button.cancel_button = true
-
-	dialog_data.button_list = { download_button, ok_button }
-	managers.system_menu:show(dialog_data)
+	QuickMenu:new(
+		managers.localization:text("blt_update_dll_title"),
+		managers.localization:text("blt_update_dll_text"),
+		{
+			{
+				text = managers.localization:text("blt_update_dll_goto_website"),
+				callback = callback(self, self, "clbk_goto_paydaymods_download", update:GetUpdateMiscData().update_url)
+			},
+			{
+				text = managers.localization:text("blt_update_later"),
+				is_cancel_button = true
+			}
+		}
+		,
+		true
+	)
 end
 
 function MenuCallbackHandler:clbk_goto_paydaymods_download(update_url)
