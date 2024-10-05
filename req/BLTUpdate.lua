@@ -194,8 +194,8 @@ function BLTUpdate:ViewPatchNotes()
 	-- this allows for easier migration of URLs
 	local url = self:GetPatchNotes()
 
-	if managers.network and managers.network.account and managers.network.account:is_overlay_enabled() then
-		managers.network.account:overlay_activate("url", url)
+	if Steam and Steam:overlay_enabled() then
+		Steam:overlay_activate("url", url)
 	else
 		os.execute("cmd /c start " .. url)
 	end
