@@ -1,9 +1,9 @@
 {
 	"name" : "RAID-SuperBLT",
 	"description" : "The collection of Lua files that allow the BLT hook to function.",
-	"author" : "ZNix, James Wilkinson",
+	"author" : "ZNix, James Wilkinson, RAIDModding",
 	"contact" : "znix@znix.xyz",
-	"version" : "1.4.0",
+	"version" : "1.0.0",
 	"blt_version" : 2,
 	"priority" : 1001,
 	"image" : "assets/guis/blt/icon.png",
