@@ -126,7 +126,7 @@ end
 ---Returns the version of BLT
 ---@return string @The version of BLT
 function BLT:GetVersion()
-	return self.version
+	return tostring(self.version)
 end
 
 ---Returns the operating system that the game is running on

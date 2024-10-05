@@ -75,7 +75,7 @@ function BLTModDependency:clbk_got_data(clbk, json_data, http_id, request_info)
 
 	if not request_info.querySucceeded or string.is_nil_or_empty(json_data) then
 		BLT:Log(LogLevel.ERROR, string.format("[Dependencies] Could not retrieve update data for '%s'", self:GetId()))
-		return self:_run_update_callback(clbk, false, "Could not retrieve update data.")
+		return clbk(clbk, false, "Could not retrieve update data.")
 	end
 
 	local server_data = json.decode(json_data)
@@ -91,7 +91,7 @@ function BLTModDependency:clbk_got_data(clbk, json_data, http_id, request_info)
 
 	if not self._server_data then
 		BLT:Log(LogLevel.ERROR, string.format("[Dependencies] No matching update data found for '%s'", self:GetId()))
-		return self:_run_update_callback(clbk, false, "Could not find dependency data.")
+		return clbk(clbk, false, "Could not find dependency data.")
 	end
 
 	clbk(self, self._server_data and self._server_data.download_url)
@@ -102,7 +102,7 @@ function BLTModDependency:GetPatchNotes()
 end
 
 function BLTModDependency:ViewPatchNotes()
-	BLTUpdate.ViewPatchNotes(self)
+	BLTUpdate.ViewPatchNotes(self) -- FIXME! this cant work properly, there wont be no self._update_data in GetPatchNotes
 end
 
 function BLTModDependency:IsCritical()
