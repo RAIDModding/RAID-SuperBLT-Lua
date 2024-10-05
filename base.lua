@@ -9,7 +9,7 @@ local io = io
 local file = file
 
 -- Log levels
-_G.LogLevel = {
+LogLevel = {
 	NONE = 0,
 	ERROR = 1,
 	WARN = 2,
@@ -17,18 +17,18 @@ _G.LogLevel = {
 	ALL = 4
 }
 
-_G.LogLevelPrefix = {
+LogLevelPrefix = {
 	[LogLevel.ERROR] = "[ERROR]",
 	[LogLevel.WARN] = "[WARN]",
 	[LogLevel.INFO] = "[INFO]"
 }
 
 -- BLT Global table
-_G.BLT = { version = 2.0 }
-_G.BLT.Base = {}
+BLT = { version = 2.0 }
+BLT.Base = {}
 
 -- Load modules
-_G.BLT._PATH = "mods/base/"
+BLT._PATH = "mods/base/"
 function BLT:Require(path)
 	dofile(string.format("%s%s", BLT._PATH, path .. ".lua"))
 end
@@ -116,9 +116,9 @@ function BLT:Setup()
 
 	-- Some backwards compatibility for v1 mods
 	local C = self.Mods.Constants
-	_G.LuaModManager = {}
-	_G.LuaModManager.Constants = C
-	_G.LuaModManager.Mods = {} -- No mods are available via old api
+	LuaModManager = {}
+	LuaModManager.Constants = C
+	LuaModManager.Mods = {} -- No mods are available via old api
 	rawset(_G, C.logs_path_global, C.mods_directory .. C.logs_directory)
 	rawset(_G, C.save_path_global, C.mods_directory .. C.saves_directory)
 end
