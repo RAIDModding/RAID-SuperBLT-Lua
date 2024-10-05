@@ -67,13 +67,13 @@ Hooks:Add("MenuComponentManagerInitialize", "BLT.MenuComponentManagerInitialize"
         inject_after = "network"
     })
 
-    -- RaidMenuHelper:CreateMenu({
-    --     name = "blt_download_manager",
-    --     name_id = "blt_download_manager",
-    --     inject_list = "raid_menu_left_options",
-    --     class = BLTDownloadManagerGui,
-    --     inject_after = "network"
-    -- })
+    RaidMenuHelper:CreateMenu({
+        name = "blt_download_manager",
+        name_id = "blt_download_manager",
+        --inject_list = "raid_menu_left_options",
+        class = BLTDownloadManagerGui,
+        --inject_after = "network"
+    })
 
     RaidMenuHelper:CreateMenu({
         name = "view_blt_mod",
