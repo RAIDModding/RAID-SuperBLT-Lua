@@ -54,7 +54,6 @@ BLT:Require("req/BLTNotificationsManager")
 BLT:Require("req/BLTPersistScripts")
 BLT:Require("req/BLTKeybindsManager")
 BLT:Require("req/BLTAssetManager")
-BLT:Require("req/xaudio/XAudio")
 
 ---Writes a message to the log file
 ---Multiple arguments can be passed to the function and will be concatenated
@@ -141,7 +140,7 @@ function BLT:GetOS()
 end
 
 ---Returns the current running game
----@return '"raid"'|'"pd2"' @The game
+---@return '"raid"' @The game
 function BLT:GetGame()
 	return blt.blt_info().game
 end

@@ -1,5 +1,5 @@
 {
-	"name" : "SuperBLT",
+	"name" : "RAID-SuperBLT",
 	"description" : "The collection of Lua files that allow the BLT hook to function.",
 	"author" : "ZNix, James Wilkinson",
 	"contact" : "znix@znix.xyz",
@@ -103,11 +103,6 @@
 		{
 			"hook_id" : "lib/managers/dynamicresourcemanager",
 			"script_path" : "lua/DynamicResourceManager.lua"
-		},
-
-		{
-			"hook_id" : "lib/units/beings/player/playermovement",
-			"script_path" : "req/xaudio/XAudioMovement.lua"
 		}
 	]
 }

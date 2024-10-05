@@ -361,14 +361,12 @@ function Utils:IsInstanceOf(object, c)
 end
 
 -- Missing in raid
-if blt.blt_info().game == "raid" then
-	function _G.table.list_to_set(list)
-		local rtn = {}
-		for _, v in pairs(list) do
-			rtn[v] = true
-		end
-		return rtn
+function _G.table.list_to_set(list)
+	local rtn = {}
+	for _, v in pairs(list) do
+		rtn[v] = true
 	end
+	return rtn
 end
 
 -- DEPRECATED FUNCTIONALITY --

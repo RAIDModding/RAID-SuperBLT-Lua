@@ -11,18 +11,16 @@
     </assets>
 
     <hooks>
-        <group game="raid">
-            <group script_path="lua/raid/">
-                <post hook_id="lib/managers/menu/raid_menu/controls/raidguicontrolkeybind" :script_path="RaidGUIControlKeyBind.lua"/>
-                <post hook_id="lib/setups/setup" :script_path="AddCallOnNextUpdate.lua"/>
-            </group>
-            <group script_path="req/raid/">
-                <post hook_id="lib/managers/menu/menucomponentmanager" :script_path="PD2Insert.lua"/>
-                <pre hook_id="lib/managers/menu/menucomponentmanager" :script_path="MenuGuiComponentGeneric.lua"/>
-                <post hook_id="lib/managers/menu/menucomponentmanager" :script_path="BLTMenu.lua"/>
-                <post hook_id="lib/managers/menu/menucomponentmanager" :script_path="BLTRaidMenus.lua"/>
-                <post hook_id="lib/entry" :script_path="RaidMenuHelper.lua"/>
-            </group>
+        <group script_path="lua/raid/">
+            <post hook_id="lib/managers/menu/raid_menu/controls/raidguicontrolkeybind" :script_path="RaidGUIControlKeyBind.lua"/>
+            <post hook_id="lib/setups/setup" :script_path="AddCallOnNextUpdate.lua"/>
+        </group>
+        <group script_path="req/raid/">
+            <post hook_id="lib/managers/menu/menucomponentmanager" :script_path="PD2Insert.lua"/>
+            <pre hook_id="lib/managers/menu/menucomponentmanager" :script_path="MenuGuiComponentGeneric.lua"/>
+            <post hook_id="lib/managers/menu/menucomponentmanager" :script_path="BLTMenu.lua"/>
+            <post hook_id="lib/managers/menu/menucomponentmanager" :script_path="BLTRaidMenus.lua"/>
+            <post hook_id="lib/entry" :script_path="RaidMenuHelper.lua"/>
         </group>
 
         <group script_path="req/">

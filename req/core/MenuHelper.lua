@@ -846,14 +846,12 @@ function MenuHelper:AddComponent(name, clss, args)
 			close = callback(component, component, close)
 		}
 
-		if BLT:GetGame() == "raid" then
-			if clss.update then
-				Hooks:Add("MenuComponentManagerUpdate", name..".MenuComponentManagerUpdate", function(self, t, dt)
-					if component[name] then
-						component[name]:update(t, dt)
-					end
-				end)
-			end
+		if clss.update then
+			Hooks:Add("MenuComponentManagerUpdate", name..".MenuComponentManagerUpdate", function(self, t, dt)
+				if component[name] then
+					component[name]:update(t, dt)
+				end
+			end)
 		end
 	end
 
