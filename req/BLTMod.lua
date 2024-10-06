@@ -33,7 +33,6 @@ function BLTMod:init(identifier, data, path)
 	self.name = "Unnamed BLT Mod"
 	self.desc = "No description"
 	self.version = "1.0"
-	self.blt_version = "1.0"
 	self.author = "Unknown"
 	self.contact = "N/A"
 	self.priority = 0
@@ -224,7 +223,6 @@ function BLTMod:SetParams(data)
 		name = data.name,
 		desc = data.description,
 		version = data.version,
-		blt_version = data.blt_version,
 		author = data.author,
 		contact = data.contact ,
 		priority = tonumber(data.priority),
@@ -390,10 +388,6 @@ end
 
 function BLTMod:GetVersion()
 	return self.version
-end
-
-function BLTMod:GetBLTVersion()
-	return self.blt_version
 end
 
 function BLTMod:GetAuthor()
@@ -660,7 +654,6 @@ function BLTMod:GetDeveloperInfo()
 	append("Path:", self:GetPath())
 	append("Load Priority:", self:GetPriority())
 	append("Version:", self:GetVersion())
-	append("BLT-Version:", self:GetBLTVersion())
 	append("Disablable:", not self:IsUndisablable())
 	append("Allow Safe Mode:", not self:DisableSafeMode())
 
