@@ -33,7 +33,7 @@
                 update_url="https://modworkshop.net/mod/49744"/>
         </update>
         <update 
-            dentifier="49746"
+            identifier="49746"
             provider="modworkshop"
             display_name="WSock Hook DLL"
             disallow_update="blt_update_dll_dialog"

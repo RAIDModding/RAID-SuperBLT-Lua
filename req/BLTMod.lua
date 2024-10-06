@@ -144,7 +144,7 @@ function BLTMod:LoadXML()
 		local load_tags = {}
 
 		for tag, v in pairs(self._tags) do
-			if v == "load" or (type(v) == "table" and v.event == "load") then
+			if v == "init" or (type(v) == "table" and v.event == "init") then
 				local clbk = type(v) == "table" and v.xml_callback or self["_load_"..tag.."_xml"] or self["_load_"..tag]
 				if clbk then
 					load_tags[tag] = function(scope, tag)
@@ -759,10 +759,20 @@ end
 
 function BLTMod:_load_updates_xml(scope, tag)
 	Utils.IO.TraverseXML(tag, scope, {
-		update = function(scope)
-			scope.disallow_update = Utils:ToBoolean(scope.disallow_update)
-			scope.critical = Utils:ToBoolean(scope.critical)
-			self:AddUpdate(scope)
+		update = function(update, sub)
+			Utils.IO.TraverseXML(sub, update, {
+				misc_data = function (misc_data)
+					update.misc_data = misc_data
+				end,
+				host = function (host)
+					update.host = host
+				end
+			})
+			if update.host or update.provider then
+				update.disallow_update = Utils:ToBoolean(update.disallow_update)
+				update.critical = Utils:ToBoolean(update.critical)
+				self:AddUpdate(update)
+			end
 		end
 	})
 end
