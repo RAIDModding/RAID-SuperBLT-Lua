@@ -57,7 +57,7 @@ function BLTUpdate:CheckForUpdates(clbk)
 						self:clbk_got_update_data(clbk, {
 							ident = self:GetId(),
 							version = version,
-							download_url = "https://api.modworkshop.net/mod/" .. self:GetId() .. "/download",
+							download_url = "https://api.modworkshop.net/mods/" .. self:GetId() .. "/download",
 							patchnotes_url = self.misc_data and self.misc_data.patchnotes_url or ("https://modworkshop.net/mod/" .. self:GetId() .. "?tab=changelog")
 						}, http_id, request_info)
 					end

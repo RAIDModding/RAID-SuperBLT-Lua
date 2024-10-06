@@ -13,7 +13,10 @@
 	"updates" : [
 		{
 			"provider" : "modworkshop",
-			"identifier" : "49758"
+			"identifier" : "49758",
+			"misc_data" : {
+				"patchnotes_url" : "https://modworkshop.net/mod/49744?tab=changelog"
+			}
 		},
 		{
 			"provider" : "modworkshop",
