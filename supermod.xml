@@ -1,5 +1,52 @@
 <?xml version="1.0"?>
-<mod>
+<mod 
+    name="RAID-SuperBLT"
+    description="The collection of Lua files that allow the BLT hook to function."
+    author="ZNix, James Wilkinson, RAIDModding"
+    contact="https://discord.gg/9tAtgtGpx9"
+    version="1.0.0"
+    blt_version="2"
+    priority="1001"
+    image="assets/guis/blt/icon.png"
+    color="255 0 255"
+    undisablable="true"
+    disable_safe_mode="true">
+
+    <updates>
+        <update
+            identifier="49758"
+            provider="modworkshop">
+            <misc_data
+                patchnotes_url="https://modworkshop.net/mod/49744?tab=changelog"/>
+        </update>
+        <update
+            identifier="49745"
+            provider="modworkshop"
+            display_name="IPHLPAPI Hook DLL"
+            disallow_update="blt_update_dll_dialog"
+            present_file="./IPHLPAPI.dll"
+            present_func="blt_can_update_dll"
+            version_func="blt_get_dll_version"
+            critical="true">
+            <misc_data
+                patchnotes_url="https://modworkshop.net/mod/49744?tab=changelog"
+                update_url="https://modworkshop.net/mod/49744"/>
+        </update>
+        <update 
+            dentifier="49746"
+            provider="modworkshop"
+            display_name="WSock Hook DLL"
+            disallow_update="blt_update_dll_dialog"
+            present_file="./WSOCK32.dll"
+            present_func="blt_can_update_dll"
+            version_func="blt_get_dll_version"
+            critical="true">
+            <misc_data
+                patchnotes_url="https://modworkshop.net/mod/49744?tab=changelog"
+                update_url="https://modworkshop.net/mod/49744"/>
+        </update>
+    </updates>
+
     <assets base_path="assets/">
         <group name="guis/blt/">
             <file :name="check_updates.png"/>
@@ -30,6 +77,31 @@
                 <post hook_id="lib/managers/menu/menucomponentmanager" :script_path="BLTDownloadManagerGui.lua"/>
                 <post hook_id="lib/managers/menu/menucomponentmanager" :script_path="BLTNotificationsGui.lua"/>
             </group>
+            <group :script_path="utils/">
+                <pre hook_id="lib/entry" :script_path="UtilsCore.lua"/>
+                <pre hook_id="lib/entry" :script_path="QuickMenu.lua"/>
+                <post hook_id="core/lib/utils/coreclass" :script_path="UtilsClass.lua"/>
+            </group>
+            <group :script_path="core/">
+                <pre hook_id="lib/entry" :script_path="MenuHelper.lua"/>
+                <pre hook_id="lib/entry" :script_path="Networking.lua"/>
+                <post hook_id="core/lib/utils/coreclass" :script_path="DelayedCalls.lua"/>
+            </group>
+        </group>
+
+        <group script_path="lua/"> 
+            <post hook_id="core/lib/managers/menu/coremenudata" :script_path="CoreMenuData.lua"/>
+            <post hook_id="lib/setups/gamesetup" :script_path="GameSetup.lua"/>
+            <post hook_id="lib/setups/menusetup" :script_path="MenuSetup.lua"/>
+            <post hook_id="core/lib/system/corepatchlua" :script_path="CorePatchLua.lua"/>
+            <post hook_id="lib/managers/localizationmanager" :script_path="LocalizationManager.lua"/>
+            <post hook_id="lib/managers/menumanager" :script_path="MenuManager.lua"/>
+            <post hook_id="core/lib/managers/menu/coremenulogic" :script_path="CoreMenuLogic.lua"/>
+            <post hook_id="lib/managers/chatmanager" :script_path="ChatManager.lua"/>
+            <post hook_id="lib/managers/menu/menucomponentmanager" :script_path="MenuComponentManager.lua"/>
+            <post hook_id="lib/network/base/basenetworksession" :script_path="BaseNetworkSession.lua"/>
+            <post hook_id="lib/network/base/networkmanager" :script_path="NetworkManager.lua"/>
+            <post hook_id="lib/managers/dynamicresourcemanager" :script_path="DynamicResourceManager.lua"/>
         </group>
     </hooks>
 </mod>
