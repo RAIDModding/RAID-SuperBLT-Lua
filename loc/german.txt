@@ -52,11 +52,11 @@
 	"blt_update_mod_up_to_date" : "$name ist bereits auf dem neuesten Stand.",
 	"blt_update_mod_error" : "Konnte nicht überprüfen, ob der Mod bereits auf dem neuesten Stand ist.\n$reason",
 	"blt_update_mod_available" : "Ein Update für $name ist verfügbar! Es wurde dem Download Manager hinzugefügt!",
-	"blt_update_mod_goto_manager" : "Gehe zum Download Manager",
+	"blt_update_mod_goto_manager" : "Zu Downloads",
 
 	"blt_update_dll_title" : "Kritisches Update",
 	"blt_update_dll_text" : "Es ist ein Update für die BLT DLL verfügbar, das du selbst anwenden musst, indem du es erneut von der Website herunterlädst und installierst.\n\nBitte aktualisiere so bald wie möglich, da es sich um ein kritisches Update handelt, das Abstürze im Spiel beheben kann.",
-	"blt_update_dll_goto_website" : "Gehe zur Download-Website",
+	"blt_update_dll_goto_website" : "Zur Website",
 	"blt_update_later" : "Später aktualisieren",
 	
 	"blt_download_manager" : "Download Manager",

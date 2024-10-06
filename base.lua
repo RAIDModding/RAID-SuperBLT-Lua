@@ -9,7 +9,7 @@ local io = io
 local file = file
 
 -- Log levels
-_G.LogLevel = {
+LogLevel = {
 	NONE = 0,
 	ERROR = 1,
 	WARN = 2,
@@ -17,18 +17,18 @@ _G.LogLevel = {
 	ALL = 4
 }
 
-_G.LogLevelPrefix = {
+LogLevelPrefix = {
 	[LogLevel.ERROR] = "[ERROR]",
 	[LogLevel.WARN] = "[WARN]",
 	[LogLevel.INFO] = "[INFO]"
 }
 
 -- BLT Global table
-_G.BLT = { version = 2.0 }
-_G.BLT.Base = {}
+BLT = { version = 2.0 }
+BLT.Base = {}
 
 -- Load modules
-_G.BLT._PATH = "mods/base/"
+BLT._PATH = "mods/base/"
 function BLT:Require(path)
 	dofile(string.format("%s%s", BLT._PATH, path .. ".lua"))
 end
@@ -40,7 +40,6 @@ BLT:Require("req/utils/json-1.0")
 BLT:Require("req/utils/json-0.9")
 BLT:Require("req/utils/json")
 BLT:Require("req/core/Hooks")
-BLT:Require("req/supermod/BLTSuperMod")
 BLT:Require("req/BLTMod")
 BLT:Require("req/BLTUpdate")
 BLT:Require("req/BLTUpdateCallbacks")
@@ -54,7 +53,6 @@ BLT:Require("req/BLTNotificationsManager")
 BLT:Require("req/BLTPersistScripts")
 BLT:Require("req/BLTKeybindsManager")
 BLT:Require("req/BLTAssetManager")
-BLT:Require("req/xaudio/XAudio")
 
 ---Writes a message to the log file
 ---Multiple arguments can be passed to the function and will be concatenated
@@ -117,9 +115,9 @@ function BLT:Setup()
 
 	-- Some backwards compatibility for v1 mods
 	local C = self.Mods.Constants
-	_G.LuaModManager = {}
-	_G.LuaModManager.Constants = C
-	_G.LuaModManager.Mods = {} -- No mods are available via old api
+	LuaModManager = {}
+	LuaModManager.Constants = C
+	LuaModManager.Mods = {} -- No mods are available via old api
 	rawset(_G, C.logs_path_global, C.mods_directory .. C.logs_directory)
 	rawset(_G, C.save_path_global, C.mods_directory .. C.saves_directory)
 end
@@ -127,7 +125,7 @@ end
 ---Returns the version of BLT
 ---@return string @The version of BLT
 function BLT:GetVersion()
-	return self.version
+	return tostring(self.version)
 end
 
 ---Returns the operating system that the game is running on
@@ -141,7 +139,7 @@ function BLT:GetOS()
 end
 
 ---Returns the current running game
----@return '"raid"'|'"pd2"' @The game
+---@return '"raid"' @The game
 function BLT:GetGame()
 	return blt.blt_info().game
 end
@@ -206,30 +204,18 @@ function BLT:FindMods()
 		return {}
 	end
 
-	for index, directory in pairs(folders) do
+	for _, directory in pairs(folders) do
 		-- Check if this directory is excluded from being checked for mods (logs, saves, etc.)
 		if not self.Mods:IsExcludedDirectory(directory) then
 			local mod_path = mods_directory .. directory .. "/"
-
-			-- Attempt to read the mod defintion file
-			local file = io.open(mod_path .. "mod.txt")
-			if file then
-				-- Read the file contents
-				local file_contents = file:read("*all")
-				file:close()
-
-				-- Create a BLT mod from the loaded data
-				local mod_content = json.decode(file_contents)
-				if mod_content then
-					local new_mod, valid = BLTMod:new(directory, mod_content, mod_path)
-					if valid then
-						table.insert(mods_list, new_mod)
-					end
+			-- If either mod.txt or supermod.xml exists, attempt to load
+			if file.FileExists(mod_path .. "mod.txt") or file.FileExists(mod_path .. "supermod.xml") then
+				local new_mod, valid = BLTMod:new(directory, nil, mod_path)
+				if valid then
+					table.insert(mods_list, new_mod)
 				else
-					self:Log(LogLevel.ERROR, "[BLT] An error occured while loading mod.txt from: " .. tostring(mod_path))
+					self:Log(LogLevel.ERROR, "[BLT] Attempted to load mod.txt or supermod.xml, mod is invalid." .. tostring(mod_path))
 				end
-			else
-				self:Log(LogLevel.WARN, "[BLT] Could not read or find mod.txt in " .. tostring(mod_path))
 			end
 		end
 	end
@@ -243,6 +229,11 @@ function BLT:ProcessModsList(mods_list)
 		return a:GetPriority() > b:GetPriority()
 	end)
 
+	-- After mods are sorted by priority, post Initialize them
+	for _, mod in pairs(mods_list) do
+		mod:PostInit()
+	end
+
 	return mods_list
 end
 
@@ -252,6 +243,30 @@ function BLT:CheckDirectory(path)
 		self:Log(LogLevel.INFO, "[BLT] Creating missing directory " .. path)
 		file.CreateDirectory(path)
 	end
+end
+
+function BLT:ToVersionTable(version)
+    local vt = {}
+    for num in version:gmatch("%d+") do
+        table.insert(vt, tonumber(num))
+    end
+    return vt
+end
+
+-- returns 1 if version 1 is newer, 2 if version 2 is newer, or 0 if versions are equal.
+function BLT:CompareVersions(version1, version2)
+    local v1 = self:ToVersionTable(tostring(version1))
+    local v2 = self:ToVersionTable(tostring(version2))
+    for i = 1, math.max(#v1, #v2) do
+        local num1 = v1[i] or 0
+        local num2 = v2[i] or 0
+        if num1 > num2 then
+            return 1
+        elseif num1 < num2 then
+            return 2
+        end
+    end
+    return 0
 end
 
 -- Perform startup

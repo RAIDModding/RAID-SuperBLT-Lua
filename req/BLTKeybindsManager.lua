@@ -250,9 +250,6 @@ function BLTKeybindsManager:update(t, dt, state)
 		if managers.hud and managers.hud:chat_focus() then
 			-- Don't run while chatting ingame
 			return
-		elseif BLT:GetGame() == "pd2" and managers.menu_component and managers.menu_component:input_focut_game_chat_gui() then -- 'focut' is not a typo on our side
-			-- Don't run while chatting in lobby
-			return
 		elseif managers.menu then
 			local menu = managers.menu:active_menu()
 			if menu and menu.renderer then

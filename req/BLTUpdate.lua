@@ -5,7 +5,7 @@ BLTUpdate.enabled = true
 BLTUpdate.revision = 1
 
 function BLTUpdate:init(parent_mod, data)
-	if not parent_mod or not data or not data.host then
+	if not parent_mod or not data or not (data.host or data.provider) then
 		return false
 	end
 
@@ -17,8 +17,12 @@ function BLTUpdate:init(parent_mod, data)
 	self.disallow_update = data.disallow_update or false
 	self.hash_file = data.hash_file or false
 	self.critical = data.critical or false
-	self.host = data.host
-	self.present_func = data.present_func
+	self.host = data.host or nil
+	self.provider = data.provider or nil
+	self.present_func = data.present_func or nil
+	self.present_file = data.present_file or nil
+	self.version_func = data.version_func or nil
+	self.misc_data = data.misc_data or nil
 
 	return true
 end
@@ -44,36 +48,70 @@ function BLTUpdate:CheckForUpdates(clbk)
 	self._requesting_updates = true
 
 	-- Perform the request from the server
-	dohttpreq(self.host.meta, function(json_data, http_id, request_info)
-		self:clbk_got_update_data(clbk, json_data, http_id, request_info)
-	end)
+	if self.provider then
+		-- by provider
+		if self.provider == "modworkshop" then
+			dohttpreq("https://api.modworkshop.net/mods/" .. self:GetId() .. "/version",
+				function(version, http_id, request_info)
+					if version then
+						self:clbk_got_update_data(clbk, {
+							ident = self:GetId(),
+							version = version,
+							download_url = "https://api.modworkshop.net/mods/" .. self:GetId() .. "/download",
+							patchnotes_url = self.misc_data and self.misc_data.patchnotes_url or ("https://modworkshop.net/mod/" .. self:GetId() .. "?tab=changelog")
+						}, http_id, request_info)
+					end
+				end)
+		else
+			BLT:Log(LogLevel.ERROR, "Unknown update provider: " .. self.provider)
+		end
+	else
+		-- by superblt meta data
+		dohttpreq(self.host.meta, function(json_data, http_id, request_info)
+			if not string.is_nil_or_empty(json_data) then
+				self:clbk_got_update_data(clbk, json_data, http_id, request_info)
+			end
+		end)
+	end
 end
 
 function BLTUpdate:clbk_got_update_data(clbk, json_data, http_id, request_info)
 	self._requesting_updates = false
 
-	if not request_info.querySucceeded or string.is_nil_or_empty(json_data) then
+	if not request_info.querySucceeded or (json_data == nil or (type(json_data) == "string" and string.is_nil_or_empty(json_data))) then
 		BLT:Log(LogLevel.WARN, string.format("[Updates] Could not retrieve update data for '%s'", self:GetId()))
 		self._error = "Could not retrieve update data."
 		return self:_run_update_callback(clbk, false, self._error)
 	end
 
-	local server_data = json.decode(json_data)
+	local server_data = type(json_data) == "string" and json.decode(json_data) or {json_data}
 	if server_data then
 		for _, data in pairs(server_data) do
 			if data.ident == self:GetId() then
-				BLT:Log(LogLevel.INFO, string.format("[Updates] Received update data for '%s'", self:GetId()))
+				BLT:Log(LogLevel.INFO, string.format("[Updates] Received update data for update id '%s'", self:GetId()))
 				self._update_data = data
-				if data.hash then -- Use hash to check
+				if data.hash  ~= nil then -- Use hash to check
 					self._server_hash = data.hash
 					self._uses_hash = true
-				elseif data.version then -- Use version
+				elseif data.version ~= nil then -- Use version
 					self._server_version = data.version
 					self._uses_hash = false
-					return self:_run_update_callback(clbk, self.parent_mod.version ~= data.version) -- Request an update if the versions don't equal.
+					local local_version = (not self.version_func) and self.parent_mod.version or BLTUpdateCallbacks[self.version_func]() or nil
+					if local_version == nil then
+						self._error = "Unable to get local version."
+						BLT:Log(LogLevel.ERROR,
+							string.format("[Updates] Unable to get local version for '%s'", self:GetId()))
+						return self:_run_update_callback(clbk, false, self._error)
+					end
+					local newer = BLT:CompareVersions(local_version, data.version)
+					BLT:Log(LogLevel.INFO, string.format("[Updates] Received version '%s' from the server (local is '%s'). %s",
+						tostring(data.version), tostring(local_version),
+						newer == 2 and "Update available!" or (newer == 1 and "[local is newer]" or "")
+					))
+					return self:_run_update_callback(clbk, newer == 2) -- Request an update if the remote version greather than local version.
 				end
 
-				local dat = {data, clbk}
+				local dat = { data, clbk }
 				local hash_result = self:GetHash(callback(self, self, "_check_hash", dat))
 
 				-- Nil indicates the file to hash was missing
@@ -82,7 +120,8 @@ function BLTUpdate:clbk_got_update_data(clbk, json_data, http_id, request_info)
 				if not hash_result then
 					-- Errored, file does not exist
 					self._error = "File to be version checked is missing."
-					BLT:Log(LogLevel.ERROR, string.format("[Updates] File to be version checked is missing for '%s'", self:GetId()))
+					BLT:Log(LogLevel.ERROR,
+						string.format("[Updates] File to be version checked is missing for '%s'", self:GetId()))
 					return self:_run_update_callback(clbk, false, self._error)
 				elseif hash_result ~= true then
 					-- Manually check the hash, since we're running on an old
@@ -109,7 +148,9 @@ function BLTUpdate:_check_hash(dat, local_hash)
 
 	self._requesting_updates = false
 
-	BLT:Log(LogLevel.INFO, string.format("[Updates] Comparing hash data for '%s':\nServer: %s\n Local: %s", data.ident, data.hash, local_hash))
+	BLT:Log(LogLevel.INFO,
+		string.format("[Updates] Comparing hash data for '%s':\nServer: %s\n Local: %s", data.ident, data.hash,
+			local_hash))
 	if not data.hash then
 		BLT:Log(LogLevel.WARN, string.format("[Updates] [WARN] Missing server hash for mod '%s'", data.ident))
 		return self:_run_update_callback(clbk, false)
@@ -137,7 +178,7 @@ function BLTUpdate:GetParentMod()
 end
 
 function BLTUpdate:GetId()
-	return self.id
+	return tostring(self.id)
 end
 
 function BLTUpdate:GetName()
@@ -194,8 +235,8 @@ function BLTUpdate:ViewPatchNotes()
 	-- this allows for easier migration of URLs
 	local url = self:GetPatchNotes()
 
-	if managers.network and managers.network.account and managers.network.account:is_overlay_enabled() then
-		managers.network.account:overlay_activate("url", url)
+	if Steam and Steam:overlay_enabled() then
+		Steam:overlay_activate("url", url)
 	else
 		os.execute("cmd /c start " .. url)
 	end
@@ -212,11 +253,7 @@ function BLTUpdate:GetDownloadURL()
 end
 
 function BLTUpdate:GetUpdateMiscData()
-	if not self._update_data then
-		return nil
-	end
-
-	return self._update_data.misc_data
+	return self._update_data and self._update_data.misc_data or self.misc_data
 end
 
 function BLTUpdate:IsInstall()

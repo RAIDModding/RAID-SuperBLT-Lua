@@ -98,6 +98,12 @@ function BLTDownloadManager:start_download(update)
 		return false
 	end
 
+	-- Check if this update is allowed to be updated by the download manager
+	if update:DisallowsUpdate() then
+		MenuCallbackHandler[update:GetDisallowCallback()](MenuCallbackHandler, update)
+		return false
+	end
+
 	-- If there is a .git or .hg file at the root of the mod, don't update it
 	-- the dev has most likely misclicked, so let's not wipe their work
 	local moddir = Application:nice_path(update:GetInstallDirectory() .. "/" .. update:GetInstallFolder(), true)
@@ -108,12 +114,6 @@ function BLTDownloadManager:start_download(update)
 			{},
 			true
 		)
-		return false
-	end
-
-	-- Check if this update is allowed to be updated by the download manager
-	if update:DisallowsUpdate() then
-		MenuCallbackHandler[update:GetDisallowCallback()](MenuCallbackHandler, update)
 		return false
 	end
 
@@ -174,7 +174,7 @@ function BLTDownloadManager:clbk_download_finished(data, http_id, request_info)
 		wait()
 
 		-- Save file to downloads
-		local f = io.open(file_path, "wb+")
+		local f = io.open(file_path, "w+b")
 		if f then
 			f:write(data)
 			f:close()
@@ -222,7 +222,7 @@ function BLTDownloadManager:clbk_download_finished(data, http_id, request_info)
 					local version = mod_data.version
 					local server_version = download.update:GetServerVersion()
 					-- Server version may be nil for simple URL based dependencies
-					if server_version == nil or server_version == version then
+					if server_version == nil or BLT:CompareVersions(version, server_version) ~= 2 then
 						passed_check = true
 					else -- Versions don't match
 						BLT:Log(LogLevel.ERROR, string.format("[Downloads] Failed to verify versions of '%s'", download_name))

@@ -27,66 +27,6 @@ function MenuManager:show_download_progress(mod_name)
 	managers.system_menu:show_download_progress(dialog_data)
 end
 
-local game = BLT:GetGame()
-
-if game == "pd2" then
-	-- Add menus
-	Hooks:Add("MenuManagerPostInitialize", "MenuManagerPostInitialize_Base", function(menu_manager)
-		local success, err = pcall(function()
-			-- Setup lua mods menu
-			menu_manager:_base_process_menu(
-				{"menu_main"},
-				"mods_options",
-				"options",
-				"MenuManager_Base_SetupModsMenu",
-				"MenuManager_Base_PopulateModsMenu",
-				"MenuManager_Base_BuildModsMenu"
-			)
-	
-			-- Setup mod options/keybinds menu
-			menu_manager:_base_process_menu(
-				{"menu_main", "menu_pause"},
-				"video",
-				"options",
-				"MenuManager_Base_SetupModOptionsMenu",
-				"MenuManager_Base_PopulateModOptionsMenu",
-				"MenuManager_Base_BuildModOptionsMenu"
-			)
-	
-			-- Allow custom menus on the main menu (and lobby) and the pause menu
-			menu_manager:_base_process_menu({"menu_main"})
-			menu_manager:_base_process_menu({"menu_pause"})
-		end)
-		if not success then
-			BLT:Log(LogLevel.ERROR, tostring(err))
-		end
-	end)
-
-	function MenuManager:_base_process_menu(menu_names, parent_menu_name, parent_menu_button, setup_hook, populate_hook, build_hook)
-		for k, v in pairs(menu_names) do
-			local menu = self._registered_menus[v]
-			if menu then
-				local nodes = menu.logic._data._nodes
-				local hook_id_setup = setup_hook or "MenuManagerSetupCustomMenus"
-				local hook_id_populate = populate_hook or "MenuManagerPopulateCustomMenus"
-				local hook_id_build = build_hook or "MenuManagerBuildCustomMenus"
-
-				MenuHelper:SetupMenu(nodes, parent_menu_name or "video")
-				MenuHelper:SetupMenuButton(nodes, parent_menu_button or "options", not parent_menu_button and "sound")
-
-				Hooks:RegisterHook(hook_id_setup)
-				Hooks:RegisterHook(hook_id_populate)
-				Hooks:RegisterHook(hook_id_build)
-
-				Hooks:Call(hook_id_setup, self, nodes)
-				Hooks:Call(hook_id_populate, self, nodes)
-				Hooks:Call(hook_id_build, self, nodes)
-			end
-		end
-	end
-end
-
-
 -- Create this function if it doesn't exist
 function MenuCallbackHandler:can_toggle_chat()
 	if managers and managers.menu then
@@ -163,22 +103,22 @@ end
 -- Add BLT dll update notification
 
 function MenuCallbackHandler:blt_update_dll_dialog(update)
-	local update_url = update:GetUpdateMiscData().update_url
-
-	local dialog_data = {}
-	dialog_data.title = managers.localization:text("blt_update_dll_title")
-	dialog_data.text = managers.localization:text("blt_update_dll_text")
-
-	local download_button = {}
-	download_button.text = managers.localization:text("blt_update_dll_goto_website")
-	download_button.callback_func = callback(self, self, "clbk_goto_paydaymods_download", update_url)
-
-	local ok_button = {}
-	ok_button.text = managers.localization:text("blt_update_later")
-	ok_button.cancel_button = true
-
-	dialog_data.button_list = { download_button, ok_button }
-	managers.system_menu:show(dialog_data)
+	QuickMenu:new(
+		managers.localization:text("blt_update_dll_title"),
+		managers.localization:text("blt_update_dll_text"),
+		{
+			{
+				text = managers.localization:text("blt_update_dll_goto_website"),
+				callback = callback(self, self, "clbk_goto_paydaymods_download", update:GetUpdateMiscData().update_url)
+			},
+			{
+				text = managers.localization:text("blt_update_later"),
+				is_cancel_button = true
+			}
+		}
+		,
+		true
+	)
 end
 
 function MenuCallbackHandler:clbk_goto_paydaymods_download(update_url)

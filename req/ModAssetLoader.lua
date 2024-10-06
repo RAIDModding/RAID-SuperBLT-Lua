@@ -1,7 +1,7 @@
 ---@class AssetLoader
----@field new fun(self, mod: BLTSuperMod):AssetLoader
+---@field new fun(self, mod: BLTMod):AssetLoader
 local c = blt_class()
-BLTSuperMod.AssetLoader = c
+BLTMod.AssetLoader = c
 
 c.DYNAMIC_LOAD_TYPES = {
 	unit = true,
@@ -21,28 +21,33 @@ local next_asset_id = 1
 function c:init(mod)
 	self._mod = mod
 
-	self.script_loadable_packages = {
-	}
+	self.script_loadable_packages = {}
 end
 
-function c:FromXML(xml, parent_scope)
+function c:FromXML(scope, tag)
 	-- Prevent the :name parameter from entering the <assets> scope
-	parent_scope.name = nil
+	scope.name = nil
 
 	-- Recurse over the XML, and find all the <file/> tags
-	BLTSuperMod._recurse_xml(xml, parent_scope, {
+	Utils.IO.TraverseXML(tag, scope, {
 		file = function(...) self:_asset_from_xml(...) end,
 		xml = function(...) self:_converted_xml_file(...) end,
 	})
 end
 
-function c:_asset_from_xml(tag, scope)
+function c:LoadAssets(assets)
+	for _, asset in pairs(assets) do
+		self:LoadAsset(asset.name, asset.path, asset)
+	end
+end
+
+function c:_asset_from_xml(scope, tag)
 	local name = scope.name
 	local path = scope.path or (scope.base_path .. name)
 	self:LoadAsset(name, path, scope)
 end
 
-function c:_converted_xml_file(tag, scope)
+function c:_converted_xml_file(scope, tag)
 	local name = scope.name
 	local path = scope.path or (scope.base_path .. name)
 	local built_path = path .. ".sblt_autoconvert"
@@ -53,8 +58,8 @@ function c:_converted_xml_file(tag, scope)
 	assert(to_type, "Missing 'to_type' tag in converted XML asset tag for '" .. name .. "'")
 
 	local convert_params = {
-		path = self._mod._mod:GetPath() .. path,
-		built_path = self._mod._mod:GetPath() .. built_path,
+		path = self._mod:GetPath() .. path,
+		built_path = self._mod:GetPath() .. built_path,
 		from_type = from_type,
 		to_type = to_type,
 	}
@@ -78,7 +83,7 @@ function c:LoadAsset(name, file, params, xml_convert)
 	local spec = {
 		dbpath = dbpath,
 		extension = extension,
-		file = self._mod._mod:GetPath() .. file,
+		file = self._mod:GetPath() .. file,
 		dyn_package = dyn_package,
 		id = next_asset_id,
 		xml_convert = xml_convert,

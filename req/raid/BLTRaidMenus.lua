@@ -44,21 +44,6 @@ end
 
 Hooks:Add("MenuComponentManagerInitialize", "BLT.MenuComponentManagerInitialize", function()
     RaidMenuHelper:CreateMenu({
-        name = "blt_options",
-        name_id = "blt_options_menu_lua_mod_options",
-        inject_list = "raid_menu_left_options",
-        class = BLTOptionsMenu,
-        inject_after = "network"
-    })
-
-    RaidMenuHelper:CreateMenu({
-		name = "blt_keybinds",
-		name_id = "blt_options_menu_keybinds",
-        inject_list = "raid_menu_left_options",
-        class = BLTKeybindsMenu
-	})
-
-    RaidMenuHelper:CreateMenu({
         name = "blt_mods",
         name_id = "blt_options_menu_blt_mods",
         inject_list = "raid_menu_left_options",
@@ -67,11 +52,27 @@ Hooks:Add("MenuComponentManagerInitialize", "BLT.MenuComponentManagerInitialize"
     })
 
     RaidMenuHelper:CreateMenu({
+		name = "blt_keybinds",
+		name_id = "blt_options_menu_keybinds",
+        inject_list = "raid_menu_left_options",
+        class = BLTKeybindsMenu,
+        inject_after = "network"
+	})
+
+    RaidMenuHelper:CreateMenu({
+        name = "blt_options",
+        name_id = "blt_options_menu_lua_mod_options",
+        inject_list = "raid_menu_left_options",
+        class = BLTOptionsMenu,
+        inject_after = "network"
+    })
+
+    RaidMenuHelper:CreateMenu({
         name = "blt_download_manager",
         name_id = "blt_download_manager",
-        inject_list = "raid_menu_left_options",
+        --inject_list = "raid_menu_left_options",
         class = BLTDownloadManagerGui,
-        inject_after = "network"
+        --inject_after = "network"
     })
 
     RaidMenuHelper:CreateMenu({
