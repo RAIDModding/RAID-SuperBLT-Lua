@@ -13,7 +13,7 @@
 	"updates" : [
 		{
 			"provider" : "modworkshop",
-			"identifier" : "49744"
+			"identifier" : "49758"
 		},
 		{
 			"provider" : "modworkshop",
