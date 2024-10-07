@@ -5,7 +5,6 @@
     author="ZNix, James Wilkinson, RAIDModding"
     contact="https://discord.gg/9tAtgtGpx9"
     version="1.0.1"
-    blt_version="2"
     priority="1001"
     image="assets/guis/blt/icon.png"
     color="255 0 255"
