@@ -103,7 +103,6 @@ function BLTModManager:_RunAutoCheckForUpdates()
 			title = managers.localization:text("blt_checking_updates"),
 			text = managers.localization:text("blt_checking_updates_help"),
 			icon = "guis/blt/updates",
-			icon_texture_rect = rect,
 			color = Color.white,
 			priority = 1000
 		})
@@ -173,9 +172,16 @@ end
 Hooks:Add("BLTOnSaveData", "BLTOnSaveData.BLTModManager", function(save_data)
 	save_data.mods = {}
 
+	local path = BLTModManager.Constants:ModManagerWrenDisabledModsFile()
+
 	-- Save a Wren-readable list of disabled mods - it doesn't have a JSON parser so it
 	-- can't load our normal file, and it needs to know what's enabled before any Lua code runs.
-	local wren_file = io.open(BLTModManager.Constants:ModManagerWrenDisabledModsFile(), "wb")
+	local wren_file = io.open(path, "wb")
+
+	if not wren_file then
+		BLT:Log(LogLevel.ERROR, "Can't read " .. path)
+		return
+	end
 
 	for _, mod in pairs(BLT.Mods:Mods()) do
 		-- Save mod updates enabled data

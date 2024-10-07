@@ -56,6 +56,16 @@
         </group>
     </assets>
 
+    <localization directory="loc" default_language="english">
+        <loc file="chinese_simplified.json" language="chinese_simplified" />
+        <loc file="english.json" language="english" />
+        <loc file="french.json" language="french" />
+        <loc file="german.json" language="german" />
+        <loc file="italian.json" language="italian" />
+        <loc file="russian.json" language="russian" />
+        <loc file="spanish.json" language="spanish" />
+    </localization>
+    
     <hooks>
         <group script_path="lua/raid/">
             <post hook_id="lib/managers/menu/raid_menu/controls/raidguicontrolkeybind" :script_path="RaidGUIControlKeyBind.lua"/>

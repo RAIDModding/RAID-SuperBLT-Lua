@@ -552,18 +552,6 @@ function BLTViewModGui:refresh()
 		end
 	end
 
-	-- Refresh safemode
-	if self._safemode_button then
-		self._safemode_button:image():set_alpha(self._mod:IsSafeModeEnabled() and 1 or 0.4)
-		if self._mod:IsSafeModeEnabled() then
-			self._safemode_button:title():set_text(managers.localization:text("blt_mod_safemode_enabled"))
-			self._safemode_button:text():set_text(managers.localization:text("blt_mod_safemode_enabled_help"))
-		else
-			self._safemode_button:title():set_text(managers.localization:text("blt_mod_safemode_disabled"))
-			self._safemode_button:text():set_text(managers.localization:text("blt_mod_safemode_disabled_help"))
-		end
-	end
-
 	-- Refresh automatic updates
 	if self._updates_button then
 		self._updates_button:image():set_alpha(self._mod:AreUpdatesEnabled() and 1 or 0.4)
@@ -597,7 +585,7 @@ Hooks:Add("CoreMenuData.LoadDataMenu", "BLTViewModGui.CoreMenuData.LoadDataMenu"
 		["scene_state"] = "crew_management",
 		[1] = {
 			["_meta"] = "default_item",
-			["name"] = back
+			["name"] = "back"
 		}
 	}
 	table.insert(menu, new_node)

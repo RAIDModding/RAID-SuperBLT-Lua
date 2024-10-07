@@ -32,13 +32,17 @@ function LocalizationManager:add_localized_strings(string_table, overwrite)
 		overwrite = true
 	end
 
-	if type(string_table) == "table" then
-		for k, v in pairs(string_table) do
-			if overwrite or not self._custom_localizations[k] then
-				self._custom_localizations[k] = v
-			end
+	if type(string_table) ~= "table" then
+		return false
+	end
+
+	for k, v in pairs(string_table) do
+		if overwrite or not self._custom_localizations[k] then
+			self._custom_localizations[k] = v
 		end
 	end
+
+	return true
 end
 
 function LocalizationManager:load_localization_file(file_path, overwrite)
@@ -48,11 +52,12 @@ function LocalizationManager:load_localization_file(file_path, overwrite)
 	end
 
 	local file = io.open(file_path, "r")
-	if file then
-		local file_contents = file:read("*all")
-		file:close()
-
-		local contents = json.decode(file_contents)
-		self:add_localized_strings(contents, overwrite)
+	if not file then
+		return false
 	end
+
+	local file_contents = file:read("*all")
+	file:close()
+
+	return self:add_localized_strings(json.decode(file_contents), overwrite)
 end
