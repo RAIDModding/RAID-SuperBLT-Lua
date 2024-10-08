@@ -40,8 +40,6 @@ function BLTMod:init(identifier, data, path)
 	self.disable_safe_mode = false
 	self.undisablable = false
 	self.library = false
-	self.vr_disabled = false
-	self.desktop_disabled = false
 
 	self.path = path
 	self.data = data
@@ -231,9 +229,7 @@ function BLTMod:SetParams(data)
 		image_path = data.image,
 		disable_safe_mode = data.disable_safe_mode,
 		undisablable = data.undisablable,
-		library = data.is_library ,
-		vr_disabled = data.vr_disabled,
-		desktop_disabled = data.desktop_disabled,
+		library = data.is_library,
 	}
 
 	for k, v in pairs(merge) do
