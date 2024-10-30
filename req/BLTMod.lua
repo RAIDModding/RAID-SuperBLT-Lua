@@ -733,8 +733,10 @@ function BLTMod:_load_keybinds_xml(scope, tag)
 		keybind = function(scope)
 			scope.run_in_menu = Utils:ToBoolean(scope.run_in_menu)
 			scope.run_in_game = Utils:ToBoolean(scope.run_in_game)
-			scope.show_in_menu = Utils:ToBoolean(scope.show_in_menu)
+			scope.run_in_paused_game = Utils:ToBoolean(scope.run_in_paused_game)
+			scope.show_in_menu = (scope.show_in_menu == nil) or Utils:ToBoolean(scope.show_in_menu) -- show_in_menu needs to default to true, if unset
 			scope.localized = Utils:ToBoolean(scope.localized)
+			scope.localized_desc = Utils:ToBoolean(scope.localized_desc)
 			self:AddKeybind(scope)
 		end
 	})
