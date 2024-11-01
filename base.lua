@@ -227,11 +227,6 @@ function BLT:ProcessModsList(mods_list)
 		return a:GetPriority() > b:GetPriority()
 	end)
 
-	-- After mods are sorted by priority, post Initialize them
-	for _, mod in pairs(mods_list) do
-		mod:PostInit()
-	end
-
 	return mods_list
 end
 

@@ -73,6 +73,11 @@ function BLTModManager:SetModsList(mods_list)
 		end
 	end
 
+	-- Post init mods
+	for _, mod in pairs(self.mods) do
+		mod:PostInit()
+	end
+
 	-- Setup mods
 	for i, mod in ipairs(self.mods) do
 		mod:Setup()

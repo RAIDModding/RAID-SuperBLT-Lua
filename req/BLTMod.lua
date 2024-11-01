@@ -9,6 +9,7 @@ BLTMod._enabled = true
 BLTMod.safe_mode = true
 BLTMod._tags = {
 	updates = "init",
+	dependencies = "init",
 	localization = "init",
 	hooks = "setup",
 	assets = "setup",
@@ -230,7 +231,6 @@ function BLTMod:SetParams(data)
 		author = data.author,
 		contact = data.contact ,
 		priority = tonumber(data.priority),
-		dependencies = data.dependencies,
 		color = data.color,
 		image_path = data.image,
 		disable_safe_mode = data.disable_safe_mode,
@@ -262,6 +262,17 @@ function BLTMod:AddUpdate(data)
 	local new_update, valid = BLTUpdate:new(self, data)
 	if valid and new_update:IsPresent() then
 		table.insert(self.updates, new_update)
+	end
+end
+
+function BLTMod:AddDependency(id, data)
+	local new_dependency, valid = BLTModDependency:new(self, id, data)
+	if valid then
+		if not self.dependencies[id] then
+			self.dependencies[id] = new_dependency
+		else
+			self.dependencies[id]:merge(new_dependency)
+		end
 	end
 end
 
@@ -772,6 +783,20 @@ function BLTMod:_load_updates_xml(scope, tag)
 				update.critical = Utils:ToBoolean(update.critical)
 				self:AddUpdate(update)
 			end
+		end
+	})
+end
+
+function BLTMod:_load_dependencies_data(data)
+	for id, dependency in ipairs(data) do
+		self:AddDependency(id, dependency)
+	end
+end
+
+function BLTMod:_load_dependencies_xml(scope, tag)
+	Utils.IO.TraverseXML(tag, scope, {
+		dependency = function(dependency)
+			self:AddDependency(dependency.name, dependency)
 		end
 	})
 end
