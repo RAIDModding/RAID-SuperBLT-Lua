@@ -15,14 +15,14 @@ function BLTKeybind:init(parent_mod, parameters)
 
 	self._allow_menu = parameters.allow_menu or false
 	self._allow_game = parameters.allow_game or false
-	self._allow_paused_game = parameters.run_in_paused_game or false
+	self._allow_paused_game = parameters.allow_paused_game or false
 
 	self._show_in_menu = parameters.show_in_menu
 	if self._show_in_menu == nil then
 		self._show_in_menu = true
 	end
 	self._name = parameters.name or false
-	self._desc = parameters.desc or parameters.description	or false
+	self._desc = parameters.desc or false
 	self._localize = parameters.localize or false
 	self._localize_desc = parameters.localize_desc or false
 end
@@ -194,10 +194,12 @@ function BLTKeybindsManager:register_keybind_json(mod, json_data)
 		file = json_data["script_path"],
 		allow_menu = json_data["run_in_menu"],
 		allow_game = json_data["run_in_game"],
+		allow_paused_game = json_data["run_in_paused_game"],
 		show_in_menu = json_data["show_in_menu"],
 		name = json_data["name"],
 		desc = json_data["description"],
-		localize = json_data["localized"]
+		localize = json_data["localized"],
+		localize_desc = json_data["localized_desc"]
 	}
 	self:register_keybind(mod, parameters)
 end

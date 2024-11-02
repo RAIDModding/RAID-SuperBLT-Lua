@@ -48,7 +48,6 @@ BLT:Require("req/BLTModule")
 BLT:Require("req/BLTLogs")
 BLT:Require("req/BLTModManager")
 BLT:Require("req/BLTDownloadManager")
-BLT:Require("req/BLTLocalization")
 BLT:Require("req/BLTNotificationsManager")
 BLT:Require("req/BLTPersistScripts")
 BLT:Require("req/BLTKeybindsManager")
@@ -100,7 +99,6 @@ function BLT:Setup()
 	self.Downloads = BLTDownloadManager:new()
 	self.Keybinds = BLTKeybindsManager:new()
 	self.PersistScripts = BLTPersistScripts:new()
-	self.Localization = BLTLocalization:new()
 	self.Notifications = BLTNotificationsManager:new()
 	self.AssetManager = BLTAssetManager:new()
 
@@ -228,11 +226,6 @@ function BLT:ProcessModsList(mods_list)
 	table.sort(mods_list, function(a, b)
 		return a:GetPriority() > b:GetPriority()
 	end)
-
-	-- After mods are sorted by priority, post Initialize them
-	for _, mod in pairs(mods_list) do
-		mod:PostInit()
-	end
 
 	return mods_list
 end

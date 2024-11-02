@@ -9,14 +9,16 @@ BLTMod._enabled = true
 BLTMod.safe_mode = true
 BLTMod._tags = {
 	updates = "init",
+	dependencies = "init",
+	localization = "init",
 	hooks = "setup",
 	assets = "setup",
 	persist_scripts = "setup",
 	keybinds = "setup",
 	scripts = "post_init",
 	native_module = "setup",
-	wren = '',
-	tweak = '',
+	wren = "",
+	tweak = "",
 }
 
 function BLTMod:init(identifier, data, path)
@@ -37,11 +39,12 @@ function BLTMod:init(identifier, data, path)
 	self.contact = "N/A"
 	self.priority = 0
 	self.dependencies = {}
+	self.default_language = "english"
+	self.localizations = {}
+	self.image_path = nil
 	self.disable_safe_mode = false
 	self.undisablable = false
 	self.library = false
-	self.vr_disabled = false
-	self.desktop_disabled = false
 
 	self.path = path
 	self.data = data
@@ -226,14 +229,11 @@ function BLTMod:SetParams(data)
 		author = data.author,
 		contact = data.contact ,
 		priority = tonumber(data.priority),
-		dependencies = data.dependencies,
 		color = data.color,
 		image_path = data.image,
 		disable_safe_mode = data.disable_safe_mode,
 		undisablable = data.undisablable,
-		library = data.is_library ,
-		vr_disabled = data.vr_disabled,
-		desktop_disabled = data.desktop_disabled,
+		library = data.is_library,
 	}
 
 	for k, v in pairs(merge) do
@@ -258,6 +258,17 @@ function BLTMod:AddUpdate(data)
 	local new_update, valid = BLTUpdate:new(self, data)
 	if valid and new_update:IsPresent() then
 		table.insert(self.updates, new_update)
+	end
+end
+
+function BLTMod:AddDependency(id, data)
+	local new_dependency, valid = BLTModDependency:new(self, id, data)
+	if valid then
+		if not self.dependencies[id] then
+			self.dependencies[id] = new_dependency
+		else
+			self.dependencies[id]:merge(new_dependency)
+		end
 	end
 end
 
@@ -341,7 +352,7 @@ function BLTMod:LastError()
 end
 
 function BLTMod:IsOutdated()
-	return self._outdated
+	return self._outdated -- FIXME: implement min_sblt_version as in RaidBLT?
 end
 
 function BLTMod:IsEnabled()
@@ -708,7 +719,7 @@ function BLTMod:_load_persist_scripts_data()
 	end
 end
 
-function BLTMod:_Load_persist_scripts_xml(scope, tag)
+function BLTMod:_load_persist_scripts_xml(scope, tag)
 	Utils.IO.TraverseXML(tag, scope, {
 		script = function(scope)
 			if scope.global and scope.script_path then
@@ -729,8 +740,10 @@ function BLTMod:_load_keybinds_xml(scope, tag)
 		keybind = function(scope)
 			scope.run_in_menu = Utils:ToBoolean(scope.run_in_menu)
 			scope.run_in_game = Utils:ToBoolean(scope.run_in_game)
-			scope.show_in_menu = Utils:ToBoolean(scope.show_in_menu)
+			scope.run_in_paused_game = Utils:ToBoolean(scope.run_in_paused_game)
+			scope.show_in_menu = (scope.show_in_menu == nil) or Utils:ToBoolean(scope.show_in_menu) -- show_in_menu needs to default to true, if unset
 			scope.localized = Utils:ToBoolean(scope.localized)
+			scope.localized_desc = Utils:ToBoolean(scope.localized_desc)
 			self:AddKeybind(scope)
 		end
 	})
@@ -766,6 +779,20 @@ function BLTMod:_load_updates_xml(scope, tag)
 				update.critical = Utils:ToBoolean(update.critical)
 				self:AddUpdate(update)
 			end
+		end
+	})
+end
+
+function BLTMod:_load_dependencies_data(data)
+	for id, dependency in ipairs(data) do
+		self:AddDependency(id, dependency)
+	end
+end
+
+function BLTMod:_load_dependencies_xml(scope, tag)
+	Utils.IO.TraverseXML(tag, scope, {
+		dependency = function(dependency)
+			self:AddDependency(dependency.name, dependency)
 		end
 	})
 end
@@ -842,4 +869,57 @@ function BLTMod:_load_scripts_xml(scope, tag)
 			end
 		end
 	})
+end
+
+function BLTMod:_load_localization_xml(scope, tag)
+	self.default_language = scope.default_language or "english"
+	self.localization_directory = scope.directory and (self:GetPath() .. scope.directory .. "/") or self:GetPath()
+	self.localizations = {}
+
+	local inner_clbk = function(...)
+		self:_load_localization_xml_inner(...)
+	end
+	Utils.IO.TraverseXML(tag, scope, {
+		loc = inner_clbk,
+		localization = inner_clbk
+	})
+
+	if managers and managers.localization then
+		self:_apply_localization()
+	else
+		Hooks:Add("LocalizationManagerPostInit", self:GetPath() .. "_Localization", function(loc)
+			self:_apply_localization()
+		end)
+	end
+end
+
+function BLTMod:_load_localization_xml_inner(scope)
+	if not self.default_localization then
+		self.default_localization = scope.file
+	end
+	local lang = scope.language
+	self.localizations[lang] = self.localizations[lang] or {}
+	local path = (self.localization_directory .. scope.file)
+	if io.file_is_readable(path) then
+		table.insert(self.localizations[lang], path)
+	else
+		BLT:Log(LogLevel.ERROR, string.format("Localization file with path %s for language %s doesn't exist!", tostring(path), tostring(lang)))
+	end
+end
+
+function BLTMod:_apply_localization()
+    local lang_key = Idstring(Steam:current_language()):key()
+    local loc = self.localizations[lang_key] or self.localizations[self.default_language]
+    if loc then
+        for _, path in pairs(loc) do
+            if not LocalizationManager:load_localization_file(path) then
+                BLT:Log(LogLevel.ERROR, string.format("Language file has errors and cannot be loaded! Path %s", path))
+            end
+        end
+    else -- legacy
+        local path = (self.localization_directory .. self.default_localization)
+        if not LocalizationManager:load_localization_file(path) then
+            BLT:Log(LogLevel.ERROR, string.format("Language file has errors and cannot be loaded! Path %s", path))
+        end
+    end
 end

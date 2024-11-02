@@ -169,7 +169,7 @@ end
 -- @param startPos The starting position for the scan.
 -- @return table, int The scanned array as a table, and the position of the next character to scan.
 function decode_scanArray(s,startPos)
-  local array, object = {}	-- The return value
+  local array, object = {}, nil	-- The return value
   local stringLen = string.len(s)
   assert(string.sub(s,startPos,startPos)=='[','decode_scanArray called but array does not start at position ' .. startPos .. ' in string:\n'..s )
   startPos = startPos + 1
@@ -294,6 +294,7 @@ function decode_scanObject(s,startPos)
     assert(startPos<=stringLen, 'JSON string ended unexpectedly scanning object.')
     -- Scan the key
     key, startPos = json.decode(s,startPos)
+    assert(key~=nil, 'JSON string object key is nil')
     assert(startPos<=stringLen, 'JSON string ended unexpectedly searching for value of key ' .. key)
     startPos = decode_scanCommentWhitespace(s,startPos)
     assert(startPos<=stringLen, 'JSON string ended unexpectedly searching for value of key ' .. key)
