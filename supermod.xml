@@ -88,6 +88,7 @@
             </group>
             <group :script_path="utils/">
                 <pre hook_id="lib/entry" :script_path="UtilsCore.lua"/>
+                <pre hook_id="lib/entry" :script_path="Table.lua"/>
                 <pre hook_id="lib/entry" :script_path="QuickMenu.lua"/>
                 <post hook_id="core/lib/utils/coreclass" :script_path="UtilsClass.lua"/>
             </group>
