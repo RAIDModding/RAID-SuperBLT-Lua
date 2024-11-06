@@ -50,7 +50,6 @@ function BLTModItem:init(panel, index, mod, show_icon)
 	self._background = self._panel:rect({
 		color = bg_color,
 		alpha = 0.2,
-		blend_mode = "add",
 		layer = -1
 	})
 	BoxGuiObject:new(self._panel, {sides = {1, 1, 1, 1}})
@@ -71,7 +70,6 @@ function BLTModItem:init(panel, index, mod, show_icon)
 		font_size = medium_font_size,
 		font = medium_font,
 		layer = 10,
-		blend_mode = "add",
 		color = text_color,
 		text = mod:GetName(),
 		align = "center",
@@ -92,7 +90,6 @@ function BLTModItem:init(panel, index, mod, show_icon)
 		font_size = small_font_size,
 		font = small_font,
 		layer = 10,
-		blend_mode = "add",
 		color = text_color,
 		text = string.sub(mod:GetDescription(), 1, 120),
 		align = "left",
@@ -142,7 +139,6 @@ function BLTModItem:init(panel, index, mod, show_icon)
 			font_size = small_font_size,
 			font = small_font,
 			layer = 10,
-			blend_mode = "add",
 			text = managers.localization:to_upper_text("blt_no_image"),
 			align = "center",
 			vertical = "center",
