@@ -95,7 +95,6 @@ function BLTCustomComponent:make_title(title, offset)
 		font_size = large_font_size,
 		font = large_font,
 		layer = 10,
-		blend_mode = "add",
 		color = tweak_data.screen_colors.title,
 		text = title,
 		vertical = "top"
@@ -123,7 +122,6 @@ function BLTCustomComponent:_add_custom_back_button()
 		font = tweak_data.menu.pd2_large_font,
 		color = tweak_data.screen_colors.button_stage_3,
 		layer = 40,
-		blend_mode = "add"
 	})
 	self:make_fine_text(back_button)
 	back_button:set_right(self._panel:w() - 10)
@@ -137,7 +135,6 @@ function BLTCustomComponent:_add_custom_back_button()
 		h = 90,
 		align = "right",
 		vertical = "bottom",
-		blend_mode = "add",
 		font_size = tweak_data.menu.pd2_massive_font_size,
 		font = tweak_data.menu.pd2_massive_font,
 		color = tweak_data.screen_colors.button_stage_3,
