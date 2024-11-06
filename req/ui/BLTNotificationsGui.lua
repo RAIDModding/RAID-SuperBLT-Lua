@@ -132,7 +132,6 @@ function BLTNotificationsGui:_setup()
 		font_size = tweak_data.menu.pd2_medium_font_size,
 		font = tweak_data.menu.pd2_medium_font,
 		layer = 10,
-		blend_mode = "add",
 		color = tweak_data.screen_colors.title,
 		text = "2",
 		align = "center",
