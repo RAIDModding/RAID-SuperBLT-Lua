@@ -805,7 +805,7 @@ end
 ---end
 ---```
 function MenuHelper:AddComponent(name, clss, args)
-	local function add(component)
+	local function add(component_manager)
 		local c_name = name .. "_gui"
 		local u_name = "_" .. name
 		local create = "create_" .. c_name
@@ -822,9 +822,6 @@ function MenuHelper:AddComponent(name, clss, args)
 				return
 			end
 			self[u_name] = self[u_name] or clss:new(self._ws, self._fullscreen_ws, node, name, args)
-			if self.register_component then
-				self:register_component(c_name, self[u_name])
-			end
 			return self[u_name]
 		end
 
@@ -833,26 +830,21 @@ function MenuHelper:AddComponent(name, clss, args)
 			if self[u_name] then
 				self[u_name]:close()
 				self[u_name] = nil
-				if self.unregister_component then
-					self:unregister_component(c_name)
-				end
 				return self[u_name]
 			end
 		end
 
 		-- Make the component available
-		component._active_components[name] = {
-			create = callback(component, component, create),
-			close = callback(component, component, close)
+		component_manager._active_components[name] = {
+			create = callback(component_manager, component_manager, create),
+			close = callback(component_manager, component_manager, close),
 		}
 
-		if clss.update then
-			Hooks:Add("MenuComponentManagerUpdate", name..".MenuComponentManagerUpdate", function(self, t, dt)
-				if component[name] then
-					component[name]:update(t, dt)
-				end
-			end)
-		end
+		Hooks:Add("MenuComponentManagerUpdate", name..".MenuComponentManagerUpdate", function(self, t, dt)
+			if self[u_name] then
+				self[u_name]:update(t, dt)
+			end
+		end)
 	end
 
 	-- If the component manager is already loaded then set everything up now,

@@ -11,6 +11,9 @@ function MenuGuiComponentGeneric:init(ws, fullscreen_ws, node, name)
     self:_setup()
 end
 
+function MenuGuiComponentGeneric:update(t, dt)
+end
+
 function MenuGuiComponentGeneric:close()
     self._ws:panel():remove(self._panel)
     self._fullscreen_ws:panel():remove(self._fullscreen_panel)

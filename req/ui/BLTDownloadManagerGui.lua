@@ -73,8 +73,3 @@ end
 function BLTDownloadManagerGui:on_close()
 	BLT.Downloads:flush_complete_downloads()
 end
-
---------------------------------------------------------------------------------
--- Patch MenuComponentManager to create the BLT Download Manager component
-
-MenuHelper:AddComponent("blt_download_manager", BLTDownloadManagerGui)

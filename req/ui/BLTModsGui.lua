@@ -448,8 +448,3 @@ Hooks:Add("BLTOnSaveData", "BLTOnSaveData.BLTModsGui", function(save_data)
 		}
 	end
 end)
-
---------------------------------------------------------------------------------
--- Patch MenuComponentManager to create the BLT Mods component
-
-MenuHelper:AddComponent("blt_mods", BLTModsGui)
