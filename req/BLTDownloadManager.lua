@@ -214,27 +214,43 @@ function BLTDownloadManager:clbk_download_finished(data, http_id, request_info)
 				BLT:Log(LogLevel.ERROR, "[Downloads]  Local: ", local_hash)
 			end
 		else
+			local definition_file = nil
+			local is_pure_xml = false
 			local mod_txt = extract_path .. "/mod.txt" -- Check the downloaded mod.txt (if it exists) to know we are downloading a valid mod with valid version.
+			local supermod_xml = extract_path .. "/supermod.xml" -- Check the downloaded supermod.xml (if it exists) to know we are downloading a valid mod with valid version.
 			if file.FileExists(mod_txt) then
-				local file = io.open(mod_txt, "r")
-				local mod_data = json.decode(file:read("*all"))
-				if mod_data then -- Is the data valid json?
-					local version = mod_data.version
-					local server_version = download.update:GetServerVersion()
-					-- Server version may be nil for simple URL based dependencies
-					if server_version == nil or BLT:CompareVersions(version, server_version) ~= 2 then
-						passed_check = true
-					else -- Versions don't match
-						BLT:Log(LogLevel.ERROR, string.format("[Downloads] Failed to verify versions of '%s'", download_name))
-						BLT:Log(LogLevel.ERROR, "[Downloads] Server: ", server_version)
-						BLT:Log(LogLevel.ERROR, "[Downloads]  Local: ", version)
+				definition_file = mod_txt
+			elseif file.FileExists(supermod_xml) then
+				definition_file = supermod_xml
+				is_pure_xml = true
+			else
+				BLT:Log(LogLevel.ERROR, string.format("[Downloads] Could not read mod data of '%s' (no mod.txt/supermod.xml found)", download_name))
+			end
+
+			if definition_file then
+				local file = io.open(definition_file, "r")
+				if file then
+					local file_content = file:read("*all")
+					file:close()
+					local mod_data = is_pure_xml and blt.parsexml(file_content) or json.decode(file_content)
+					if mod_data and (not is_pure_xml or mod_data.params) then -- Is the data valid json/xml?
+						local version = is_pure_xml and mod_data.params.version or mod_data.version
+						local server_version = download.update:GetServerVersion()
+						-- Server version may be nil for simple URL based dependencies
+					if server_version == nil or BLT:CompareVersions(version, server_version) == 0 then
+							passed_check = true
+						else -- Versions don't match
+							BLT:Log(LogLevel.ERROR, string.format("[Downloads] Failed to comapre downloaded version to announced '%s'", download_name))
+							BLT:Log(LogLevel.ERROR, "[Downloads] Server: ", server_version)
+							BLT:Log(LogLevel.ERROR, "[Downloads]  Local: ", version)
+						end
+
+					else
+						BLT:Log(LogLevel.ERROR, string.format("[Downloads] Could not read mod data of '%s' (invalid mod %s)", download_name, is_pure_xml and "xml" or "json"))
 					end
 				else
-					BLT:Log(LogLevel.ERROR, string.format("[Downloads] Could not read mod data of '%s' (invalid json)", download_name))
+					BLT:Log(LogLevel.ERROR, string.format("[Downloads] Could not read mod data of '%s' (%s unreadble)", download_name, is_pure_xml and "supermod.xml" or "mod.txt"))
 				end
-				file:close()
-			else
-				BLT:Log(LogLevel.ERROR, string.format("[Downloads] Could not read mod data of '%s' (no mod.txt found)", download_name))
 			end
 		end
 		if not passed_check then

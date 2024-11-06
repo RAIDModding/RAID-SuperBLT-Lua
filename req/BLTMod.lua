@@ -135,6 +135,8 @@ function BLTMod:LoadXML()
 			return
 		end
 
+		self:SetParams(xml.params)
+
 		xml._doc = { filename = supermod_path }
 
 		if self:IsEnabled() then
@@ -157,7 +159,6 @@ function BLTMod:LoadXML()
 		end
 
 		Utils.IO.TraverseXML(xml, {}, load_tags, true)
-		self:SetParams(xml.params)
 
 		self._xml_data = xml
 	end
