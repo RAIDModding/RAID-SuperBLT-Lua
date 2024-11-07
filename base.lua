@@ -29,10 +29,10 @@ BLT.Base = {}
 
 -- BLT fonts table
 BLT.fonts = {
-	["small"] = {"ui/fonts/pf_din_text_comp_pro_medium_20_mf", 20},
-	["medium"] = {"ui/fonts/pf_din_text_comp_pro_medium_26_mf", 28},
-	["large"] = {"ui/fonts/pf_din_text_comp_pro_medium_32_mf", 32},
-	["massive"] = {"ui/fonts/pf_din_text_comp_pro_medium_66_mf", 66} -- raid has no massive in tweak_data.gui, used title which is 66
+	small = { font = "ui/fonts/pf_din_text_comp_pro_medium_20_mf", font_size = 20 },
+	medium = { font = "ui/fonts/pf_din_text_comp_pro_medium_26_mf", font_size = 28 },
+	large = { font = "ui/fonts/pf_din_text_comp_pro_medium_32_mf", font_size = 32 },
+	massive = { font = "ui/fonts/pf_din_text_comp_pro_medium_66_mf", font_size = 66 } -- raid has no massive in tweak_data.gui, used title which is 66
 }
 
 -- Load modules

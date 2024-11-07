@@ -14,6 +14,14 @@ local BAR_Y = 0
 local TIME_PER_PAGE = 6
 local CHANGE_TIME = 0.5
 
+local small_font = BLT.fonts.small.font
+local medium_font = BLT.fonts.medium.font
+local large_font = BLT.fonts.large.font
+
+local small_font_size = BLT.fonts.small.font_size
+local medium_font_size = BLT.fonts.medium.font_size
+local large_font_size = BLT.fonts.large.font_size
+
 function BLTNotificationsGui:init(ws, fullscreen_ws, node)
 	self._ws = ws
 	self._fullscreen_ws = fullscreen_ws
@@ -37,13 +45,6 @@ function BLTNotificationsGui:close()
 end
 
 function BLTNotificationsGui:_setup()
-	local font = BLT.fonts["small"][1] -- unused?
-	local font_size = BLT.fonts["small"][2]
-	local max_left_len = 0
-	local max_right_len = 0
-	local extra_w = font_size * 4
-	local icon_size = 16
-
 	self._enabled = true
 
 	-- Get player profile panel
@@ -119,8 +120,8 @@ function BLTNotificationsGui:_setup()
 	})
 
 	self._downloads_count =self._downloads_panel:text({
-		font_size = BLT.fonts["medium"][1],
-		font = BLT.fonts["medium"][2],
+		font_size = medium_font_size,
+		font = medium_font,
 		layer = 10,
 		color = tweak_data.screen_colors.title,
 		text = "2",
@@ -213,8 +214,8 @@ function BLTNotificationsGui:add_notification(parameters)
 
 	local title = new_notif:text({
 		text = parameters.title or "No Title",
-		font = BLT.fonts["large"][1],
-		font_size = BLT.fonts["large"][2] * 0.5,
+		font = large_font,
+		font_size = large_font_size * 0.5,
 		x = _x,
 		y = padding
 	})
@@ -222,8 +223,8 @@ function BLTNotificationsGui:add_notification(parameters)
 
 	local text = new_notif:text({
 		text = parameters.text or "No Text",
-		font = BLT.fonts["small"][1],
-		font_size = BLT.fonts["small"][2],
+		font = small_font,
+		font_size = small_font_size,
 		x = _x,
 		w = new_notif:w() - _x,
 		y = title:bottom(),

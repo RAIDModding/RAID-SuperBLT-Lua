@@ -4,10 +4,12 @@
 BLTCustomComponent = BLTCustomComponent or blt_class(MenuGuiComponentGeneric)
 
 local padding = 10
-local large_font_size = BLT.fonts["large"][2]
-local large_font = BLT.fonts["large"][1]
-local massive_font = BLT.fonts["massive"][1]
-local massive_font_size = BLT.fonts["massive"][2]
+
+local large_font = BLT.fonts.large.font
+local massive_font = BLT.fonts.massive.font
+
+local large_font_size = BLT.fonts.large.font_size
+local massive_font_size = BLT.fonts.massive.font_size
 
 function BLTCustomComponent:init(ws, fullscreen_ws, node)
 	self._ws = ws

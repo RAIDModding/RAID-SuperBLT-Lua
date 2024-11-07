@@ -1,14 +1,12 @@
 local padding = 10
 
-local massive_font = BLT.fonts["massive"][1] -- unused?
-local large_font = BLT.fonts["large"][1]
-local medium_font = BLT.fonts["medium"][1]
-local small_font = BLT.fonts["small"][1]
+local small_font = BLT.fonts.small.font
+local medium_font = BLT.fonts.medium.font
+local large_font = BLT.fonts.large.font
 
-local massive_font_size = BLT.fonts["medium"][2] -- unused?
-local large_font_size = BLT.fonts["large"][2]
-local medium_font_size = BLT.fonts["medium"][2]
-local small_font_size = BLT.fonts["small"][2]
+local small_font_size = BLT.fonts.small.font_size
+local medium_font_size = BLT.fonts.medium.font_size
+local large_font_size = BLT.fonts.large.font_size
 
 local function make_fine_text(text)
 	local x, y, w, h = text:text_rect()
