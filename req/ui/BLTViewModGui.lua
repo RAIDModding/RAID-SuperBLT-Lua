@@ -325,6 +325,19 @@ function BLTViewModGui:_setup_buttons(mod)
 		callback = callback(self, self, "clbk_toggle_dev_info")
 	})
 	table.insert(self._buttons, btn)
+
+	if self._mod:IsContactWebsite() then
+		btn = BLTUIButton:new(buttons_panel, {
+			x = button_w + padding,
+			y = (next_row_height or 0),
+			w = button_w,
+			h = button_h * 0.5,
+			title = managers.localization:text("blt_mod_open_contact"),
+			text = managers.localization:text("blt_mod_open_contact_desc"),
+			callback = callback(self, self, "clbk_btn_open_contact", self._mod:GetContact())
+		})
+		table.insert(self._buttons, btn)
+	end
 end
 
 --------------------------------------------------------------------------------
@@ -494,6 +507,10 @@ function BLTViewModGui:clbk_toggle_dev_info()
 
 	-- change dev panel visibility
 	self._dev_panel:set_visible(show_dev)
+end
+
+function BLTViewModGui:clbk_btn_open_contact(contact_url)
+	BLT:OpenUrl(contact_url)
 end
 
 function BLTViewModGui:refresh()
