@@ -411,7 +411,7 @@ function BLTMod:GetContact()
 end
 
 function BLTMod:IsContactWebsite()
-	if string.find(self.contact, "https?://[%l%u%d].[%l%u]%a") then
+	if string.find(self.contact, "(https?://[%w-_%.%?%.:/%+=&]+)") then
 		return true
 	end
 	return false
