@@ -48,6 +48,9 @@
 	"blt_mod_toggle_dev" : "Toggle Developer Info",
 	"blt_mod_toggle_dev_desc" : "Show/hide developer information for this mod.",
 
+	"blt_mod_open_contact" : "Open Contact Website",
+	"blt_mod_open_contact_desc" : "Opens Contact website of this mod.",
+
 	"blt_update_mod_title" : "$name Update",
 	"blt_update_mod_up_to_date" : "$name is already up to date.",
 	"blt_update_mod_error" : "Could not check if the mod is already up to date.\n$reason",

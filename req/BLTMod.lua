@@ -410,6 +410,13 @@ function BLTMod:GetContact()
 	return self.contact
 end
 
+function BLTMod:IsContactWebsite()
+	if string.find(self.contact, "https?://[%l%u%d].[%l%u]%a") then
+		return true
+	end
+	return false
+end
+
 function BLTMod:GetPriority()
 	return self.priority
 end

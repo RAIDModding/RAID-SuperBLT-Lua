@@ -234,12 +234,7 @@ function BLTUpdate:ViewPatchNotes()
 	-- Use the URL returned in the update metadata if possible
 	-- this allows for easier migration of URLs
 	local url = self:GetPatchNotes()
-
-	if Steam and Steam:overlay_enabled() then
-		Steam:overlay_activate("url", url)
-	else
-		os.execute("cmd /c start " .. url)
-	end
+	BLT:OpenUrl(url)
 end
 
 function BLTUpdate:GetDownloadURL()
