@@ -78,17 +78,6 @@ function BLTViewModGui:_setup_mod_info(mod)
 	attach_corners(info_panel)
 	self._info_panel = info_panel
 
-	self:make_background(self._info_panel)
-	self._info_panel:bitmap({
-		texture = "guis/textures/test_blur_df",
-		w = self._info_panel:w(),
-		h = self._info_panel:h(),
-		render_template = "VertexColorTexturedBlur3D",
-		layer = -1,
-		halign = "scale",
-		valign = "scale"
-	})
-
 	self._info_scroll = ScrollablePanel:new(info_panel, "info_scroll")
 	local info_canvas = self._info_scroll:canvas()
 
@@ -242,17 +231,6 @@ function BLTViewModGui:_setup_dev_info(mod)
 	BoxGuiObject:new(dev_panel:panel({layer = 100}), {sides = {1, 1, 1, 1}})
 	self._dev_panel = dev_panel
 
-	self:make_background(dev_panel)
-	self._dev_panel:bitmap({
-		texture = "guis/textures/test_blur_df",
-		w = self._dev_panel:w(),
-		h = self._dev_panel:h(),
-		render_template = "VertexColorTexturedBlur3D",
-		layer = -1,
-		halign = "scale",
-		valign = "scale"
-	})
-
 	self._dev_scroll = ScrollablePanel:new(dev_panel, "dev_scroll")
 	local dev_canvas = self._dev_scroll:canvas()
 
@@ -288,7 +266,7 @@ function BLTViewModGui:_setup_buttons(mod)
 	buttons_panel:set_left(self._info_panel:right() + padding)
 
 	local button_w = 280
-	local button_h = 220
+	local button_h = 230
 	local btn
 	local next_row_height
 

@@ -54,16 +54,6 @@ function BLTModItem:init(panel, index, mod, show_icon)
 	})
 	BoxGuiObject:new(self._panel, {sides = {1, 1, 1, 1}})
 
-	self._panel:bitmap({
-		texture = "guis/textures/test_blur_df",
-		w = self._panel:w(),
-		h = self._panel:h(),
-		render_template = "VertexColorTexturedBlur3D",
-		layer = -1,
-		halign = "scale",
-		valign = "scale"
-	})
-
 	-- Mod name
 	local mod_name = self._panel:text({
 		name = "mod_name",

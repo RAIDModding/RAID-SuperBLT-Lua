@@ -79,16 +79,6 @@ function BLTNotificationsGui:_setup()
 		valign = "scale"
 	})
 
-	local blur =self._content_panel:bitmap({
-		texture = "guis/textures/test_blur_df",
-		w = self._content_panel:w(),
-		h = self._content_panel:h(),
-		render_template = "VertexColorTexturedBlur3D",
-		layer = -1,
-		halign = "scale",
-		valign = "scale"
-	})
-
 	-- Outline
 	BoxGuiObject:new(self._content_panel, {sides = {1, 1, 1, 1}})
 	self._content_outline = BoxGuiObject:new(self._content_panel, {sides = {2, 2, 2, 2}})

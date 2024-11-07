@@ -42,15 +42,6 @@ function BLTUIButton:init(panel, parameters)
 	})
 	BoxGuiObject:new(self._panel, {sides = {1, 1, 1, 1}})
 
-	self._panel:bitmap({
-		texture = "guis/textures/test_blur_df",
-		w = self._panel:w(),
-		h = self._panel:h(),
-		render_template = "VertexColorTexturedBlur3D",
-		layer = -1,
-		halign = "scale",
-		valign = "scale"
-	})
 
 	local title = self._panel:text({
 		name = "title",
@@ -178,16 +169,6 @@ function BLTDownloadControl:init(panel, parameters)
 	})
 	BoxGuiObject:new(self._download_panel, {sides = {1, 1, 1, 1}})
 
-	self._download_panel:bitmap({
-		texture = "guis/textures/test_blur_df",
-		w = self._download_panel:w(),
-		h = self._download_panel:h(),
-		render_template = "VertexColorTexturedBlur3D",
-		layer = -1,
-		halign = "scale",
-		valign = "scale"
-	})
-
 	local image = self._download_panel:bitmap({
 		name = "image",
 		texture = "guis/blt/updates",
@@ -234,15 +215,6 @@ function BLTDownloadControl:init(panel, parameters)
 		w = self._panel:w() - self._download_panel:w() - self._patch_panel:w() - padding * 2
 	})
 
-	self._info_panel:bitmap({
-		texture = "guis/textures/test_blur_df",
-		w = self._panel:w(),
-		h = self._panel:h(),
-		render_template = "VertexColorTexturedBlur3D",
-		layer = -1,
-		halign = "scale",
-		valign = "scale"
-	})
 	BoxGuiObject:new(self._info_panel, {sides = {1, 1, 1, 1}})
 
 	local download_name = parameters.update:GetName() or "No Name"
