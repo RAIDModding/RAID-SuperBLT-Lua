@@ -27,6 +27,14 @@ LogLevelPrefix = {
 BLT = { version = 2.0 }
 BLT.Base = {}
 
+-- BLT fonts table
+BLT.fonts = {
+	["small"] = {"ui/fonts/pf_din_text_comp_pro_medium_20_mf", 20},
+	["medium"] = {"ui/fonts/pf_din_text_comp_pro_medium_26_mf", 28},
+	["large"] = {"ui/fonts/pf_din_text_comp_pro_medium_32_mf", 32},
+	["massive"] = {"ui/fonts/pf_din_text_comp_pro_medium_66_mf", 66} -- raid has no massive in tweak_data.gui, used title which is 66
+}
+
 -- Load modules
 BLT._PATH = "mods/base/"
 function BLT:Require(path)
@@ -260,6 +268,14 @@ function BLT:CompareVersions(version1, version2)
         end
     end
     return 0
+end
+
+function BLT:OpenUrl(url)
+	if Steam and Steam:overlay_enabled() then
+		Steam:overlay_activate("url", url)
+	else
+		os.execute("cmd /c start " .. url)
+	end
 end
 
 -- Perform startup

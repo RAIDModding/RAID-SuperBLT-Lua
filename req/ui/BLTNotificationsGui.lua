@@ -37,8 +37,8 @@ function BLTNotificationsGui:close()
 end
 
 function BLTNotificationsGui:_setup()
-	local font = tweak_data.menu.pd2_small_font
-	local font_size = tweak_data.menu.pd2_small_font_size
+	local font = BLT.fonts["small"][1] -- unused?
+	local font_size = BLT.fonts["small"][2]
 	local max_left_len = 0
 	local max_right_len = 0
 	local extra_w = font_size * 4
@@ -74,16 +74,6 @@ function BLTNotificationsGui:_setup()
 		name = "background",
 		color = Color.black,
 		alpha = 0,
-		layer = -1,
-		halign = "scale",
-		valign = "scale"
-	})
-
-	local blur =self._content_panel:bitmap({
-		texture = "guis/textures/test_blur_df",
-		w = self._content_panel:w(),
-		h = self._content_panel:h(),
-		render_template = "VertexColorTexturedBlur3D",
 		layer = -1,
 		halign = "scale",
 		valign = "scale"
@@ -129,7 +119,7 @@ function BLTNotificationsGui:_setup()
 	})
 
 	self._downloads_count =self._downloads_panel:text({
-		font_size = tweak_data.menu.pd2_medium_font_size,
+		font_size = tweak_data.menu.pd2_medium_font_size, -- NEEDS PADAY2 FONTS OTHERWISE NUMBER IS INVISIBLE
 		font = tweak_data.menu.pd2_medium_font,
 		layer = 10,
 		color = tweak_data.screen_colors.title,
@@ -223,8 +213,8 @@ function BLTNotificationsGui:add_notification(parameters)
 
 	local title = new_notif:text({
 		text = parameters.title or "No Title",
-		font = tweak_data.menu.pd2_large_font,
-		font_size = tweak_data.menu.pd2_large_font_size * 0.5,
+		font = BLT.fonts["large"][1],
+		font_size = BLT.fonts["large"][2] * 0.5,
 		x = _x,
 		y = padding
 	})
@@ -232,8 +222,8 @@ function BLTNotificationsGui:add_notification(parameters)
 
 	local text = new_notif:text({
 		text = parameters.text or "No Text",
-		font = tweak_data.menu.pd2_small_font,
-		font_size = tweak_data.menu.pd2_small_font_size,
+		font = BLT.fonts["small"][1],
+		font_size = BLT.fonts["small"][2],
 		x = _x,
 		w = new_notif:w() - _x,
 		y = title:bottom(),

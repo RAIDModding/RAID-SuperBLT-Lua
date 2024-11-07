@@ -7,15 +7,15 @@ BLTViewModGui._add_back_button = BLTViewModGui._add_custom_back_button
 
 local padding = 10
 
-local massive_font = tweak_data.menu.pd2_massive_font
-local large_font = tweak_data.menu.pd2_large_font
-local medium_font = tweak_data.menu.pd2_medium_font
-local small_font = tweak_data.menu.pd2_small_font
+local massive_font = BLT.fonts["massive"][1] -- unused?
+local large_font = BLT.fonts["large"][1] -- unused?
+local medium_font = BLT.fonts["medium"][1]
+local small_font = BLT.fonts["small"][1]
 
-local massive_font_size = tweak_data.menu.pd2_massive_font_size
-local large_font_size = tweak_data.menu.pd2_large_font_size
-local medium_font_size = tweak_data.menu.pd2_medium_font_size
-local small_font_size = tweak_data.menu.pd2_small_font_size
+local massive_font_size = BLT.fonts["massive"][2] -- unused?
+local large_font_size = BLT.fonts["large"][2] -- unused?
+local medium_font_size = BLT.fonts["medium"][2]
+local small_font_size = BLT.fonts["small"][2]
 
 -- attaches white corners to panel, which will align correctly when 'panel' changes size
 local function attach_corners(parent)
@@ -77,17 +77,6 @@ function BLTViewModGui:_setup_mod_info(mod)
 	})
 	attach_corners(info_panel)
 	self._info_panel = info_panel
-
-	self:make_background(self._info_panel)
-	self._info_panel:bitmap({
-		texture = "guis/textures/test_blur_df",
-		w = self._info_panel:w(),
-		h = self._info_panel:h(),
-		render_template = "VertexColorTexturedBlur3D",
-		layer = -1,
-		halign = "scale",
-		valign = "scale"
-	})
 
 	self._info_scroll = ScrollablePanel:new(info_panel, "info_scroll")
 	local info_canvas = self._info_scroll:canvas()
@@ -242,17 +231,6 @@ function BLTViewModGui:_setup_dev_info(mod)
 	BoxGuiObject:new(dev_panel:panel({layer = 100}), {sides = {1, 1, 1, 1}})
 	self._dev_panel = dev_panel
 
-	self:make_background(dev_panel)
-	self._dev_panel:bitmap({
-		texture = "guis/textures/test_blur_df",
-		w = self._dev_panel:w(),
-		h = self._dev_panel:h(),
-		render_template = "VertexColorTexturedBlur3D",
-		layer = -1,
-		halign = "scale",
-		valign = "scale"
-	})
-
 	self._dev_scroll = ScrollablePanel:new(dev_panel, "dev_scroll")
 	local dev_canvas = self._dev_scroll:canvas()
 
@@ -288,7 +266,7 @@ function BLTViewModGui:_setup_buttons(mod)
 	buttons_panel:set_left(self._info_panel:right() + padding)
 
 	local button_w = 280
-	local button_h = 220
+	local button_h = 230
 	local btn
 	local next_row_height
 
@@ -351,6 +329,19 @@ function BLTViewModGui:_setup_buttons(mod)
 		callback = callback(self, self, "clbk_toggle_dev_info")
 	})
 	table.insert(self._buttons, btn)
+
+	if self._mod:IsContactWebsite() then
+		btn = BLTUIButton:new(buttons_panel, {
+			x = button_w + padding,
+			y = (next_row_height or 0),
+			w = button_w,
+			h = button_h * 0.5,
+			title = managers.localization:text("blt_mod_open_contact"),
+			text = managers.localization:text("blt_mod_open_contact_desc"),
+			callback = callback(self, self, "clbk_btn_open_contact", self._mod:GetContact())
+		})
+		table.insert(self._buttons, btn)
+	end
 end
 
 --------------------------------------------------------------------------------
@@ -520,6 +511,10 @@ function BLTViewModGui:clbk_toggle_dev_info()
 
 	-- change dev panel visibility
 	self._dev_panel:set_visible(show_dev)
+end
+
+function BLTViewModGui:clbk_btn_open_contact(contact_url)
+	BLT:OpenUrl(contact_url)
 end
 
 function BLTViewModGui:refresh()
