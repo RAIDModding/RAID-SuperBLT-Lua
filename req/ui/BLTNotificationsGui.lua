@@ -37,8 +37,8 @@ function BLTNotificationsGui:close()
 end
 
 function BLTNotificationsGui:_setup()
-	local font = tweak_data.menu.pd2_small_font
-	local font_size = tweak_data.menu.pd2_small_font_size
+	local font = BLT.fonts["small"][1] -- unused?
+	local font_size = BLT.fonts["small"][2]
 	local max_left_len = 0
 	local max_right_len = 0
 	local extra_w = font_size * 4
@@ -129,8 +129,8 @@ function BLTNotificationsGui:_setup()
 	})
 
 	self._downloads_count =self._downloads_panel:text({
-		font_size = tweak_data.menu.pd2_medium_font_size,
-		font = tweak_data.menu.pd2_medium_font,
+		font_size = BLT.fonts["medium"][1],
+		font = BLT.fonts["medium"][2],
 		layer = 10,
 		color = tweak_data.screen_colors.title,
 		text = "2",
@@ -223,8 +223,8 @@ function BLTNotificationsGui:add_notification(parameters)
 
 	local title = new_notif:text({
 		text = parameters.title or "No Title",
-		font = tweak_data.menu.pd2_large_font,
-		font_size = tweak_data.menu.pd2_large_font_size * 0.5,
+		font = BLT.fonts["large"][1],
+		font_size = BLT.fonts["large"][2] * 0.5,
 		x = _x,
 		y = padding
 	})
@@ -232,8 +232,8 @@ function BLTNotificationsGui:add_notification(parameters)
 
 	local text = new_notif:text({
 		text = parameters.text or "No Text",
-		font = tweak_data.menu.pd2_small_font,
-		font_size = tweak_data.menu.pd2_small_font_size,
+		font = BLT.fonts["small"][1],
+		font_size = BLT.fonts["small"][2],
 		x = _x,
 		w = new_notif:w() - _x,
 		y = title:bottom(),

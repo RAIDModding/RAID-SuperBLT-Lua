@@ -4,11 +4,11 @@ BLTModItem = BLTModItem or blt_class()
 
 local padding = 10
 
-local medium_font = tweak_data.menu.pd2_medium_font
-local small_font = tweak_data.menu.pd2_small_font
+local medium_font = BLT.fonts["medium"][1]
+local small_font = BLT.fonts["small"][1]
 
-local medium_font_size = tweak_data.menu.pd2_medium_font_size
-local small_font_size = tweak_data.menu.pd2_small_font_size
+local medium_font_size = BLT.fonts["medium"][2]
+local small_font_size = BLT.fonts["small"][2]
 
 BLTModItem.layout = {
 	x = 4,

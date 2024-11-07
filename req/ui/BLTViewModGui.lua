@@ -7,15 +7,15 @@ BLTViewModGui._add_back_button = BLTViewModGui._add_custom_back_button
 
 local padding = 10
 
-local massive_font = tweak_data.menu.pd2_massive_font
-local large_font = tweak_data.menu.pd2_large_font
-local medium_font = tweak_data.menu.pd2_medium_font
-local small_font = tweak_data.menu.pd2_small_font
+local massive_font = BLT.fonts["massive"][1] -- unused?
+local large_font = BLT.fonts["large"][1] -- unused?
+local medium_font = BLT.fonts["medium"][1]
+local small_font = BLT.fonts["small"][1]
 
-local massive_font_size = tweak_data.menu.pd2_massive_font_size
-local large_font_size = tweak_data.menu.pd2_large_font_size
-local medium_font_size = tweak_data.menu.pd2_medium_font_size
-local small_font_size = tweak_data.menu.pd2_small_font_size
+local massive_font_size = BLT.fonts["massive"][2] -- unused?
+local large_font_size = BLT.fonts["large"][2] -- unused?
+local medium_font_size = BLT.fonts["medium"][2]
+local small_font_size = BLT.fonts["small"][2]
 
 -- attaches white corners to panel, which will align correctly when 'panel' changes size
 local function attach_corners(parent)
