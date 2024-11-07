@@ -4,7 +4,7 @@
     description="The collection of Lua files that allow the BLT hook to function."
     author="ZNix, James Wilkinson, RAIDModding"
     contact="https://discord.gg/9tAtgtGpx9"
-    version="1.0.3"
+    version="1.1.0"
     priority="1001"
     image="assets/guis/blt/icon.png"
     color="255 0 255"

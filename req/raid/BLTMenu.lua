@@ -75,6 +75,13 @@ function BLTMenu:Clear()
     self._root_panel.ctrls = {}
 end
 
+function BLTMenu:update(t, dt)
+    self:Update(t, dt)
+end
+
+function BLTMenu:Update(t, dt)
+end
+
 function BLTMenu:close()
     self._ws:panel():remove(self._panel)
     self._fullscreen_ws:panel():remove(self._fullscreen_panel)
