@@ -119,8 +119,8 @@ function BLTNotificationsGui:_setup()
 	})
 
 	self._downloads_count =self._downloads_panel:text({
-		font_size = BLT.fonts["medium"][1],
-		font = BLT.fonts["medium"][2],
+		font_size = tweak_data.menu.pd2_medium_font_size, -- NEEDS PADAY2 FONTS OTHERWISE NUMBER IS INVISIBLE
+		font = tweak_data.menu.pd2_medium_font,
 		layer = 10,
 		color = tweak_data.screen_colors.title,
 		text = "2",
