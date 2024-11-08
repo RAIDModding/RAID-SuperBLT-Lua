@@ -270,13 +270,5 @@ function BLT:CompareVersions(version1, version2)
     return 0
 end
 
-function BLT:OpenUrl(url)
-	if Steam and Steam:overlay_enabled() then
-		Steam:overlay_activate("url", url)
-	else
-		os.execute("cmd /c start " .. url)
-	end
-end
-
 -- Perform startup
 BLT:Initialize()

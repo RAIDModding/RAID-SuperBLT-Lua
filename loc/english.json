@@ -104,6 +104,9 @@
 
 	"blt_no_image" : "No Image",
 	"blt_no_name" : "No Name",
-	"blt_no_desc" : "No Description"
+	"blt_no_desc" : "No Description",
 
+	"blt_openurl_title" : "Open Url",
+	"blt_openurl_text_browser" : "Do you want to open this URL in your browser?\nURL: %s",
+	"blt_openurl_text_steamoverlay" : "Do you want to open this URL in your steam overlay?\nURL: %s"
 }

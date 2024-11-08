@@ -510,7 +510,7 @@ function BLTViewModGui:clbk_toggle_dev_info()
 end
 
 function BLTViewModGui:clbk_btn_open_contact(contact_url)
-	BLT:OpenUrl(contact_url)
+	Utils.OpenUrlSafe(contact_url)
 end
 
 function BLTViewModGui:refresh()

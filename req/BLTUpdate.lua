@@ -234,7 +234,7 @@ function BLTUpdate:ViewPatchNotes()
 	-- Use the URL returned in the update metadata if possible
 	-- this allows for easier migration of URLs
 	local url = self:GetPatchNotes()
-	BLT:OpenUrl(url)
+	Utils.OpenUrlSafe(url)
 end
 
 function BLTUpdate:GetDownloadURL()

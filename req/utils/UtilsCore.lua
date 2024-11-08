@@ -375,6 +375,34 @@ function _G.table.list_to_set(list)
 	return rtn
 end
 
+function Utils.OpenUrlSafe(url)
+	QuickMenu:new(
+		managers.localization:text("blt_openurl_title"),
+		string.format(Steam and Steam:overlay_enabled() and managers.localization:text("blt_openurl_text_steamoverlay") or managers.localization:text("blt_openurl_text_browser"), url),
+		{
+			[1] = {
+				text = math.random() < 0.02 and "NEIN!" or managers.localization:text("dialog_no"),
+				is_cancel_button = true,
+			},
+			[2] = {
+				text = managers.localization:text("dialog_yes"),
+				callback = function()
+					Utils.OpenUrl(url)
+				end,
+			},
+		},
+		true
+	)
+end
+
+function Utils.OpenUrl(url)
+	if Steam and Steam:overlay_enabled() then
+		Steam:overlay_activate("url", url)
+	else
+		os.execute("cmd /c start " .. url)
+	end
+end
+
 -- DEPRECATED FUNCTIONALITY --
 
 ---@deprecated @Use hooks or manual cloning instead
