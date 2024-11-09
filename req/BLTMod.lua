@@ -176,7 +176,6 @@ function BLTMod:PostInit()
 	end
 
 	if BLT:CompareVersions(BLT:GetBaseVersion(), self.min_sblt_version) == 2 then
-		
 		table.insert(self._errors, "blt_mod_info_min_sblt_ver_not_met")
 		self:SetEnabled(false, true)
 	end
@@ -928,7 +927,7 @@ function BLTMod:_load_localization_xml_inner(scope)
 end
 
 function BLTMod:_apply_localization()
-    local lang_key = Idstring(Steam:current_language()):key()
+    local lang_key = Steam:current_language()
     local loc = self.localizations[lang_key] or self.localizations[self.default_language]
     if loc then
         for _, path in pairs(loc) do
