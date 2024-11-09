@@ -24,7 +24,10 @@ LogLevelPrefix = {
 }
 
 -- BLT Global table
-BLT = { version = 2.0 }
+BLT = { 
+	version = 2.0,
+	base_version = nil
+}
 BLT.Base = {}
 
 -- BLT fonts table
@@ -126,12 +129,26 @@ function BLT:Setup()
 	LuaModManager.Mods = {} -- No mods are available via old api
 	rawset(_G, C.logs_path_global, C.mods_directory .. C.logs_directory)
 	rawset(_G, C.save_path_global, C.mods_directory .. C.saves_directory)
+
+	-- save blt base version
+	local file = io.open(BLT._PATH .. "supermod.xml")
+	if file then
+		local content = file:read("*all")
+		file:close()
+		local xml = blt.parsexml(content)
+		self.base_version = xml.params.version
+	end
+
 end
 
 ---Returns the version of BLT
 ---@return string @The version of BLT
 function BLT:GetVersion()
 	return tostring(self.version)
+end
+
+function BLT:GetBaseVersion()
+	return tostring(self.base_version)
 end
 
 ---Returns the operating system that the game is running on

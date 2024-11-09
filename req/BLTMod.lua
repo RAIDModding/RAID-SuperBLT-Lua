@@ -45,6 +45,7 @@ function BLTMod:init(identifier, data, path)
 	self.disable_safe_mode = false
 	self.undisablable = false
 	self.library = false
+	self.min_sblt_version = nil
 
 	self.path = path
 	self.data = data
@@ -174,6 +175,12 @@ function BLTMod:PostInit()
 		self:SetEnabled(false, true)
 	end
 
+	if BLT:CompareVersions(BLT:GetBaseVersion(), self.min_sblt_version) == 2 then
+		
+		table.insert(self._errors, "blt_mod_info_min_sblt_ver_not_met")
+		self:SetEnabled(false, true)
+	end
+
 	if not self:IsEnabled() then
 		return
 	end
@@ -235,6 +242,7 @@ function BLTMod:SetParams(data)
 		disable_safe_mode = data.disable_safe_mode,
 		undisablable = data.undisablable,
 		library = data.is_library,
+		min_sblt_version = data.min_sblt_version
 	}
 
 	for k, v in pairs(merge) do
@@ -419,6 +427,10 @@ end
 
 function BLTMod:GetPriority()
 	return self.priority
+end
+
+function BLTMod:GetMinSBLTVer()
+	return self.min_sblt_version
 end
 
 function BLTMod:GetColor()

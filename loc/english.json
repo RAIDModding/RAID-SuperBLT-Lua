@@ -19,6 +19,8 @@
 
 	"blt_mod_info_author" : "Author",
 	"blt_mod_info_contact" : "Contact",
+	"blt_mod_info_min_sblt_version" : "Minimum SBLT Version",
+	"blt_mod_info_min_sblt_ver_not_met" : "This mod requires a newer version of SBLT",
 
 	"blt_mod_state_enabled" : "Enabled",
 	"blt_mod_state_enabled_desc" : "This mod is loaded when the game is started.",

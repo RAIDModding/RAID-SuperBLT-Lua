@@ -176,6 +176,28 @@ function BLTViewModGui:_setup_mod_info(mod)
 	})
 	self:make_fine_text(contact)
 	contact:set_top(author:bottom())
+	-- min sblt version
+	local min_sblt_ver = nil
+	if mod:GetMinSBLTVer() then
+		min_sblt_ver = info_canvas:text({
+			name = "contact",
+			x = padding,
+			y = padding,
+			w = info_canvas:w() - padding * 2,
+			font_size = medium_font_size,
+			font = medium_font,
+			layer = 10,
+			color = tweak_data.screen_colors.title,
+			text = managers.localization:text("blt_mod_info_min_sblt_version") .. ": " .. mod:GetMinSBLTVer(),
+			align = "left",
+			vertical = "top",
+			wrap = true,
+			word_wrap = true
+		})
+
+		self:make_fine_text(min_sblt_ver)
+		min_sblt_ver:set_top(contact:bottom())
+	end
 
 	-- Mod update status
 	local update_status = info_canvas:text({
@@ -192,7 +214,7 @@ function BLTViewModGui:_setup_mod_info(mod)
 		wrap = true,
 		word_wrap = true
 	})
-	update_status:set_top(contact:bottom())
+	update_status:set_top(min_sblt_ver ~= nil and min_sblt_ver:bottom() or contact:bottom())
 
 	if mod:GetUpdateError() then
 		update_status:set_text(managers.localization:text("blt_update_mod_error", {
