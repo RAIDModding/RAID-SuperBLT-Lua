@@ -51,6 +51,17 @@ function BLTDownloadManagerGui:setup()
 			callback = callback(self, self, "clbk_download_all")
 		})
 		table.insert(self._buttons, button)
+		-- relua btn
+		local button = BLTUIButton:new(self._scroll:canvas(), {
+			x = self._scroll:canvas():w() - w * 2 - padding,
+			y = (h + padding) * num_downloads,
+			w = w,
+			h = h,
+			text = managers.localization:text("blt_download_relua_button"),
+			center_text = true,
+			callback = callback(self, self, "clbk_relua_button")
+		})
+		table.insert(self._buttons, button)
 	end
 end
 
@@ -58,6 +69,28 @@ function BLTDownloadManagerGui:clbk_download_all()
 	BLT.Downloads:download_all()
 end
 
+function BLTDownloadManagerGui:clbk_relua_button()
+	if setup and setup.quit_to_main_menu then
+		QuickMenu:new(
+			managers.localization:text("blt_download_relua_title"),
+			managers.localization:text("blt_download_relua_text"),
+			{
+				[1] = {
+					text = math.random() < 0.02 and "NEIN!" or managers.localization:text("dialog_no"),
+					is_cancel_button = true,
+				},
+				[2] = {
+					text = managers.localization:text("dialog_yes"),
+					callback = function()
+						setup.exit_to_main_menu = true
+						setup:quit_to_main_menu()
+					end,
+				},
+			},
+			true
+		)
+	end
+end
 --------------------------------------------------------------------------------
 
 function BLTDownloadManagerGui:update(t, dt)

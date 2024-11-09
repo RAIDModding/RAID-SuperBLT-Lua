@@ -74,6 +74,9 @@
 	"blt_download_done" : "Done!",
 	"blt_download_dependency" : "$dependency, required by $mod",
 	"blt_download_all" : "Update All",
+	"blt_download_relua_button" : "Reload game",
+	"blt_download_relua_title" : "Do you want to reload the game?",
+	"blt_download_relua_text" : "This will reload all lua code except for SuperBLT & assets",
 
 	"blt_checking_updates" : "Checking for Updates",
 	"blt_checking_updates_help" : "Checking for updates to your mods, please wait...",
