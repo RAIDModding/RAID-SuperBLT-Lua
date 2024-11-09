@@ -56,3 +56,23 @@ end
 function MenuGuiComponentGeneric:back_pressed()
     RaidGuiBase:_on_legend_pc_back()
 end
+
+function MenuGuiComponentGeneric:move_up()
+    -- empty function to prevent crash when using arrow keys on main menu
+end
+
+function MenuGuiComponentGeneric:move_down()
+    -- empty function to prevent crash when using arrow keys on main menu
+end
+
+function MenuGuiComponentGeneric:move_left()
+    -- empty function to prevent crash when using arrow keys on main menu
+end
+
+function MenuGuiComponentGeneric:move_right()
+    -- empty function to prevent crash when using arrow keys on main menu
+end
+
+function MenuGuiComponentGeneric:confirm_pressed()
+    -- empty function to prevent crash when using arrow keys on main menu
+end
