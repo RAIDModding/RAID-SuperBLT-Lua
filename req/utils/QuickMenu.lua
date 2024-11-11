@@ -37,7 +37,10 @@ function QuickMenu:init(title, text, options, show_immediately)
 		}
 		button.text = option.text
 		button.callback_func = callback(self, self, "_callback", callback_data)
-		button.cancel_button = option.is_cancel_button or false
+
+		if option.is_cancel_button then
+			button.class = RaidGUIControlButtonShortSecondary
+		end
 
 		if option.is_focused_button then
 			self.dialog_data.focus_button = #self.dialog_data.button_list + 1
