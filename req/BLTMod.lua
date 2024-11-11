@@ -928,13 +928,23 @@ end
 
 function BLTMod:_apply_localization()
     local lang_key = Steam:current_language()
-    local loc = self.localizations[lang_key] or self.localizations[self.default_language]
+	local default_loc = self.localizations[self.default_language]
+    local loc = self.localizations[lang_key] or default_loc
     if loc then
+		-- load localization matching game language
         for _, path in pairs(loc) do
             if not LocalizationManager:load_localization_file(path) then
                 BLT:Log(LogLevel.ERROR, string.format("Language file has errors and cannot be loaded! Path %s", path))
             end
         end
+		-- load default localtization as fallback
+		if default_loc then
+			for _, path in pairs(default_loc) do
+				if not LocalizationManager:load_localization_file(path, false) then
+					BLT:Log(LogLevel.ERROR, string.format("Language file has errors and cannot be loaded! Path %s", path))
+				end
+			end
+		end
     else -- legacy
         local path = (self.localization_directory .. self.default_localization)
         if not LocalizationManager:load_localization_file(path) then
