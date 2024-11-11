@@ -51,17 +51,20 @@ function BLTDownloadManagerGui:setup()
 			callback = callback(self, self, "clbk_download_all")
 		})
 		table.insert(self._buttons, button)
-		-- relua btn
-		local button = BLTUIButton:new(self._scroll:canvas(), {
-			x = self._scroll:canvas():w() - w * 2 - padding,
-			y = (h + padding) * num_downloads,
-			w = w,
-			h = h,
-			text = managers.localization:text("blt_download_relua_button"),
-			center_text = true,
-			callback = callback(self, self, "clbk_relua_button")
-		})
-		table.insert(self._buttons, button)
+
+		if file.FileExists(BLTModManager.Constants.mods_directory .. "developer.txt") then
+			-- relua btn
+			local relua_button = BLTUIButton:new(self._scroll:canvas(), {
+				x = self._scroll:canvas():w() - w * 2 - padding,
+				y = (h + padding) * num_downloads,
+				w = w,
+				h = h,
+				text = managers.localization:text("blt_download_relua_button"),
+				center_text = true,
+				callback = callback(self, self, "clbk_relua_button")
+			})
+			table.insert(self._buttons, relua_button)
+		end
 	end
 end
 
