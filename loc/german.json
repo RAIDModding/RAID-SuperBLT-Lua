@@ -19,6 +19,8 @@
 
 	"blt_mod_info_author" : "Autor",
 	"blt_mod_info_contact" : "Kontakt",
+	"blt_mod_info_min_sblt_version" : "Minimale SBLT Version",
+	"blt_mod_info_min_sblt_ver_not_met" : "Diese Mod benötigt eine neuere Version von SBLT",
 
 	"blt_mod_state_enabled" : "Aktiviert",
 	"blt_mod_state_enabled_desc" : "Dieser Mod wird geladen, wenn das Spiel gestartet wird.",
@@ -48,6 +50,9 @@
 	"blt_mod_toggle_dev" : "Entwicklerinfo umschalten",
 	"blt_mod_toggle_dev_desc" : "Entwicklerinformationen für diesen Mod ein-/ausblenden.",
 
+	"blt_mod_open_contact" : "Öffne Kontakt-Website",
+	"blt_mod_open_contact_desc" : "Öffnet die Kontakt-Website für diesen Mod.",
+
 	"blt_update_mod_title" : "$name Update",
 	"blt_update_mod_up_to_date" : "$name ist bereits auf dem neuesten Stand.",
 	"blt_update_mod_error" : "Konnte nicht überprüfen, ob der Mod bereits auf dem neuesten Stand ist.\n$reason",
@@ -71,6 +76,9 @@
 	"blt_download_done" : "Erledigt!",
 	"blt_download_dependency" : "$dependency, erforderlich für $mod",
 	"blt_download_all" : "Alle aktualisieren",
+	"blt_download_relua_button" : "Spiel neuladen",
+	"blt_download_relua_title" : "Willst du das Spiel neuladen?",
+	"blt_download_relua_text" : "Das wird allen Lua Code außer SuperBLT & Assets neuladen",
 
 	"blt_checking_updates" : "Nach Updates suchen",
 	"blt_checking_updates_help" : "Suche nach Updates für deine Mods, bitte warten...",
@@ -101,6 +109,9 @@
 
 	"blt_no_image" : "Kein Bild",
 	"blt_no_name" : "Kein Name",
-	"blt_no_desc" : "Keine Beschreibung"
+	"blt_no_desc" : "Keine Beschreibung",
 
+	"blt_openurl_title" : "Öffne URL",
+	"blt_openurl_text_browser" : "Möchtest du diese URL in deinem Browser öffnen?\nURL: %s",
+	"blt_openurl_text_steamoverlay" : "Möchtest du diese URL in deinem Steam Overlay öffnen?\nURL: %s"
 }

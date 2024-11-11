@@ -7,15 +7,11 @@ BLTViewModGui._add_back_button = BLTViewModGui._add_custom_back_button
 
 local padding = 10
 
-local massive_font = tweak_data.menu.pd2_massive_font
-local large_font = tweak_data.menu.pd2_large_font
-local medium_font = tweak_data.menu.pd2_medium_font
-local small_font = tweak_data.menu.pd2_small_font
+local small_font = BLT.fonts.small.font
+local medium_font = BLT.fonts.medium.font
 
-local massive_font_size = tweak_data.menu.pd2_massive_font_size
-local large_font_size = tweak_data.menu.pd2_large_font_size
-local medium_font_size = tweak_data.menu.pd2_medium_font_size
-local small_font_size = tweak_data.menu.pd2_small_font_size
+local small_font_size = BLT.fonts.small.font_size
+local medium_font_size = BLT.fonts.medium.font_size
 
 -- attaches white corners to panel, which will align correctly when 'panel' changes size
 local function attach_corners(parent)
@@ -77,17 +73,6 @@ function BLTViewModGui:_setup_mod_info(mod)
 	})
 	attach_corners(info_panel)
 	self._info_panel = info_panel
-
-	self:make_background(self._info_panel)
-	self._info_panel:bitmap({
-		texture = "guis/textures/test_blur_df",
-		w = self._info_panel:w(),
-		h = self._info_panel:h(),
-		render_template = "VertexColorTexturedBlur3D",
-		layer = -1,
-		halign = "scale",
-		valign = "scale"
-	})
 
 	self._info_scroll = ScrollablePanel:new(info_panel, "info_scroll")
 	local info_canvas = self._info_scroll:canvas()
@@ -191,6 +176,28 @@ function BLTViewModGui:_setup_mod_info(mod)
 	})
 	self:make_fine_text(contact)
 	contact:set_top(author:bottom())
+	-- min sblt version
+	local min_sblt_ver = nil
+	if mod:GetMinSBLTVer() then
+		min_sblt_ver = info_canvas:text({
+			name = "contact",
+			x = padding,
+			y = padding,
+			w = info_canvas:w() - padding * 2,
+			font_size = medium_font_size,
+			font = medium_font,
+			layer = 10,
+			color = tweak_data.screen_colors.title,
+			text = managers.localization:text("blt_mod_info_min_sblt_version") .. ": " .. mod:GetMinSBLTVer(),
+			align = "left",
+			vertical = "top",
+			wrap = true,
+			word_wrap = true
+		})
+
+		self:make_fine_text(min_sblt_ver)
+		min_sblt_ver:set_top(contact:bottom())
+	end
 
 	-- Mod update status
 	local update_status = info_canvas:text({
@@ -207,7 +214,7 @@ function BLTViewModGui:_setup_mod_info(mod)
 		wrap = true,
 		word_wrap = true
 	})
-	update_status:set_top(contact:bottom())
+	update_status:set_top(min_sblt_ver ~= nil and min_sblt_ver:bottom() or contact:bottom())
 
 	if mod:GetUpdateError() then
 		update_status:set_text(managers.localization:text("blt_update_mod_error", {
@@ -241,17 +248,6 @@ function BLTViewModGui:_setup_dev_info(mod)
 	dev_panel:set_bottom(self._panel:h() - padding * 4)
 	BoxGuiObject:new(dev_panel:panel({layer = 100}), {sides = {1, 1, 1, 1}})
 	self._dev_panel = dev_panel
-
-	self:make_background(dev_panel)
-	self._dev_panel:bitmap({
-		texture = "guis/textures/test_blur_df",
-		w = self._dev_panel:w(),
-		h = self._dev_panel:h(),
-		render_template = "VertexColorTexturedBlur3D",
-		layer = -1,
-		halign = "scale",
-		valign = "scale"
-	})
 
 	self._dev_scroll = ScrollablePanel:new(dev_panel, "dev_scroll")
 	local dev_canvas = self._dev_scroll:canvas()
@@ -288,7 +284,7 @@ function BLTViewModGui:_setup_buttons(mod)
 	buttons_panel:set_left(self._info_panel:right() + padding)
 
 	local button_w = 280
-	local button_h = 220
+	local button_h = 230
 	local btn
 	local next_row_height
 
@@ -351,6 +347,19 @@ function BLTViewModGui:_setup_buttons(mod)
 		callback = callback(self, self, "clbk_toggle_dev_info")
 	})
 	table.insert(self._buttons, btn)
+
+	if self._mod:IsContactWebsite() then
+		btn = BLTUIButton:new(buttons_panel, {
+			x = button_w + padding,
+			y = (next_row_height or 0),
+			w = button_w,
+			h = button_h * 0.5,
+			title = managers.localization:text("blt_mod_open_contact"),
+			text = managers.localization:text("blt_mod_open_contact_desc"),
+			callback = callback(self, self, "clbk_btn_open_contact", self._mod:GetContact())
+		})
+		table.insert(self._buttons, btn)
+	end
 end
 
 --------------------------------------------------------------------------------
@@ -520,6 +529,10 @@ function BLTViewModGui:clbk_toggle_dev_info()
 
 	-- change dev panel visibility
 	self._dev_panel:set_visible(show_dev)
+end
+
+function BLTViewModGui:clbk_btn_open_contact(contact_url)
+	Utils.OpenUrlSafe(contact_url)
 end
 
 function BLTViewModGui:refresh()

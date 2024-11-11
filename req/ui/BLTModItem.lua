@@ -4,11 +4,11 @@ BLTModItem = BLTModItem or blt_class()
 
 local padding = 10
 
-local medium_font = tweak_data.menu.pd2_medium_font
-local small_font = tweak_data.menu.pd2_small_font
+local small_font = BLT.fonts.small.font
+local medium_font = BLT.fonts.medium.font
 
-local medium_font_size = tweak_data.menu.pd2_medium_font_size
-local small_font_size = tweak_data.menu.pd2_small_font_size
+local small_font_size = BLT.fonts.small.font_size
+local medium_font_size = BLT.fonts.medium.font_size
 
 BLTModItem.layout = {
 	x = 4,
@@ -53,16 +53,6 @@ function BLTModItem:init(panel, index, mod, show_icon)
 		layer = -1
 	})
 	BoxGuiObject:new(self._panel, {sides = {1, 1, 1, 1}})
-
-	self._panel:bitmap({
-		texture = "guis/textures/test_blur_df",
-		w = self._panel:w(),
-		h = self._panel:h(),
-		render_template = "VertexColorTexturedBlur3D",
-		layer = -1,
-		halign = "scale",
-		valign = "scale"
-	})
 
 	-- Mod name
 	local mod_name = self._panel:text({

@@ -4,6 +4,17 @@ This lists the changes between different versions of the RAID-SuperBLT basemod,
 the changes for the DLL are listed in their own changelog.
 Contributors other than maintainers are listed in parenthesis after specific changes.
 
+## v1.2.0
+
+- added BLT.fonts table, reflecting pd2 font presets
+- added open contact button
+- added Util.OpenUrl and Util.OpenUrlSafe (with yes no msgbox)
+- added reload button to BLTDownloadManagerGui if developer.txt is present
+- added min_sblt_version for supermod.xml
+- fixed crashes in main menu due to missing event handlers when using arrow keys or enter
+- fixed always applying default localization
+- fixed QuickMenu cancel button flag for raid
+
 ## v1.1.0
 
 - fixed auto updater download validation for pure-xml mods (as in v1.0.1)

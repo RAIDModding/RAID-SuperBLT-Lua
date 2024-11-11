@@ -1,14 +1,12 @@
 local padding = 10
 
-local massive_font = tweak_data.menu.pd2_massive_font
-local large_font = tweak_data.menu.pd2_large_font
-local medium_font = tweak_data.menu.pd2_medium_font
-local small_font = tweak_data.menu.pd2_small_font
+local small_font = BLT.fonts.small.font
+local medium_font = BLT.fonts.medium.font
+local large_font = BLT.fonts.large.font
 
-local massive_font_size = tweak_data.menu.pd2_massive_font_size
-local large_font_size = tweak_data.menu.pd2_large_font_size
-local medium_font_size = tweak_data.menu.pd2_medium_font_size
-local small_font_size = tweak_data.menu.pd2_small_font_size
+local small_font_size = BLT.fonts.small.font_size
+local medium_font_size = BLT.fonts.medium.font_size
+local large_font_size = BLT.fonts.large.font_size
 
 local function make_fine_text(text)
 	local x, y, w, h = text:text_rect()
@@ -42,15 +40,6 @@ function BLTUIButton:init(panel, parameters)
 	})
 	BoxGuiObject:new(self._panel, {sides = {1, 1, 1, 1}})
 
-	self._panel:bitmap({
-		texture = "guis/textures/test_blur_df",
-		w = self._panel:w(),
-		h = self._panel:h(),
-		render_template = "VertexColorTexturedBlur3D",
-		layer = -1,
-		halign = "scale",
-		valign = "scale"
-	})
 
 	local title = self._panel:text({
 		name = "title",
@@ -178,16 +167,6 @@ function BLTDownloadControl:init(panel, parameters)
 	})
 	BoxGuiObject:new(self._download_panel, {sides = {1, 1, 1, 1}})
 
-	self._download_panel:bitmap({
-		texture = "guis/textures/test_blur_df",
-		w = self._download_panel:w(),
-		h = self._download_panel:h(),
-		render_template = "VertexColorTexturedBlur3D",
-		layer = -1,
-		halign = "scale",
-		valign = "scale"
-	})
-
 	local image = self._download_panel:bitmap({
 		name = "image",
 		texture = "guis/blt/updates",
@@ -234,15 +213,6 @@ function BLTDownloadControl:init(panel, parameters)
 		w = self._panel:w() - self._download_panel:w() - self._patch_panel:w() - padding * 2
 	})
 
-	self._info_panel:bitmap({
-		texture = "guis/textures/test_blur_df",
-		w = self._panel:w(),
-		h = self._panel:h(),
-		render_template = "VertexColorTexturedBlur3D",
-		layer = -1,
-		halign = "scale",
-		valign = "scale"
-	})
 	BoxGuiObject:new(self._info_panel, {sides = {1, 1, 1, 1}})
 
 	local download_name = parameters.update:GetName() or "No Name"

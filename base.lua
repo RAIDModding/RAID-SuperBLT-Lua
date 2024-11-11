@@ -24,8 +24,19 @@ LogLevelPrefix = {
 }
 
 -- BLT Global table
-BLT = { version = 2.0 }
+BLT = { 
+	version = 2.0,
+	base_version = nil
+}
 BLT.Base = {}
+
+-- BLT fonts table
+BLT.fonts = {
+	small = { font = "ui/fonts/pf_din_text_comp_pro_medium_20_mf", font_size = 20 },
+	medium = { font = "ui/fonts/pf_din_text_comp_pro_medium_26_mf", font_size = 28 },
+	large = { font = "ui/fonts/pf_din_text_comp_pro_medium_32_mf", font_size = 32 },
+	massive = { font = "ui/fonts/pf_din_text_comp_pro_medium_66_mf", font_size = 66 } -- raid has no massive in tweak_data.gui, used title which is 66
+}
 
 -- Load modules
 BLT._PATH = "mods/base/"
@@ -118,12 +129,26 @@ function BLT:Setup()
 	LuaModManager.Mods = {} -- No mods are available via old api
 	rawset(_G, C.logs_path_global, C.mods_directory .. C.logs_directory)
 	rawset(_G, C.save_path_global, C.mods_directory .. C.saves_directory)
+
+	-- save blt base version
+	local file = io.open(BLT._PATH .. "supermod.xml")
+	if file then
+		local content = file:read("*all")
+		file:close()
+		local xml = blt.parsexml(content)
+		self.base_version = xml.params.version
+	end
+
 end
 
 ---Returns the version of BLT
 ---@return string @The version of BLT
 function BLT:GetVersion()
 	return tostring(self.version)
+end
+
+function BLT:GetBaseVersion()
+	return tostring(self.base_version)
 end
 
 ---Returns the operating system that the game is running on

@@ -12,15 +12,13 @@ BLTModsGui.save_data_loaded = false
 
 local padding = 10
 
-local massive_font = tweak_data.menu.pd2_massive_font
-local large_font = tweak_data.menu.pd2_large_font
-local medium_font = tweak_data.menu.pd2_medium_font
-local small_font = tweak_data.menu.pd2_small_font
+local small_font = BLT.fonts.small.font
+local large_font = BLT.fonts.large.font
+local massive_font = BLT.fonts.massive.font
 
-local massive_font_size = tweak_data.menu.pd2_massive_font_size
-local large_font_size = tweak_data.menu.pd2_large_font_size
-local medium_font_size = tweak_data.menu.pd2_medium_font_size
-local small_font_size = tweak_data.menu.pd2_small_font_size
+local small_font_size = BLT.fonts.small.font_size
+local large_font_size = BLT.fonts.large.font_size
+local massive_font_size = BLT.fonts.massive.font_size
 
 local function make_fine_text(text)
 	local x, y, w, h = text:text_rect()
@@ -76,8 +74,8 @@ function BLTModsGui:_setup()
 		text = managers.localization:text("menu_back"),
 		align = "right",
 		vertical = "bottom",
-		font_size = tweak_data.menu.pd2_large_font_size,
-		font = tweak_data.menu.pd2_large_font,
+		font_size = large_font_size,
+		font = large_font,
 		color = tweak_data.screen_colors.button_stage_3,
 		layer = 40,
 	})
@@ -99,8 +97,8 @@ function BLTModsGui:_setup()
 		h = 90,
 		align = "right",
 		vertical = "bottom",
-		font_size = tweak_data.menu.pd2_massive_font_size,
-		font = tweak_data.menu.pd2_massive_font,
+		font_size = massive_font_size,
+		font = massive_font,
 		color = tweak_data.screen_colors.button_stage_3,
 		alpha = 0.4,
 		layer = 1
@@ -133,8 +131,8 @@ function BLTModsGui:_setup()
 		width = self._panel:w() - padding * 2,
 		height = large_font_size,
 		color = tweak_data.screen_colors.button_stage_3,
-		font = tweak_data.menu.pd2_small_font,
-		font_size = tweak_data.menu.pd2_small_font_size,
+		font = small_font,
+		font_size = small_font_size,
 		vertical = "bottom",
 		align = "right"
 	}

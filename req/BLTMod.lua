@@ -45,6 +45,7 @@ function BLTMod:init(identifier, data, path)
 	self.disable_safe_mode = false
 	self.undisablable = false
 	self.library = false
+	self.min_sblt_version = nil
 
 	self.path = path
 	self.data = data
@@ -174,6 +175,11 @@ function BLTMod:PostInit()
 		self:SetEnabled(false, true)
 	end
 
+	if BLT:CompareVersions(BLT:GetBaseVersion(), self.min_sblt_version) == 2 then
+		table.insert(self._errors, "blt_mod_info_min_sblt_ver_not_met")
+		self:SetEnabled(false, true)
+	end
+
 	if not self:IsEnabled() then
 		return
 	end
@@ -235,6 +241,7 @@ function BLTMod:SetParams(data)
 		disable_safe_mode = data.disable_safe_mode,
 		undisablable = data.undisablable,
 		library = data.is_library,
+		min_sblt_version = data.min_sblt_version
 	}
 
 	for k, v in pairs(merge) do
@@ -410,8 +417,19 @@ function BLTMod:GetContact()
 	return self.contact
 end
 
+function BLTMod:IsContactWebsite()
+	if string.find(self.contact, "(https?://[%w-_%.%?%.:/%+=&]+)") then
+		return true
+	end
+	return false
+end
+
 function BLTMod:GetPriority()
 	return self.priority
+end
+
+function BLTMod:GetMinSBLTVer()
+	return self.min_sblt_version
 end
 
 function BLTMod:GetColor()
@@ -909,14 +927,24 @@ function BLTMod:_load_localization_xml_inner(scope)
 end
 
 function BLTMod:_apply_localization()
-    local lang_key = Idstring(Steam:current_language()):key()
-    local loc = self.localizations[lang_key] or self.localizations[self.default_language]
+    local lang_key = Steam:current_language()
+	local default_loc = self.localizations[self.default_language]
+    local loc = self.localizations[lang_key] or default_loc
     if loc then
+		-- load localization matching game language
         for _, path in pairs(loc) do
             if not LocalizationManager:load_localization_file(path) then
                 BLT:Log(LogLevel.ERROR, string.format("Language file has errors and cannot be loaded! Path %s", path))
             end
         end
+		-- load default localtization as fallback
+		if default_loc then
+			for _, path in pairs(default_loc) do
+				if not LocalizationManager:load_localization_file(path, false) then
+					BLT:Log(LogLevel.ERROR, string.format("Language file has errors and cannot be loaded! Path %s", path))
+				end
+			end
+		end
     else -- legacy
         local path = (self.localization_directory .. self.default_localization)
         if not LocalizationManager:load_localization_file(path) then

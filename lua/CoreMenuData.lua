@@ -32,8 +32,8 @@ function Data:_load_data(root, menu_id)
 end
 
 function Data:load_data(file_path, menu_id)
-	if PackageManager:has(Idstring("menu"), file_path:id()) then
-		self:_load_data(PackageManager:script_data(Idstring("menu"), file_path:id()), menu_id)
+	if PackageManager:has(Idstring("menu"), Idstring(file_path)) then
+		self:_load_data(PackageManager:script_data(Idstring("menu"), Idstring(file_path)), menu_id)
 	end
 end
 

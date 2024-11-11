@@ -4,8 +4,12 @@
 BLTCustomComponent = BLTCustomComponent or blt_class(MenuGuiComponentGeneric)
 
 local padding = 10
-local large_font_size = tweak_data.menu.pd2_large_font_size
-local large_font = tweak_data.menu.pd2_large_font
+
+local large_font = BLT.fonts.large.font
+local massive_font = BLT.fonts.massive.font
+
+local large_font_size = BLT.fonts.large.font_size
+local massive_font_size = BLT.fonts.massive.font_size
 
 function BLTCustomComponent:init(ws, fullscreen_ws, node)
 	self._ws = ws
@@ -118,8 +122,8 @@ function BLTCustomComponent:_add_custom_back_button()
 		text = managers.localization:text("menu_back"),
 		align = "right",
 		vertical = "bottom",
-		font_size = tweak_data.menu.pd2_large_font_size,
-		font = tweak_data.menu.pd2_large_font,
+		font_size = large_font_size,
+		font = large_font,
 		color = tweak_data.screen_colors.button_stage_3,
 		layer = 40,
 	})
@@ -135,8 +139,8 @@ function BLTCustomComponent:_add_custom_back_button()
 		h = 90,
 		align = "right",
 		vertical = "bottom",
-		font_size = tweak_data.menu.pd2_massive_font_size,
-		font = tweak_data.menu.pd2_massive_font,
+		font_size = massive_font_size,
+		font = massive_font,
 		color = tweak_data.screen_colors.button_stage_3,
 		alpha = 0.4,
 		layer = 1
