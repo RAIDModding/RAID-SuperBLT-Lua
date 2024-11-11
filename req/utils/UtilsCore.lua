@@ -402,6 +402,71 @@ function Utils.OpenUrl(url)
 		os.execute("cmd /c start " .. url)
 	end
 end
+---@param size integer @desired size
+---@param font_name string @name of font valid: `"lato"`, `"lato_outlined"`, `"din_compressed"`, `"din_compressed_outlined"`
+---@return string|nil @returns matching font_path or `nil` when font_name is invalid
+function Utils.MatchFontToSize(size, font_name)
+	local fixed_fonts = { -- rearranged partial copy of tweak_data.gui.font_paths & tweak_data.gui.fonts with better structure
+		["din_compressed"] ={
+			[18] = tweak_data.gui.font_paths.din_compressed[18],
+			[20] = tweak_data.gui.font_paths.din_compressed[20],
+			[22] = tweak_data.gui.font_paths.din_compressed[22],
+			[24] = tweak_data.gui.font_paths.din_compressed[24],
+			[26] = tweak_data.gui.font_paths.din_compressed[26],
+			[32] = tweak_data.gui.font_paths.din_compressed[32],
+			[38] = tweak_data.gui.font_paths.din_compressed[38],
+			[42] = tweak_data.gui.font_paths.din_compressed[42],
+			[46] = tweak_data.gui.font_paths.din_compressed[46],
+			[52] = tweak_data.gui.font_paths.din_compressed[52],
+			[56] = tweak_data.gui.font_paths.din_compressed[56],
+			[66] = tweak_data.gui.font_paths.din_compressed[66],
+			[72] = tweak_data.gui.font_paths.din_compressed[72],
+			[76] = tweak_data.gui.font_paths.din_compressed[76],
+			[84] = tweak_data.gui.font_paths.din_compressed[84],
+		},
+		["din_compressed_outlined"] = {
+			[18] = tweak_data.gui.fonts.din_compressed_outlined_18,
+			[20] = tweak_data.gui.fonts.din_compressed_outlined_20,
+			[22] = tweak_data.gui.fonts.din_compressed_outlined_22,
+			[24] = tweak_data.gui.fonts.din_compressed_outlined_24,
+			[26] = tweak_data.gui.fonts.din_compressed_outlined_26,
+			[32] = tweak_data.gui.fonts.din_compressed_outlined_32,
+			[38] = tweak_data.gui.fonts.din_compressed_outlined_38,
+			[42] = tweak_data.gui.fonts.din_compressed_outlined_42,
+		},
+		["lato"] = {
+			[18] = tweak_data.gui.font_paths.lato[18],
+			[20] = tweak_data.gui.font_paths.lato[20],
+			[22] = tweak_data.gui.font_paths.lato[22],
+			[24] = tweak_data.gui.font_paths.lato[24],
+			[26] = tweak_data.gui.font_paths.lato[26],
+			[32] = tweak_data.gui.font_paths.lato[32],
+			[38] = tweak_data.gui.font_paths.lato[38],
+			[42] = tweak_data.gui.font_paths.lato[42],
+		},
+		["lato_outlined"] = {
+			[18] = tweak_data.gui.fonts.lato_outlined_18,
+			[20] = tweak_data.gui.fonts.lato_outlined_20,
+		},
+	}
+	if fixed_fonts[font_name] ~= nil  and size ~= nil then
+		local sizes = {}
+		for k, _ in pairs(fixed_fonts[font_name]) do
+			table.insert(sizes, k)
+		end
+		Utils.PrintTable(sizes)
+		local closest = sizes[1]
+		local dist = math.abs(closest - size)
+		for _, v in ipairs(sizes) do
+			local dist2 = math.abs(v - size)
+			if dist > dist2 then
+				closest = v
+				dist = dist2
+			end
+		end
+		return fixed_fonts[font_name][closest]
+	end
+end
 
 -- DEPRECATED FUNCTIONALITY --
 
