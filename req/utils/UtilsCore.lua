@@ -459,7 +459,6 @@ function Utils.MatchFontToSize(size, font_name)
 			table.insert(sizes, k)
 		end
 		table.sort(sizes)
-		Utils.PrintTable(sizes)
 		local closest = sizes[1]
 		local dist = math.abs(closest - size)
 		for _, v in ipairs(sizes) do
