@@ -91,6 +91,7 @@
                 <pre hook_id="lib/entry" :script_path="Table.lua"/>
                 <pre hook_id="lib/entry" :script_path="QuickMenu.lua"/>
                 <post hook_id="core/lib/utils/coreclass" :script_path="UtilsClass.lua"/>
+                <post hook_id="lib/tweak_data/tweakdata" :script_path="UtilsTweakData.lua"/>
             </group>
             <group :script_path="core/">
                 <pre hook_id="lib/entry" :script_path="MenuHelper.lua"/>
