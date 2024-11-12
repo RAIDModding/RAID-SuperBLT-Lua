@@ -404,10 +404,7 @@ function Utils.OpenUrl(url)
 	end
 end
 
----@param size integer @desired size
----@param font_name string @name of font valid: `"lato"`, `"lato_outlined"`, `"din_compressed"`, `"din_compressed_outlined"`
----@return string|nil @returns matching font_path or `nil` when font_name is invalid
-function Utils.MatchFontToSize(size, font_name)
+function Utils._setup_fixed_fonts_table()
 	if not Utils._fixed_fonts then -- init Utils._fixed_fonts on first call since tweak_data == nil when this file is ran
 		Utils._fixed_fonts = { -- rearranged partial copy of tweak_data.gui.font_paths & tweak_data.gui.fonts with better structure
 			["din_compressed"] ={
@@ -453,16 +450,25 @@ function Utils.MatchFontToSize(size, font_name)
 			},
 		}
 	end
-	if Utils._fixed_fonts[font_name] ~= nil  and size ~= nil then
+end
+
+---@param font_size integer @desired size
+---@param font_name string @name of font valid: `"lato"`, `"lato_outlined"`, `"din_compressed"`, `"din_compressed_outlined"`
+---@return string|nil @returns matching font_path or `nil` when font_name is invalid
+function Utils.GetFontBySize(font_name, font_size)
+	if not Utils._fixed_fonts then
+		Utils._setup_fixed_fonts_table()
+	end
+	if Utils._fixed_fonts[font_name] ~= nil  and font_size ~= nil then
 		local sizes = {}
 		for k, _ in pairs(Utils._fixed_fonts[font_name]) do
 			table.insert(sizes, k)
 		end
 		table.sort(sizes)
 		local closest = sizes[1]
-		local dist = math.abs(closest - size)
+		local dist = math.abs(closest - font_size)
 		for _, v in ipairs(sizes) do
-			local dist2 = math.abs(v - size)
+			local dist2 = math.abs(v - font_size)
 			if dist > dist2 then
 				closest = v
 				dist = dist2
@@ -470,6 +476,7 @@ function Utils.MatchFontToSize(size, font_name)
 		end
 		return Utils._fixed_fonts[font_name][closest]
 	end
+	return nil
 end
 
 -- DEPRECATED FUNCTIONALITY --
