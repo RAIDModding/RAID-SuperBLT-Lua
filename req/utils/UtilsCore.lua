@@ -464,7 +464,9 @@ function Utils.GetFontBySize(font_name, font_size)
 		for k, _ in pairs(Utils._fixed_fonts[font_name]) do
 			table.insert(sizes, k)
 		end
-		table.sort(sizes)
+		table.sort(sizes, function(a, b)
+			return a < b
+		end)
 		local closest = sizes[1]
 		local dist = math.abs(closest - font_size)
 		for _, v in ipairs(sizes) do
