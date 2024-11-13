@@ -407,7 +407,7 @@ end
 function Utils._setup_fixed_fonts_table()
 	if not Utils._fixed_fonts then -- init Utils._fixed_fonts on first call since tweak_data == nil when this file is ran
 		Utils._fixed_fonts = { -- rearranged partial copy of tweak_data.gui.font_paths & tweak_data.gui.fonts with better structure
-			["din_compressed"] ={
+			din_compressed ={
 				[18] = tweak_data.gui.font_paths.din_compressed[18],
 				[20] = tweak_data.gui.font_paths.din_compressed[20],
 				[22] = tweak_data.gui.font_paths.din_compressed[22],
@@ -424,7 +424,7 @@ function Utils._setup_fixed_fonts_table()
 				[76] = tweak_data.gui.font_paths.din_compressed[76],
 				[84] = tweak_data.gui.font_paths.din_compressed[84],
 			},
-			["din_compressed_outlined"] = {
+			din_compressed_outlined = {
 				[18] = tweak_data.gui.fonts.din_compressed_outlined_18,
 				[20] = tweak_data.gui.fonts.din_compressed_outlined_20,
 				[22] = tweak_data.gui.fonts.din_compressed_outlined_22,
@@ -434,7 +434,7 @@ function Utils._setup_fixed_fonts_table()
 				[38] = tweak_data.gui.fonts.din_compressed_outlined_38,
 				[42] = tweak_data.gui.fonts.din_compressed_outlined_42,
 			},
-			["lato"] = {
+			lato = {
 				[18] = tweak_data.gui.font_paths.lato[18],
 				[20] = tweak_data.gui.font_paths.lato[20],
 				[22] = tweak_data.gui.font_paths.lato[22],
@@ -444,7 +444,7 @@ function Utils._setup_fixed_fonts_table()
 				[38] = tweak_data.gui.font_paths.lato[38],
 				[42] = tweak_data.gui.font_paths.lato[42],
 			},
-			["lato_outlined"] = {
+			lato_outlined = {
 				[18] = tweak_data.gui.fonts.lato_outlined_18,
 				[20] = tweak_data.gui.fonts.lato_outlined_20,
 			},
