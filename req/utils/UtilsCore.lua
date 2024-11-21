@@ -465,8 +465,8 @@ function Utils._setup_fixed_fonts_table()
 	end
 end
 
----@param font_size integer @desired size
 ---@param font_name string @name of font valid: `"lato"`, `"lato_outlined"`, `"din_compressed"`, `"din_compressed_outlined"`
+---@param font_size integer @desired size
 ---@return string|nil @returns matching font_path or `nil` when font_name is invalid
 function Utils.GetFontBySize(font_name, font_size)
 	if not Utils._fixed_fonts or not Utils._fixed_font_sizes then
