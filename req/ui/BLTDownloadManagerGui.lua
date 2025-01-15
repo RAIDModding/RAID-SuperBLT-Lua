@@ -52,7 +52,7 @@ function BLTDownloadManagerGui:setup()
 		})
 		table.insert(self._buttons, button)
 
-		if file.FileExists(BLTModManager.Constants.mods_directory .. "developer.txt") then
+		if BLT:CheckUpdatesReluaPossible(BLT.Downloads:pending_downloads()) then
 			-- relua btn
 			local relua_button = BLTUIButton:new(self._scroll:canvas(), {
 				x = self._scroll:canvas():w() - w * 2 - padding,
