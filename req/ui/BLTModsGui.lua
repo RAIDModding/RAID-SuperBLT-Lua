@@ -269,6 +269,7 @@ function BLTModsGui:update_visible_mods(scroll_position)
 		text = managers.localization:text("blt_download_manager_help"),
 		image = "guis/blt/updates",
 		image_size = 108,
+		image_padding_top = 50,
 		callback = callback(self, self, "clbk_open_download_manager")
 	})
 	table.insert(self._buttons, button)
