@@ -109,8 +109,8 @@ function BLTModItem:init(panel, index, mod, show_icon)
 			w = BLTModItem.image_size,
 			h = BLTModItem.image_size
 		})
-		image:set_center_x(self._panel:w() * 0.45)
-		image:set_top(padding * 5)
+		image:set_center_x(self._panel:w() * 0.5)
+		image:set_top(padding)
 	elseif show_icon then
 		local no_image_panel = self._panel:panel({
 			name = "no_image_panel",
@@ -120,7 +120,7 @@ function BLTModItem:init(panel, index, mod, show_icon)
 			layer = 10
 		})
 		no_image_panel:set_center_x(self._panel:w() * 0.5)
-		no_image_panel:set_top(padding * 5)
+		no_image_panel:set_top(padding)
 
 		BoxGuiObject:new(no_image_panel, {sides = {1, 1, 1, 1}})
 

@@ -94,7 +94,7 @@ function BLTUIButton:init(panel, parameters)
 			h = parameters.image_size or 64
 		})
 		image:set_center_x(self._panel:w() * 0.5)
-		image:set_top(parameters.image_padding_top or padding)
+		image:set_top(padding)
 		if parameters.texture_rect then
 			image:set_texture_rect(unpack(parameters.texture_rect))
 		end
