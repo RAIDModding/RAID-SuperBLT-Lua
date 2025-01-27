@@ -9,7 +9,6 @@ Contributors other than maintainers are listed in parenthesis after specific cha
 - added `Utils.GetFontBySize()` to help mods with scaling fonts
 - added new icon for SBLT by [Dribbleondo](https://www.youtube.com/channel/UCD_C63csNn6SDm9IirZN3oA)
 - improved reloading game logic in BLTDownloadManagerGui. it now only shows the button to reload if no mod using the `assets` module
-- improved icon alignment in SBLT Mods Menu
 
 ## v1.2.0
 
