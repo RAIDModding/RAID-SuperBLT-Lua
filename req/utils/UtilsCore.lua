@@ -1,4 +1,5 @@
 _G.Utils = _G.Utils or {}
+Utils._fixed_fonts = nil
 
 function Utils.MakeValueOutput(value, output)
 	if type(value) == "string" then
@@ -401,6 +402,91 @@ function Utils.OpenUrl(url)
 	else
 		os.execute("cmd /c start " .. url)
 	end
+end
+
+function Utils._setup_fixed_fonts_table()
+	if Utils._fixed_fonts and Utils._fixed_font_sizes then -- init Utils._fixed_fonts on first call since tweak_data == nil when this file is ran
+		return
+	end
+	Utils._fixed_fonts = { -- rearranged partial copy of tweak_data.gui.font_paths & tweak_data.gui.fonts with better structure
+		din_compressed ={
+			[18] = tweak_data.gui.font_paths.din_compressed[18],
+			[20] = tweak_data.gui.font_paths.din_compressed[20],
+			[22] = tweak_data.gui.font_paths.din_compressed[22],
+			[24] = tweak_data.gui.font_paths.din_compressed[24],
+			[26] = tweak_data.gui.font_paths.din_compressed[26],
+			[32] = tweak_data.gui.font_paths.din_compressed[32],
+			[38] = tweak_data.gui.font_paths.din_compressed[38],
+			[42] = tweak_data.gui.font_paths.din_compressed[42],
+			[46] = tweak_data.gui.font_paths.din_compressed[46],
+			[52] = tweak_data.gui.font_paths.din_compressed[52],
+			[56] = tweak_data.gui.font_paths.din_compressed[56],
+			[66] = tweak_data.gui.font_paths.din_compressed[66],
+			[72] = tweak_data.gui.font_paths.din_compressed[72],
+			[76] = tweak_data.gui.font_paths.din_compressed[76],
+			[84] = tweak_data.gui.font_paths.din_compressed[84],
+		},
+		din_compressed_outlined = {
+			[18] = tweak_data.gui.fonts.din_compressed_outlined_18,
+			[20] = tweak_data.gui.fonts.din_compressed_outlined_20,
+			[22] = tweak_data.gui.fonts.din_compressed_outlined_22,
+			[24] = tweak_data.gui.fonts.din_compressed_outlined_24,
+			[26] = tweak_data.gui.fonts.din_compressed_outlined_26,
+			[32] = tweak_data.gui.fonts.din_compressed_outlined_32,
+			[38] = tweak_data.gui.fonts.din_compressed_outlined_38,
+			[42] = tweak_data.gui.fonts.din_compressed_outlined_42,
+		},
+		lato = {
+			[18] = tweak_data.gui.font_paths.lato[18],
+			[20] = tweak_data.gui.font_paths.lato[20],
+			[22] = tweak_data.gui.font_paths.lato[22],
+			[24] = tweak_data.gui.font_paths.lato[24],
+			[26] = tweak_data.gui.font_paths.lato[26],
+			[32] = tweak_data.gui.font_paths.lato[32],
+			[38] = tweak_data.gui.font_paths.lato[38],
+			[42] = tweak_data.gui.font_paths.lato[42],
+		},
+		lato_outlined = {
+			[18] = tweak_data.gui.fonts.lato_outlined_18,
+			[20] = tweak_data.gui.fonts.lato_outlined_20,
+		},
+	}
+	table.sort(Utils._fixed_fonts)
+
+	-- pre-cache font sizes
+	Utils._fixed_font_sizes = {}
+	for name, font in pairs(Utils._fixed_fonts) do
+		local sizes = {}
+		for k, _ in pairs(font) do
+			table.insert(sizes, k)
+		end
+		table.sort(sizes)
+		Utils._fixed_font_sizes[name] = sizes
+	end
+end
+
+---@param font_name string @name of font valid: `"lato"`, `"lato_outlined"`, `"din_compressed"`, `"din_compressed_outlined"`
+---@param font_size integer @desired size
+---@return string|nil @returns matching font_path or `nil` when font_name is invalid
+function Utils.GetFontBySize(font_name, font_size)
+	if not Utils._fixed_fonts or not Utils._fixed_font_sizes then
+		Utils._setup_fixed_fonts_table()
+	end
+	local font = Utils._fixed_fonts[font_name]
+	local sizes = Utils._fixed_font_sizes[font_name]
+	if font ~= nil and sizes ~= nil and font_size ~= nil then
+		local closest = sizes[1]
+		local dist = math.abs(closest - font_size)
+		for _, v in ipairs(sizes) do
+			local dist2 = math.abs(v - font_size)
+			if dist > dist2 then
+				closest = v
+				dist = dist2
+			end
+		end
+		return font[closest]
+	end
+	return nil
 end
 
 -- DEPRECATED FUNCTIONALITY --

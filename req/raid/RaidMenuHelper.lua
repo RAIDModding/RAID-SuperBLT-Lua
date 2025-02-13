@@ -42,7 +42,7 @@ function RaidMenuHelper:CreateMenu(params)
 	end
     if params.inject_list then
         self:InjectButtons(params.inject_list, params.inject_after, {
-            self:PrepareListButton(text, params.localize, self:MakeNextMenuClbk(component_name), params.flags)
+            self:PrepareListButton(text, params.localize, self:MakeNextMenuClbk(component_name), params.flags, params.icon)
 		}, true)
 	elseif params.inject_menu then
 		local menu = managers.raid_menu.menus[params.inject_menu]
@@ -55,11 +55,12 @@ function RaidMenuHelper:CreateMenu(params)
 				text = text,
 				localize = params.localize,
 				index = params.index,
+				icon = params.icon,
 				callback = clbk
 			}, params.merge_data))
 		else
 			self:InjectButtons(params.inject_menu, params.inject_after, {
-				self:PrepareButton(text, params.localize, clbk)
+				self:PrepareButton(text, params.localize, clbk, params.icon)
 			})
 		end
     end
@@ -75,19 +76,21 @@ function RaidMenuHelper:InjectButtons(menu, point, buttons, is_list)
     })
 end
 
-function RaidMenuHelper:PrepareButton(text, localize, callback)
+function RaidMenuHelper:PrepareButton(text, localize, callback, icon)
 	return {
 		text = text,
 		localize = localize,
 		callback = callback,
+		icon = icon,
 	}
 end
 
-function RaidMenuHelper:PrepareListButton(text, localize, callback_s, flags)
+function RaidMenuHelper:PrepareListButton(text, localize, callback_s, flags, icon)
 	return {
 		text = localize and managers.localization:to_upper_text(text) or text,
 		callback = callback_s,
-		availability_flags = flags
+		availability_flags = flags,
+		icon = icon,
 	}
 end
 
@@ -129,6 +132,8 @@ function RaidMenuHelper:InjectIntoAList(menu_comp, injection_point, buttons, lis
 		end
 		table.insert(list._injected_to_data_source, {buttons = buttons, point = injection_point})
 		list:refresh_data()
+		list:set_selected(true)
+		list:show()
 	else
 		BLT:Log(LogLevel.ERROR, "BLTMenuHelper", "Menu component given has no list, cannot inject into this menu.")
 	end
@@ -212,6 +217,7 @@ function RaidMenuHelper:LoadMenu(data, path, mod)
 			localize = data.localize,
 			class = clss,
 			inject_menu = data.inject_menu,
+			icon = data.icon,
 		})
 		if clss then
 			clss._mod = mod

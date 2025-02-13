@@ -287,5 +287,15 @@ function BLT:CompareVersions(version1, version2)
     return 0
 end
 
+function BLT:CheckUpdatesReluaPossible(downloads)
+	for _, update in ipairs(downloads) do
+		if update.update:HasAssets() == true then -- check if asset module is used
+			return false
+		end
+
+	end
+	return true
+end
+
 -- Perform startup
 BLT:Initialize()

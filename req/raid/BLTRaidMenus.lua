@@ -48,7 +48,8 @@ Hooks:Add("MenuComponentManagerInitialize", "BLT.MenuComponentManagerInitialize"
         name_id = "blt_options_menu_blt_mods",
         inject_list = "raid_menu_left_options",
         class = BLTModsGui,
-        inject_after = "network"
+        inject_after = "network",
+        icon = "menu_item_cards"
     })
 
     RaidMenuHelper:CreateMenu({
@@ -56,7 +57,8 @@ Hooks:Add("MenuComponentManagerInitialize", "BLT.MenuComponentManagerInitialize"
 		name_id = "blt_options_menu_keybinds",
         inject_list = "raid_menu_left_options",
         class = BLTKeybindsMenu,
-        inject_after = "network"
+        inject_after = "network",
+        icon = "menu_item_controls"
 	})
 
     RaidMenuHelper:CreateMenu({
@@ -64,7 +66,8 @@ Hooks:Add("MenuComponentManagerInitialize", "BLT.MenuComponentManagerInitialize"
         name_id = "blt_options_menu_lua_mod_options",
         inject_list = "raid_menu_left_options",
         class = BLTOptionsMenu,
-        inject_after = "network"
+        inject_after = "network",
+        icon = "menu_item_options"
     })
 
     RaidMenuHelper:CreateMenu({
