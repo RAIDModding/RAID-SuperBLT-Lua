@@ -4,6 +4,12 @@ This lists the changes between different versions of the RAID-SuperBLT basemod,
 the changes for the DLL are listed in their own changelog.
 Contributors other than maintainers are listed in parenthesis after specific changes.
 
+## `master` branch
+
+- added `Utils.GetFontBySize()` to help mods with scaling fonts
+- added new icon for SBLT by [Dribbleondo](https://www.youtube.com/channel/UCD_C63csNn6SDm9IirZN3oA)
+- improved reloading game logic in BLTDownloadManagerGui. it now only shows the button to reload if no mod using the `assets` module
+
 ## v1.2.0
 
 - added BLT.fonts table, reflecting pd2 font presets

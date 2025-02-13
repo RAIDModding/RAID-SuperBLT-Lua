@@ -266,3 +266,12 @@ end
 function BLTUpdate:GetError()
 	return self._error
 end
+
+function BLTUpdate:HasAssets()
+	for _, v2 in ipairs(self:GetParentMod()._xml_data) do
+		if v2.name ~= nil and v2.name == "assets" then
+			return true
+		end
+	end
+	return true
+end
