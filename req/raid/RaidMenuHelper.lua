@@ -133,6 +133,7 @@ function RaidMenuHelper:InjectIntoAList(menu_comp, injection_point, buttons, lis
 		table.insert(list._injected_to_data_source, {buttons = buttons, point = injection_point})
 		list:refresh_data()
 		list:set_selected(true)
+		list:show()
 	else
 		BLT:Log(LogLevel.ERROR, "BLTMenuHelper", "Menu component given has no list, cannot inject into this menu.")
 	end
