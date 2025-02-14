@@ -55,6 +55,7 @@ function BLTModsGui:init(ws, fullscreen_ws, node)
 end
 
 function BLTModsGui:close()
+    MenuCallbackHandler:perform_blt_save()
 	BLTModsGui.last_y_position = self._scroll:canvas():y() * -1
 	self._ws:panel():remove(self._panel)
 	self._fullscreen_ws:panel():remove(self._fullscreen_panel)
