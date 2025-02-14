@@ -4,6 +4,11 @@ This lists the changes between different versions of the RAID-SuperBLT basemod,
 the changes for the DLL are listed in their own changelog.
 Contributors other than maintainers are listed in parenthesis after specific changes.
 
+## v1.2.2
+
+- fixed min_sblt_version check
+- fixed saving blt options when leaving the mods menu
+
 ## v1.2.1
 
 - fixed U24 menu animations in options
