@@ -118,6 +118,15 @@ function BLT:Setup()
 	self:CheckDirectory(BLTModManager.Constants:LogsDirectory())
 	self:CheckDirectory(BLTModManager.Constants:SavesDirectory())
 
+	-- save blt base version
+	local xml_file = io.open(BLT._PATH .. "supermod.xml")
+	if xml_file then
+		local content = xml_file:read("*all")
+		xml_file:close()
+		local xml = blt.parsexml(content)
+		self.base_version = xml.params.version
+	end
+
 	-- Initialization functions
 	self.Logs:CleanLogs()
 	self.Mods:SetModsList(self:ProcessModsList(self:FindMods()))
@@ -129,16 +138,6 @@ function BLT:Setup()
 	LuaModManager.Mods = {} -- No mods are available via old api
 	rawset(_G, C.logs_path_global, C.mods_directory .. C.logs_directory)
 	rawset(_G, C.save_path_global, C.mods_directory .. C.saves_directory)
-
-	-- save blt base version
-	local file = io.open(BLT._PATH .. "supermod.xml")
-	if file then
-		local content = file:read("*all")
-		file:close()
-		local xml = blt.parsexml(content)
-		self.base_version = xml.params.version
-	end
-
 end
 
 ---Returns the version of BLT

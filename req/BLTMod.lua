@@ -175,7 +175,7 @@ function BLTMod:PostInit()
 		self:SetEnabled(false, true)
 	end
 
-	if BLT:CompareVersions(BLT:GetBaseVersion(), self.min_sblt_version) == 2 then
+	if self.min_sblt_version and BLT:CompareVersions(BLT:GetBaseVersion(), self.min_sblt_version) == 2 then
 		table.insert(self._errors, "blt_mod_info_min_sblt_ver_not_met")
 		self:SetEnabled(false, true)
 	end
