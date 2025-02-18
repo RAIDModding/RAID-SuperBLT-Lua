@@ -4,6 +4,10 @@ This lists the changes between different versions of the RAID-SuperBLT basemod,
 the changes for the DLL are listed in their own changelog.
 Contributors other than maintainers are listed in parenthesis after specific changes.
 
+## v1.2.3
+
+- added support for id="" in update tags (not just 'identifier')
+
 ## v1.2.2
 
 - fixed min_sblt_version check
