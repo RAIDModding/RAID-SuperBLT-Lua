@@ -288,7 +288,7 @@ end
 
 function BLT:CheckUpdatesReluaPossible(downloads)
 	for _, update in ipairs(downloads) do
-		if update.update:HasAssets() == true then -- check if asset module is used
+		if update.update.HasAssets ~= nil and update.update:HasAssets() == true then -- check if asset module is used
 			return false
 		end
 
