@@ -640,7 +640,7 @@ function BLTMod:AreDependenciesInstalled()
 
 		if not found then
 			installed = false
-			local download_data = type(data) == "table" and data or { download_url = data }
+			local download_data = type(data) == "table" and data._download_data or { download_url = data }
 			local new_dependency, valid = BLTModDependency:new(self, id, download_data)
 			if valid then
 				table.insert(self.missing_dependencies, new_dependency)
