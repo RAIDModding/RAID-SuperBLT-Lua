@@ -365,7 +365,7 @@ function BLTDownloadControl:mouse_pressed(button, x, y)
 end
 
 function BLTDownloadControl:update_download(download)
-	self._background:set_color(tweak_data.menu.default_disabled_text_color)
+	self._background:set_color(Color(1, 0.5, 0.5, 0.5))
 
 	local percent = (download.bytes or 0) / (download.total_bytes or 1)
 	if download.state == "complete" then

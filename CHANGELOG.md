@@ -4,6 +4,22 @@ This lists the changes between different versions of the RAID-SuperBLT basemod,
 the changes for the DLL are listed in their own changelog.
 Contributors other than maintainers are listed in parenthesis after specific changes.
 
+## v1.2.7
+
+- dependency-system fixes by 11BelowStudio
+
+## v1.2.6
+
+- fixed crash when clicking the download button of a blt mod, due to a deleted pd2 color in u25
+
+## v1.2.5
+
+- no changes
+
+## v1.2.4
+
+- no changes
+
 ## v1.2.3
 
 - added support for id="" in update tags (not just 'identifier')
