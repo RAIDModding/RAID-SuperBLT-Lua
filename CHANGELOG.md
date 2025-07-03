@@ -4,6 +4,10 @@ This lists the changes between different versions of the RAID-SuperBLT basemod,
 the changes for the DLL are listed in their own changelog.
 Contributors other than maintainers are listed in parenthesis after specific changes.
 
+## v1.2.8
+
+- generalized BLT:make_fine_text and BLT:make_fine_text_aligning, as MenuNodeBaseGui.make_fine_text is now gone in U25.1
+
 ## v1.2.7
 
 - dependency-system fixes by 11BelowStudio

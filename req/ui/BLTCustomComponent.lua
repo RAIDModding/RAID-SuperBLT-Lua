@@ -46,14 +46,6 @@ end
 function BLTCustomComponent:setup() end
 
 --[[
-	Trim the container so it perfectly fits the text?
-]]
-function BLTCustomComponent:make_fine_text(text)
-	local x, y, w, h = text:text_rect()
-	text:set_shape(math.round(text:x()), math.round(text:y()), w, h)
-end
-
---[[
 	Set this component up as a list (eg, the download manager)
 ]]
 function BLTCustomComponent:make_into_listview(name, title, add_frame)
@@ -103,7 +95,7 @@ function BLTCustomComponent:make_title(title, offset)
 		text = title,
 		vertical = "top"
 	})
-	self:make_fine_text(title)
+	BLT:make_fine_text(title)
 	return title
 end
 
@@ -127,7 +119,7 @@ function BLTCustomComponent:_add_custom_back_button()
 		color = tweak_data.screen_colors.button_stage_3,
 		layer = 40,
 	})
-	self:make_fine_text(back_button)
+	BLT:make_fine_text(back_button)
 	back_button:set_right(self._panel:w() - 10)
 	back_button:set_bottom(self._panel:h() - 10)
 	back_button:set_visible(managers.menu:is_pc_controller())

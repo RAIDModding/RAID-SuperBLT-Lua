@@ -166,12 +166,6 @@ function BLTNotificationsGui:_rec_round_object(object)
 	end
 end
 
-function BLTNotificationsGui:_make_fine_text(text)
-	local x, y, w, h = text:text_rect()
-	text:set_size(w, h)
-	text:set_position(math.round(text:x()), math.round(text:y()))
-end
-
 --------------------------------------------------------------------------------
 
 function BLTNotificationsGui:_get_uid()
@@ -219,7 +213,7 @@ function BLTNotificationsGui:add_notification(parameters)
 		x = _x,
 		y = padding
 	})
-	self:_make_fine_text(title)
+	BLT:make_fine_text(title)
 
 	local text = new_notif:text({
 		text = parameters.text or "No Text",

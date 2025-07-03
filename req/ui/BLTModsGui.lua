@@ -20,19 +20,6 @@ local small_font_size = BLT.fonts.small.font_size
 local large_font_size = BLT.fonts.large.font_size
 local massive_font_size = BLT.fonts.massive.font_size
 
-local function make_fine_text(text)
-	local x, y, w, h = text:text_rect()
-	text:set_size(w, h)
-	text:set_position(math.round(text:x()), math.round(text:y()))
-end
-
-local function make_fine_text_aligning(text)
-	-- Make fine text, but use the text rect X and Y in set_position
-	local x, y, w, h = text:text_rect()
-	text:set_size(w, h)
-	text:set_position(math.round(x), math.round(y))
-end
-
 function BLTModsGui:init(ws, fullscreen_ws, node)
 	self._ws = ws
 	self._fullscreen_ws = fullscreen_ws
@@ -80,7 +67,7 @@ function BLTModsGui:_setup()
 		color = tweak_data.screen_colors.button_stage_3,
 		layer = 40,
 	})
-	make_fine_text(back_button)
+	BLT:make_fine_text(back_button)
 	back_button:set_right(self._panel:w() - 10)
 	back_button:set_bottom(self._panel:h() - 10)
 	back_button:set_visible(managers.menu:is_pc_controller())
@@ -160,7 +147,7 @@ function BLTModsGui:_setup()
 		color = tweak_data.screen_colors.text
 	}))
 	-- Shift the show and hide buttons to the left of the libraries label
-	make_fine_text_aligning(libraries_text)
+	BLT:make_fine_text_aligning(libraries_text)
 	params.width = libraries_text:x() - params.x - 4 -- 4px padding
 
 	self._libraries_show_button = self._panel:text(customize({
@@ -171,8 +158,8 @@ function BLTModsGui:_setup()
 		text = managers.localization:to_upper_text("blt_mod_state_enabled")
 	}))
 
-	make_fine_text_aligning(self._libraries_show_button)
-	make_fine_text_aligning(self._libraries_hide_button)
+	BLT:make_fine_text_aligning(self._libraries_show_button)
+	BLT:make_fine_text_aligning(self._libraries_hide_button)
 
 	self._custom_buttons[self._libraries_show_button] = {
 		clbk = function()
@@ -199,7 +186,7 @@ function BLTModsGui:_setup()
 	}))
 
 	-- Shift the show and hide buttons to the left of the label
-	make_fine_text_aligning(icons_text)
+	BLT:make_fine_text_aligning(icons_text)
 	params.width = icons_text:x() - params.x - 4 -- 4px padding
 
 	self._mod_icons_show_button = self._panel:text(customize({
@@ -210,8 +197,8 @@ function BLTModsGui:_setup()
 		text = managers.localization:to_upper_text("blt_mod_state_enabled")
 	}))
 
-	make_fine_text_aligning(self._mod_icons_show_button)
-	make_fine_text_aligning(self._mod_icons_hide_button)
+	BLT:make_fine_text_aligning(self._mod_icons_show_button)
+	BLT:make_fine_text_aligning(self._mod_icons_hide_button)
 
 	self._custom_buttons[self._mod_icons_show_button] = {
 		clbk = function()
