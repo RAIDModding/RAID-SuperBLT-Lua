@@ -41,15 +41,6 @@ end
 function MenuGuiComponentGeneric:mouse_double_click(o, button, x, y)
 end
 
-function MenuGuiComponentGeneric:make_fine_text(text)
-    if not alive(text) then
-        return
-    end
-    local x,y,w,h = text:text_rect()
-    text:set_size(w, h)
-    text:set_position(math.round(text:x()), math.round(text:y()))
-end
-
 function MenuGuiComponentGeneric:update_back_button_hover(button, x, y)
 end
 

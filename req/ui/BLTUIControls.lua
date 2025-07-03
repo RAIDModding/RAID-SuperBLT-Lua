@@ -8,12 +8,6 @@ local small_font_size = BLT.fonts.small.font_size
 local medium_font_size = BLT.fonts.medium.font_size
 local large_font_size = BLT.fonts.large.font_size
 
-local function make_fine_text(text)
-	local x, y, w, h = text:text_rect()
-	text:set_size(w, h)
-	text:set_position(math.round(text:x()), math.round(text:y()))
-end
-
 --------------------------------------------------------------------------------
 
 ---@class BLTUIButton
@@ -54,7 +48,7 @@ function BLTUIButton:init(panel, parameters)
 		word_wrap = true,
 		w = self._panel:w() - padding * 2
 	})
-	make_fine_text(title)
+	BLT:make_fine_text(title)
 	title:set_w(self._panel:w())
 	title:set_center_x(self._panel:w() * 0.5)
 	if parameters.image then
@@ -76,7 +70,7 @@ function BLTUIButton:init(panel, parameters)
 		word_wrap = true,
 		w = self._panel:w() - padding * 2
 	})
-	make_fine_text(desc)
+	BLT:make_fine_text(desc)
 	desc:set_w(self._panel:w())
 	desc:set_center_x(self._panel:w() * 0.5)
 	desc:set_top(title:bottom() + 5)

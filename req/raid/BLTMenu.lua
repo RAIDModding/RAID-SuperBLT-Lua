@@ -287,7 +287,7 @@ function BLTMenu:CreateSimple(typ, params, create_data)
 end
 
 function BLTMenu:adjust_description_label()
-    local _, _, w, _ = MenuNodeBaseGui.make_fine_text(self._description_label._object)
+    local _, _, w, _ = BLT:make_fine_text(self._description_label._object)
     self._description_label:set_width(w)
     self._description_label:set_right(managers.viewport:get_safe_rect_pixels().width)
 end

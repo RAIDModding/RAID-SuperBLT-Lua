@@ -60,7 +60,7 @@ function BLTViewModGui:_setup_mod_info(mod)
 		align = "left",
 		vertical = "top"
 	})
-	self:make_fine_text(version)
+	BLT:make_fine_text(version)
 	version:set_left(title:right() + padding)
 	version:set_bottom(title:bottom() - 4)
 
@@ -115,7 +115,7 @@ function BLTViewModGui:_setup_mod_info(mod)
 			wrap = true,
 			word_wrap = true
 		})
-		self:make_fine_text(error_text)
+		BLT:make_fine_text(error_text)
 	end
 
 	-- Mod description
@@ -134,7 +134,7 @@ function BLTViewModGui:_setup_mod_info(mod)
 		wrap = true,
 		word_wrap = true
 	})
-	self:make_fine_text(desc)
+	BLT:make_fine_text(desc)
 	if error_text then
 		desc:set_top(error_text:bottom() + padding)
 	end
@@ -155,7 +155,7 @@ function BLTViewModGui:_setup_mod_info(mod)
 		wrap = true,
 		word_wrap = true
 	})
-	self:make_fine_text(author)
+	BLT:make_fine_text(author)
 	author:set_top(desc:bottom())
 
 	-- Mod contact
@@ -174,7 +174,7 @@ function BLTViewModGui:_setup_mod_info(mod)
 		wrap = true,
 		word_wrap = true
 	})
-	self:make_fine_text(contact)
+	BLT:make_fine_text(contact)
 	contact:set_top(author:bottom())
 	-- min sblt version
 	local min_sblt_ver = nil
@@ -195,7 +195,7 @@ function BLTViewModGui:_setup_mod_info(mod)
 			word_wrap = true
 		})
 
-		self:make_fine_text(min_sblt_ver)
+		BLT:make_fine_text(min_sblt_ver)
 		min_sblt_ver:set_top(contact:bottom())
 	end
 
@@ -233,7 +233,7 @@ function BLTViewModGui:_setup_mod_info(mod)
 		update_status:hide()
 	end
 
-	self:make_fine_text(update_status)
+	BLT:make_fine_text(update_status)
 
 	self._info_scroll:update_canvas_size()
 end
@@ -267,7 +267,7 @@ function BLTViewModGui:_setup_dev_info(mod)
 		wrap = true,
 		word_wrap = true
 	})
-	self:make_fine_text(info)
+	BLT:make_fine_text(info)
 
 	self._dev_scroll:update_canvas_size()
 	self._dev_panel:set_visible(false)

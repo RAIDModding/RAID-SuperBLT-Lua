@@ -296,5 +296,26 @@ function BLT:CheckUpdatesReluaPossible(downloads)
 	return true
 end
 
+function BLT:make_fine_text(text)
+    if not alive(text) then
+        return
+    end
+	local _, _, w, h = text:text_rect()
+	text:set_size(w, h)
+	text:set_position(math.round(text:x()), math.round(text:y()))
+	return text:x(), text:y(), w, h
+end
+
+function BLT:make_fine_text_aligning(text)
+	-- Make fine text, but use the text rect X and Y in set_position
+    if not alive(text) then
+        return
+    end
+	local x, y, w, h = text:text_rect()
+	text:set_size(w, h)
+	text:set_position(math.round(x), math.round(y))
+	return x, y, w, h
+end
+
 -- Perform startup
 BLT:Initialize()
