@@ -20,9 +20,13 @@ end
 
 require("lib/managers/menu/raid_menu/controls/raidguicontrol")
 require("lib/managers/menu/raid_menu/controls/raidguicontrolbutton")
+require("lib/managers/menu/raid_menu/controls/raidguicontrolsteppersimple")
+require("lib/managers/menu/raid_menu/controls/raidguicontrolstepper")
 
 BLT:Require("req/raid/BLTGUIControlButton")
 BLT:Require("req/raid/BLTGUIControlMenuButton")
+BLT:Require("req/raid/BLTGUIControlStepperIconsSimple")
+BLT:Require("req/raid/BLTGUIControlStepperIcons")
 
 BLTMenu = BLTMenu or class(RaidGuiBase)
 --core functions
@@ -360,11 +364,11 @@ function BLTMenu:Switch(params)
     return BLTMenu.CreateSimple(self, "switch_button", params, {text_key = "description"})
 end
 
-function BLTMenu:MultiChoice(params)
+function BLTMenu:_MultiChoice(params, typ)
     params = clone(params)
     params.data_source_callback = params.items_func or function() return params.items or {} end
     local item
-    item = BLTMenu.CreateSimple(self, "stepper", params, {no_clone = true, text_key = "description", clbk_key = "on_item_selected_callback", default_clbk = function(value)
+    item = BLTMenu.CreateSimple(self, typ, params, {no_clone = true, text_key = "description", clbk_key = "on_item_selected_callback", default_clbk = function(value)
         params.callback(value, item)
     end})
     -- if params.selected was passed, the game already did the selection in RaidGUIControlStepper:init()
@@ -373,6 +377,14 @@ function BLTMenu:MultiChoice(params)
         item:set_value_and_render(params.value, true) -- set value, skip animation
     end
     return item
+end
+
+function BLTMenu:MultiChoice(params)
+    return self:_MultiChoice(params, "stepper")
+end
+
+function BLTMenu:MultiChoiceIcons(params)
+    return self:_MultiChoice(params, "stepper_icons")
 end
 
 function BLTMenu:GetCorrectSliderValue(value, min, max)

@@ -4,6 +4,14 @@ This lists the changes between different versions of the RAID-SuperBLT basemod,
 the changes for the DLL are listed in their own changelog.
 Contributors other than maintainers are listed in parenthesis after specific changes.
 
+## v1.2.10
+
+- added custom MultiChoice/stepper menu controls with icons instead of texts. (put icon_id or texture & texture_rect, instead of text or text_id in params.options)
+new factory functions:
+  - BLTMenu:MultiChoiceIcons(params)
+  - RaidGUIPanel:stepper_icons(params)
+  - RaidGUIPanel:stepper_icons_simple(params) [used internally for the stepper itself (without label)]
+
 ## v1.2.9
 
 - fixed LuaNetworking events ChatManagerOnReceiveMessage and NetworkReceivedData.
