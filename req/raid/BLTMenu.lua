@@ -364,11 +364,11 @@ function BLTMenu:Switch(params)
     return BLTMenu.CreateSimple(self, "switch_button", params, {text_key = "description"})
 end
 
-function BLTMenu:MultiChoice(params)
+function BLTMenu:_MultiChoice(params, typ)
     params = clone(params)
     params.data_source_callback = params.items_func or function() return params.items or {} end
     local item
-    item = BLTMenu.CreateSimple(self, "stepper", params, {no_clone = true, text_key = "description", clbk_key = "on_item_selected_callback", default_clbk = function(value)
+    item = BLTMenu.CreateSimple(self, typ, params, {no_clone = true, text_key = "description", clbk_key = "on_item_selected_callback", default_clbk = function(value)
         params.callback(value, item)
     end})
     -- if params.selected was passed, the game already did the selection in RaidGUIControlStepper:init()
@@ -379,19 +379,12 @@ function BLTMenu:MultiChoice(params)
     return item
 end
 
+function BLTMenu:MultiChoice(params)
+    return self:_MultiChoice(params, "stepper")
+end
+
 function BLTMenu:MultiChoiceIcons(params)
-    params = clone(params)
-    params.data_source_callback = params.items_func or function() return params.items or {} end
-    local item
-    item = BLTMenu.CreateSimple(self, "stepper_icons", params, {no_clone = true, text_key = "description", clbk_key = "on_item_selected_callback", default_clbk = function(value)
-        params.callback(value, item)
-    end})
-    -- if params.selected was passed, the game already did the selection in RaidGUIControlStepper:init()
-    -- if not, but params.value, we have to do it now...
-    if params.selected == nil and params.value ~= nil then
-        item:set_value_and_render(params.value, true) -- set value, skip animation
-    end
-    return item
+    return self:_MultiChoice(params, "stepper_icons")
 end
 
 function BLTMenu:GetCorrectSliderValue(value, min, max)
