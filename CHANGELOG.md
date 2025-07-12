@@ -6,9 +6,9 @@ Contributors other than maintainers are listed in parenthesis after specific cha
 
 ## v1.2.10
 
-- added custom MultiChoice/stepper menu controls with icons instead of texts. (put icon_id or texture & texture_rect, instead of text or text_id in options)
+- added custom MultiChoice/stepper menu controls with icons instead of texts. (put icon_id or texture & texture_rect, instead of text or text_id in params.options)
 new factory functions:
-  - BLTMenu:MultiChoiceIcons()
+  - BLTMenu:MultiChoiceIcons(params)
   - RaidGUIPanel:stepper_icons(params)
   - RaidGUIPanel:stepper_icons_simple(params) [used internally for the stepper itself (without label)]
 
