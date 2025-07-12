@@ -4,7 +4,7 @@
     description="The collection of Lua files that allow the BLT hook to function."
     author="ZNix, James Wilkinson, RAIDModding"
     contact="https://discord.gg/9tAtgtGpx9"
-    version="1.2.9"
+    version="1.2.10"
     priority="1001"
     image="assets/guis/blt/icon.png"
     color="255 0 255"
@@ -70,6 +70,7 @@
         <group script_path="lua/raid/">
             <post hook_id="lib/managers/menu/raid_menu/controls/raidguicontrolkeybind" :script_path="RaidGUIControlKeyBind.lua"/>
             <post hook_id="lib/setups/setup" :script_path="AddCallOnNextUpdate.lua"/>
+            <post hook_id="lib/managers/menu/raid_menu/controls/raidguipanel" :script_path="RaidGUIPanel.lua"/>
         </group>
         <group script_path="req/raid/">
             <post hook_id="lib/managers/menu/menucomponentmanager" :script_path="PD2Insert.lua"/>

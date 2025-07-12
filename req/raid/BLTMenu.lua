@@ -20,9 +20,13 @@ end
 
 require("lib/managers/menu/raid_menu/controls/raidguicontrol")
 require("lib/managers/menu/raid_menu/controls/raidguicontrolbutton")
+require("lib/managers/menu/raid_menu/controls/raidguicontrolsteppersimple")
+require("lib/managers/menu/raid_menu/controls/raidguicontrolstepper")
 
 BLT:Require("req/raid/BLTGUIControlButton")
 BLT:Require("req/raid/BLTGUIControlMenuButton")
+BLT:Require("req/raid/BLTGUIControlStepperIconsSimple")
+BLT:Require("req/raid/BLTGUIControlStepperIcons")
 
 BLTMenu = BLTMenu or class(RaidGuiBase)
 --core functions
@@ -365,6 +369,21 @@ function BLTMenu:MultiChoice(params)
     params.data_source_callback = params.items_func or function() return params.items or {} end
     local item
     item = BLTMenu.CreateSimple(self, "stepper", params, {no_clone = true, text_key = "description", clbk_key = "on_item_selected_callback", default_clbk = function(value)
+        params.callback(value, item)
+    end})
+    -- if params.selected was passed, the game already did the selection in RaidGUIControlStepper:init()
+    -- if not, but params.value, we have to do it now...
+    if params.selected == nil and params.value ~= nil then
+        item:set_value_and_render(params.value, true) -- set value, skip animation
+    end
+    return item
+end
+
+function BLTMenu:MultiChoiceIcons(params)
+    params = clone(params)
+    params.data_source_callback = params.items_func or function() return params.items or {} end
+    local item
+    item = BLTMenu.CreateSimple(self, "stepper_icons", params, {no_clone = true, text_key = "description", clbk_key = "on_item_selected_callback", default_clbk = function(value)
         params.callback(value, item)
     end})
     -- if params.selected was passed, the game already did the selection in RaidGUIControlStepper:init()
