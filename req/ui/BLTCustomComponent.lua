@@ -122,7 +122,7 @@ function BLTCustomComponent:_add_custom_back_button()
 	BLT:make_fine_text(back_button)
 	back_button:set_right(self._panel:w() - 10)
 	back_button:set_bottom(self._panel:h() - 10)
-	back_button:set_visible(managers.menu:is_pc_controller())
+	back_button:set_visible(managers.raid_menu:is_pc_controller())
 	self._back_button = back_button
 
 	local bg_back = self._fullscreen_panel:text({

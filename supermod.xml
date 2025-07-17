@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
-<mod 
+<mod
     name="RAID-SuperBLT"
     description="The collection of Lua files that allow the BLT hook to function."
     author="ZNix, James Wilkinson, RAIDModding"
     contact="https://discord.gg/9tAtgtGpx9"
-    version="1.2.10"
+    version="1.3.0"
     priority="1001"
     image="assets/guis/blt/icon.png"
     color="255 0 255"
@@ -31,7 +31,7 @@
                 patchnotes_url="https://modworkshop.net/mod/49744?tab=changelog"
                 update_url="https://modworkshop.net/mod/49744"/>
         </update>
-        <update 
+        <update
             identifier="49746"
             provider="modworkshop"
             display_name="WSock Hook DLL"
@@ -65,7 +65,7 @@
         <loc file="russian.json" language="russian" />
         <loc file="spanish.json" language="spanish" />
     </localization>
-    
+
     <hooks>
         <group script_path="lua/raid/">
             <post hook_id="lib/managers/menu/raid_menu/controls/raidguicontrolkeybind" :script_path="RaidGUIControlKeyBind.lua"/>
@@ -101,7 +101,7 @@
             </group>
         </group>
 
-        <group script_path="lua/"> 
+        <group script_path="lua/">
             <post hook_id="core/lib/managers/menu/coremenudata" :script_path="CoreMenuData.lua"/>
             <post hook_id="lib/setups/gamesetup" :script_path="GameSetup.lua"/>
             <post hook_id="lib/setups/menusetup" :script_path="MenuSetup.lua"/>
