@@ -67,7 +67,10 @@ function BLTMenu:init(ws, fullscreen_ws, node, name, args)
     self._description_label = self:Label({
         name = "bltmenu_description_label",
         text = "",
-        ignore_align = true
+        ignore_align = true,
+		color = tweak_data.gui.colors.raid_dirty_white,
+		font = tweak_data.gui.fonts.din_compressed,
+		font_size = tweak_data.gui.font_sizes.small,
     })
     self:adjust_description_label()
     self:Align()
@@ -293,7 +296,7 @@ end
 function BLTMenu:adjust_description_label()
     local _, _, w, _ = BLT:make_fine_text(self._description_label._object)
     self._description_label:set_width(w)
-    self._description_label:set_right(managers.viewport:get_safe_rect_pixels().width)
+    self._description_label:set_right(self._description_label._object:parent():w())
 end
 
 function BLTMenu:_show_description(params)

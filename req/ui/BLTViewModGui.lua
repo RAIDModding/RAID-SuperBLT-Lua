@@ -40,7 +40,7 @@ function BLTViewModGui:setup()
 		self:_setup_buttons(self._mod)
 		self:refresh()
 	else
-		managers.menu:back(true)
+		managers.raid_menu:close_menu()
 	end
 end
 

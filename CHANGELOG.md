@@ -4,6 +4,20 @@ This lists the changes between different versions of the RAID-SuperBLT basemod,
 the changes for the DLL are listed in their own changelog.
 Contributors other than maintainers are listed in parenthesis after specific changes.
 
+## v1.3.0
+
+- new mod options sub menu, matching the style of main menu and options.
+  - deprecated `inject_menu = "blt_options"`. use `inject_list` instead.
+  - `blt_options` injects can now handle the `icon` param, which can be any regular gui tweak icon.
+- injected lists can now automatically be sorted, if `blt_can_sort_list` is passed, and no injection injects by `point`.
+  - ..which now applies to the new `blt_options` list.
+- reworked MenuComponent creation, so that keyboard interactions should now be somewhat possible to implement in BLTMenus. (might require some more work to be fully usable, see MenuHelper changes)
+- other menu fixes:
+  - using the keyboard now works in mod options list and should not crash the game any longer.
+  - using internal raid_menu helper functions where possible.
+  - fixed special_btn_released when chat is focused.
+  - BLTMenu: fixed option description screen alignment and made font and color more raid-like.
+
 ## v1.2.10
 
 - added custom MultiChoice/stepper menu controls with icons instead of texts. (put icon_id or texture & texture_rect, instead of text or text_id in params.options)

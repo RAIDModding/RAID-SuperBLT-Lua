@@ -812,25 +812,47 @@ function MenuHelper:AddComponent(name, clss, args)
 		local close = "close_" .. c_name
 
 		-- function MenuComponentManager:name_gui()
-		MenuComponentManager[c_name] = function(self)
-			return self[u_name]
+		MenuComponentManager[c_name] = function(this)
+			return this[u_name]
 		end
 
 		-- function MenuComponentManager:create_name_gui()
-		MenuComponentManager[create] = function(self, node)
+		MenuComponentManager[create] = function(this, node, component)
 			if not node then
 				return
 			end
-			self[u_name] = self[u_name] or clss:new(self._ws, self._fullscreen_ws, node, name, args)
-			return self[u_name]
+			this[u_name] = this[u_name] or clss:new(this._ws, this._fullscreen_ws, node, name, args)
+			if this[u_name].update then
+				table.insert(this._update_components, this[u_name])
+			end
+			if component then
+				this._active_controls[component] = {}
+				if this[u_name]._root_panel then
+					local final_list = this._active_controls[component]
+					for _, control in ipairs(this[u_name]._root_panel._controls) do
+						this:_collect_controls(control, final_list)
+					end
+				end
+			end
+			local active_menu = managers.menu:active_menu()
+			if active_menu then
+				active_menu.input:set_force_input(true)
+			end
+			return this[u_name]
 		end
 
 		-- function MenuComponentManager:close_name_gui()
-		MenuComponentManager[close] = function(self)
-			if self[u_name] then
-				self[u_name]:close()
-				self[u_name] = nil
-				return self[u_name]
+		MenuComponentManager[close] = function(this)
+			if this[u_name] then
+				if this[u_name].update then
+					this:remove_update_component(this[u_name])
+				end
+				this[u_name]:close()
+				this[u_name] = nil
+				local active_menu = managers.menu:active_menu()
+				if active_menu then
+					active_menu.input:set_force_input(false)
+				end
 			end
 		end
 
@@ -839,12 +861,6 @@ function MenuHelper:AddComponent(name, clss, args)
 			create = callback(component_manager, component_manager, create),
 			close = callback(component_manager, component_manager, close),
 		}
-
-		Hooks:Add("MenuComponentManagerUpdate", name..".MenuComponentManagerUpdate", function(self, t, dt)
-			if self[u_name] then
-				self[u_name]:update(t, dt)
-			end
-		end)
 	end
 
 	-- If the component manager is already loaded then set everything up now,
@@ -852,7 +868,7 @@ function MenuHelper:AddComponent(name, clss, args)
 	if managers.component then
 		add(managers.component)
 	else
-		Hooks:Add("MenuComponentManagerInitialize", name .. ".MenuComponentManagerInitialize", add)
+		Hooks:Add("MenuComponentManagerInitialize", "MenuHelper.MenuComponentManagerInitialize."..name, add)
 	end
 end
 

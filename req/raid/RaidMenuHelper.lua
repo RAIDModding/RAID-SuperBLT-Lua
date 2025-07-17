@@ -40,6 +40,12 @@ function RaidMenuHelper:CreateMenu(params)
 	if params.localize == nil then
 		params.localize = true
 	end
+	if params.inject_menu == "blt_options" then
+		log("inject_menu = \"blt_options\" is deprecated, use inject_list = \"blt_options\" instead. (menu: " ..
+			name .. ")")
+		params.inject_list = "blt_options"
+		params.inject_menu = nil
+	end
     if params.inject_list then
         self:InjectButtons(params.inject_list, params.inject_after, {
             self:PrepareListButton(text, params.localize, self:MakeNextMenuClbk(component_name), params.flags, params.icon)
@@ -109,34 +115,54 @@ end
 
 function RaidMenuHelper:InjectIntoAList(menu_comp, injection_point, buttons, list_name)
 	local list = (list_name and menu_comp[list_name]) or menu_comp._list_menu or menu_comp.list_menu_options
-	if list then
-		if not list._injected_data_source then
-			list._orig_data_source_callback = list._orig_data_source_callback or list._data_source_callback
-			list._injected_to_data_source = list._injected_to_data_source or {}			
-			list._data_source_callback = function()
-				local t = list._orig_data_source_callback()
-				for _, inject in pairs(list._injected_to_data_source) do
-					if inject.buttons then
+	if not list then
+		BLT:Log(LogLevel.ERROR, "BLTMenuHelper", "Menu component given has no list, cannot inject into this menu.")
+		return nil
+	end
+	if not list._injected_data_source then
+		list._orig_data_source_callback = list._orig_data_source_callback or list._data_source_callback
+		list._injected_to_data_source = list._injected_to_data_source or {}
+		list._data_source_callback = function()
+			local t = list._orig_data_source_callback()
+			local can_sort = list._list_params and list._list_params.blt_can_sort_list
+			local inject_buttons_by_point = {}
+			local nil_point = "<nil>"
+			for _, inject in pairs(list._injected_to_data_source) do
+				if inject.point then
+					can_sort = false
+				end
+				if inject.buttons and (#inject.buttons > 0) then
+					inject_buttons_by_point[inject.point or nil_point] = inject_buttons_by_point[inject.point or nil_point] or {}
+					for k = #inject.buttons, 1, -1 do
+						table.insert(inject_buttons_by_point[inject.point or nil_point], inject.buttons[k])
+					end
+				end
+			end
+			for point, inject_buttons in pairs(inject_buttons_by_point) do
+				for _, button in ipairs(inject_buttons) do
+					if #t == 0 then
+						table.insert(t, button)
+					else
 						for i, item in pairs(t) do
-							if i == #t or (inject.point and tostring(item.text):lower() == tostring(inject.point):lower()) then
-								for k = #inject.buttons, 1, -1 do
-									table.insert(t, i + 1, inject.buttons[k])
-								end
+							if i == #t or ((point ~= nil_point) and tostring(item.text):lower() == tostring(point):lower()) then
+								table.insert(t, i + 1, button)
 								break
 							end
 						end
 					end
 				end
-				return t
 			end
+			if can_sort then
+				table.sort(t, function(a, b)
+					return a.text < b.text
+				end)
+			end
+			return t
 		end
-		table.insert(list._injected_to_data_source, {buttons = buttons, point = injection_point})
-		list:refresh_data()
-		list:set_selected(true)
-		list:show()
-	else
-		BLT:Log(LogLevel.ERROR, "BLTMenuHelper", "Menu component given has no list, cannot inject into this menu.")
+		list._injected_data_source = true
 	end
+	table.insert(list._injected_to_data_source, {buttons = buttons, point = injection_point})
+	return list
 end
 
 ---@deprecated @use MenuHelper:AddComponent instead

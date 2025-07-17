@@ -70,11 +70,11 @@ function BLTModsGui:_setup()
 	BLT:make_fine_text(back_button)
 	back_button:set_right(self._panel:w() - 10)
 	back_button:set_bottom(self._panel:h() - 10)
-	back_button:set_visible(managers.menu:is_pc_controller())
+	back_button:set_visible(managers.raid_menu:is_pc_controller())
 	self._back_button = back_button
 	self._custom_buttons[back_button] = {
 		clbk = function()
-			managers.menu:back()
+			managers.raid_menu:close_menu()
 			return true
 		end
 	}
