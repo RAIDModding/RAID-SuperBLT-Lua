@@ -1,7 +1,7 @@
 Hooks:RegisterHook("CustomizeControllerOnKeySet")
 
 Hooks:PostHook(RaidGuiControlKeyBind, "activate_customize_controller", "BLT.RaidGuiControlKeyBind.activate_customize_controller", function(self)
-    self._skip_first_activate_key = true
+	self._skip_first_activate_key = true
 
 	-- NOTE: This isn't the prettiest way to do this, but there's no easy way to check
 	-- if we're binding a key otherwise...
@@ -84,7 +84,7 @@ function RaidGuiControlKeyBind:_key_press(text, key, input_id, ...)
 	for _, name in ipairs(RaidMenuOptionsControlsKeybinds.controls_info_by_category(button_category)) do
 		local connection = connections[name]
 		if connection._btn_connections then
-			for name, btn_connection in pairs(connection._btn_connections) do
+			for _, btn_connection in pairs(connection._btn_connections) do
 				if btn_connection.name == key_name and self._keybind_params.binding ~= btn_connection.name then
 					managers.menu:show_key_binding_collision({
 						KEY = key_name,

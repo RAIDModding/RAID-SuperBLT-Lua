@@ -84,7 +84,7 @@ end
 	Create this component's title text
 ]]
 function BLTCustomComponent:make_title(title, offset)
-	local title = self._panel:text({
+	local _title = self._panel:text({
 		name = "title",
 		x = padding,
 		y = padding + (offset or 0),
@@ -95,8 +95,8 @@ function BLTCustomComponent:make_title(title, offset)
 		text = title,
 		vertical = "top"
 	})
-	BLT:make_fine_text(title)
-	return title
+	BLT:make_fine_text(_title)
+	return _title
 end
 
 --[[
@@ -209,12 +209,12 @@ function BLTCustomComponent:mouse_pressed(o, button, x, y)
 	if not result then
 		-- Shouldn't happen in PD2 since it already does it beforehand, missing in RAID.
 		if button == Idstring("mouse wheel down") then
-            self:mouse_wheel_down(x, y)
-        elseif button == Idstring("mouse wheel up") then
-            self:mouse_wheel_up(x, y)
-        else
-            self:_mouse_pressed(button, x, y)
-        end
+			self:mouse_wheel_down(x, y)
+		elseif button == Idstring("mouse wheel up") then
+			self:mouse_wheel_up(x, y)
+		else
+			self:_mouse_pressed(button, x, y)
+		end
 	end
 
 	return result

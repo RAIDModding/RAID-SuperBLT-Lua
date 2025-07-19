@@ -396,6 +396,7 @@ function BLTViewModGui:mouse_move(o, x, y)
 		used, pointer = self._dev_scroll:mouse_moved(o, x, y)
 	end
 	if not used then
+		---@diagnostic disable-next-line: undefined-field
 		return BLTViewModGui.super.mouse_move(self, o, x, y)
 	else
 		return used, pointer

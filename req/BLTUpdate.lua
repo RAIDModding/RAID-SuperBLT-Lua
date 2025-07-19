@@ -108,7 +108,7 @@ function BLTUpdate:clbk_got_update_data(clbk, json_data, http_id, request_info)
 						tostring(data.version), tostring(local_version),
 						newer == 2 and "Update available!" or (newer == 1 and "[local is newer]" or "")
 					))
-					return self:_run_update_callback(clbk, newer == 2) -- Request an update if the remote version greather than local version.
+					return self:_run_update_callback(clbk, newer == 2) -- Request an update if the remote version greater than local version.
 				end
 
 				local dat = { data, clbk }

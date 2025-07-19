@@ -48,13 +48,13 @@ function BLTUIButton:init(panel, parameters)
 		word_wrap = true,
 		w = self._panel:w() - padding * 2
 	})
-	BLT:make_fine_text(title)
-	title:set_w(self._panel:w())
-	title:set_center_x(self._panel:w() * 0.5)
+	local _, _, _, th = title:text_rect()
+	title:set_h(th)
+	title:set_x(math.round((self._panel:w() * 0.5) - (title:w() * 0.5)))
 	if parameters.image then
-		title:set_top(self._panel:h() * 0.5)
+		title:set_top(math.round(self._panel:h() * 0.5))
 	else
-		title:set_bottom(self._panel:h() * 0.5)
+		title:set_bottom(math.round(self._panel:h() * 0.5))
 	end
 
 	local desc = self._panel:text({
@@ -70,12 +70,12 @@ function BLTUIButton:init(panel, parameters)
 		word_wrap = true,
 		w = self._panel:w() - padding * 2
 	})
-	BLT:make_fine_text(desc)
-	desc:set_w(self._panel:w())
-	desc:set_center_x(self._panel:w() * 0.5)
+	local _, _, _, dh = desc:text_rect()
+	desc:set_h(dh)
+	desc:set_x(math.round((self._panel:w() * 0.5) - (desc:w() * 0.5)))
 	desc:set_top(title:bottom() + 5)
 	if parameters.center_text then
-		desc:set_center_y(self._panel:h() * 0.5)
+		desc:set_y(math.round((self._panel:h() * 0.5) - (desc:h() * 0.5)))
 	end
 
 	if parameters.image then
@@ -87,7 +87,7 @@ function BLTUIButton:init(panel, parameters)
 			w = parameters.image_size or 64,
 			h = parameters.image_size or 64
 		})
-		image:set_center_x(self._panel:w() * 0.5)
+		image:set_x(math.round((self._panel:w() * 0.5) - (image:w() * 0.5)))
 		image:set_top(padding)
 		if parameters.texture_rect then
 			image:set_texture_rect(unpack(parameters.texture_rect))
@@ -222,7 +222,7 @@ function BLTDownloadControl:init(panel, parameters)
 	end
 
 	if image_path then
-		local image = self._info_panel:bitmap({
+		self._info_panel:bitmap({
 			name = "image",
 			texture = image_path,
 			color = Color.white,
@@ -242,7 +242,7 @@ function BLTDownloadControl:init(panel, parameters)
 		})
 		BoxGuiObject:new(no_image_panel, {sides = {1, 1, 1, 1}})
 
-		local no_image_text = no_image_panel:text({
+		no_image_panel:text({
 			name = "no_image_text",
 			font_size = small_font_size * 0.8,
 			font = small_font,
@@ -257,7 +257,7 @@ function BLTDownloadControl:init(panel, parameters)
 	end
 
 	-- Download info
-	local title = self._info_panel:text({
+	self._info_panel:text({
 		name = "title",
 		font_size = medium_font_size,
 		font = medium_font,

@@ -105,7 +105,7 @@ function c:LoadAsset(name, file, params, xml_convert)
 
 		table.insert(group.assets, spec)
 	else
-		error("Unrecognised load type " .. params.target)
+		error("Unrecognized load type " .. params.target)
 	end
 end
 
@@ -195,8 +195,10 @@ local function convert_xml_asset(params)
 	-- Write it out
 	do
 		local file = io.open(params.built_path, "wb")
-		file:write(output_str)
-		file:close()
+		if file then
+			file:write(output_str)
+			file:close()
+		end
 	end
 end
 

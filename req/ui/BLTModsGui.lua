@@ -42,7 +42,7 @@ function BLTModsGui:init(ws, fullscreen_ws, node)
 end
 
 function BLTModsGui:close()
-    MenuCallbackHandler:perform_blt_save()
+	MenuCallbackHandler:perform_blt_save()
 	BLTModsGui.last_y_position = self._scroll:canvas():y() * -1
 	self._ws:panel():remove(self._panel)
 	self._fullscreen_ws:panel():remove(self._fullscreen_panel)
@@ -112,7 +112,6 @@ function BLTModsGui:_setup()
 	})
 
 	-- Toggle libraries visible button
-	local padding = 10
 	local params = {
 		x = padding,
 		y = padding,
@@ -122,7 +121,8 @@ function BLTModsGui:_setup()
 		font = small_font,
 		font_size = small_font_size,
 		vertical = "bottom",
-		align = "right"
+		align = "right",
+		layer = 1000
 	}
 
 	local function customize(changes)
@@ -251,8 +251,8 @@ function BLTModsGui:update_visible_mods(scroll_position)
 	local button = BLTUIButton:new(self._scroll:canvas(), {
 		x = 0,
 		y = 0,
-		w = (self._scroll:canvas():w() - (BLTModItem.layout.x + 1) * padding) / BLTModItem.layout.x,
-		h = (self._scroll:canvas():h() - (BLTModItem.layout.y + 1) * padding) / BLTModItem.layout.y,
+		w = math.round((self._scroll:canvas():w() - (BLTModItem.layout.x + 1) * padding) / BLTModItem.layout.x),
+		h = math.round((self._scroll:canvas():h() - (BLTModItem.layout.y + 1) * padding) / BLTModItem.layout.y),
 		title = title_text,
 		text = managers.localization:text("blt_download_manager_help"),
 		image = "guis/blt/updates",
@@ -308,7 +308,7 @@ end
 
 --------------------------------------------------------------------------------
 
-function BLTModsGui:mouse_moved(button, x, y)
+function BLTModsGui:mouse_moved(btn, x, y)
 	if managers.menu_scene and managers.menu_component:input_focus() then
 		return false
 	end
@@ -342,7 +342,7 @@ function BLTModsGui:mouse_moved(button, x, y)
 	end
 
 	if alive(self._scroll) and not used then
-		used, pointer = self._scroll:mouse_moved(button, x, y)
+		used, pointer = self._scroll:mouse_moved(btn, x, y)
 	end
 
 	return used, pointer
@@ -358,17 +358,17 @@ function BLTModsGui:mouse_clicked(o, button, x, y)
 	end
 end
 
-function BLTModsGui:_mouse_pressed(button, x, y)
+function BLTModsGui:_mouse_pressed(btn, x, y)
 	if managers.menu_scene and managers.menu_component:input_focus() then
 		return false
 	end
 
 	local result
 	if alive(self._scroll) then
-		result = self._scroll:mouse_pressed(button, x, y)
+		result = self._scroll:mouse_pressed(btn, x, y)
 	end
 
-	if button == Idstring("0") then
+	if btn == Idstring("0") then
 		for button, data in pairs(self._custom_buttons) do
 			if alive(button) and button:visible() and button:inside(x, y) then
 				return data.clbk()

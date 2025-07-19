@@ -151,6 +151,7 @@ BLTKeybindsManager = BLTKeybindsManager or blt_class(BLTModule)
 BLTKeybindsManager.__type = "BLTKeybindsManager"
 
 function BLTKeybindsManager:init()
+	---@diagnostic disable-next-line: undefined-field
 	BLTKeybindsManager.super.init(self)
 
 	self._keybinds = {}
@@ -337,7 +338,7 @@ function BLTKeybindMenuInitiator:modify_node(node)
 	local last_mod
 	for i, bind in ipairs(BLT.Keybinds:keybinds()) do
 		if bind:IsActive() and bind:ShowInMenu() then
-			-- Seperate keybinds by mod
+			-- Separate keybinds by mod
 			if last_mod ~= bind:ParentMod() then
 				if last_mod then
 					self:create_divider(node, tostring(i), nil, 16)

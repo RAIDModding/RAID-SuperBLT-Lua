@@ -4,6 +4,7 @@ BLTNotificationsManager = BLTNotificationsManager or blt_class(BLTModule)
 BLTNotificationsManager.__type = "BLTNotificationsManager"
 
 function BLTNotificationsManager:init()
+	---@diagnostic disable-next-line: undefined-field
 	BLTNotificationsManager.super.init(self)
 
 	self._notifications = {}

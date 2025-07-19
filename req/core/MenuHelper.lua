@@ -16,9 +16,9 @@ function MenuHelper:SetupMenuButton(menu, id, button_name)
 
 	local button_id
 	if button_name then
-		for id, item in pairs(menu[id]:items()) do
+		for _id, item in pairs(menu[id]:items()) do
 			if type(item) == "table" and item._parameters and item._parameters.name == button_name then
-				button_id = id
+				button_id = _id
 			end
 		end
 	else
@@ -743,7 +743,7 @@ function MenuHelper:LoadFromJsonFile(file_path, parent_class, data_table)
 end
 
 ---Resets all specified items to a specific value
----@param item any @Menu item for which the helper function can retreive any items specified in `items_table`
+---@param item any @Menu item for which the helper function can retrieve any items specified in `items_table`
 ---@param items_table table @Table of items, where the item name is the key, which should be reset to the value
 ---@param value any @Value which all items specified should be reset to
 function MenuHelper:ResetItemsToDefaultValue(item, items_table, value)

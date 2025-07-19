@@ -4,6 +4,7 @@ BLTModManager = blt_class(BLTModule)
 BLTModManager.__type = "BLTModManager"
 
 function BLTModManager:init()
+	---@diagnostic disable-next-line: undefined-field
 	BLTModManager.super.init(self)
 end
 

@@ -4,6 +4,7 @@ BLTDownloadManager = BLTDownloadManager or blt_class(BLTModule)
 BLTDownloadManager.__type = "BLTDownloadManager"
 
 function BLTDownloadManager:init()
+	---@diagnostic disable-next-line: undefined-field
 	BLTDownloadManager.super.init(self)
 
 	self._pending_downloads = {}
@@ -110,7 +111,7 @@ function BLTDownloadManager:start_download(update)
 	if file.DirectoryExists(moddir .. ".hg") or file.DirectoryExists(moddir .. ".git") then
 		QuickMenu:new(
 			"Update Blocked", -- TODO i18n
-			"Mercerial or Git version control are in use for this mod, update blocked", -- TODO i18n
+			"Mercurial or Git version control are in use for this mod, update blocked", -- TODO i18n
 			{},
 			true
 		)
@@ -134,6 +135,9 @@ end
 
 function BLTDownloadManager:clbk_download_finished(data, http_id, request_info)
 	local download = self:get_download_from_http_id(http_id)
+	if not download then
+		return
+	end
 	local download_name = download.update:GetName()
 
 	if not request_info.querySucceeded or string.is_nil_or_empty(data) then
@@ -240,7 +244,7 @@ function BLTDownloadManager:clbk_download_finished(data, http_id, request_info)
 					if server_version == nil or BLT:CompareVersions(version, server_version) == 0 then
 							passed_check = true
 						else -- Versions don't match
-							BLT:Log(LogLevel.ERROR, string.format("[Downloads] Failed to comapre downloaded version to announced '%s'", download_name))
+							BLT:Log(LogLevel.ERROR, string.format("[Downloads] Failed to compare downloaded version to announced '%s'", download_name))
 							BLT:Log(LogLevel.ERROR, "[Downloads] Server: ", server_version)
 							BLT:Log(LogLevel.ERROR, "[Downloads]  Local: ", version)
 						end
@@ -249,7 +253,7 @@ function BLTDownloadManager:clbk_download_finished(data, http_id, request_info)
 						BLT:Log(LogLevel.ERROR, string.format("[Downloads] Could not read mod data of '%s' (invalid mod %s)", download_name, is_pure_xml and "xml" or "json"))
 					end
 				else
-					BLT:Log(LogLevel.ERROR, string.format("[Downloads] Could not read mod data of '%s' (%s unreadble)", download_name, is_pure_xml and "supermod.xml" or "mod.txt"))
+					BLT:Log(LogLevel.ERROR, string.format("[Downloads] Could not read mod data of '%s' (%s unreadable)", download_name, is_pure_xml and "supermod.xml" or "mod.txt"))
 				end
 			end
 		end
@@ -294,9 +298,11 @@ end
 
 function BLTDownloadManager:clbk_download_progress(http_id, bytes, total_bytes)
 	local download = self:get_download_from_http_id(http_id)
-	download.state = "downloading"
-	download.bytes = bytes
-	download.total_bytes = total_bytes
+	if download then
+		download.state = "downloading"
+		download.bytes = bytes
+		download.total_bytes = total_bytes
+	end
 end
 
 function BLTDownloadManager:flush_complete_downloads()

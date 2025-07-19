@@ -17,8 +17,8 @@ BLTModItem.layout = {
 BLTModItem.image_size = 108
 
 function BLTModItem:init(panel, index, mod, show_icon)
-	local w = (panel:w() - (self.layout.x + 1) * padding) / self.layout.x
-	local h = ((panel:h() - (self.layout.y + 1) * padding) / self.layout.y) * (show_icon and 1 or 0.5) - (show_icon and 0 or padding * 0.5)
+	local w = math.round((panel:w() - (self.layout.x + 1) * padding) / self.layout.x)
+	local h = math.round(((panel:h() - (self.layout.y + 1) * padding) / self.layout.y) * (show_icon and 1 or 0.5) - (show_icon and 0 or padding * 0.5))
 	local column, row = self:_get_col_row(index)
 	local icon_size = 32
 
@@ -39,8 +39,8 @@ function BLTModItem:init(panel, index, mod, show_icon)
 
 	-- Main panel
 	self._panel = panel:panel({
-		x = (w + padding) * (column - 1),
-		y = (h + padding) * (row - 1),
+		x = math.round((w + padding) * (column - 1)),
+		y = math.round((h + padding) * (row - 1)),
 		w = w,
 		h = h,
 		layer = 10
@@ -68,30 +68,31 @@ function BLTModItem:init(panel, index, mod, show_icon)
 		word_wrap = true
 	})
 	local name_padding = show_icon and padding or (icon_size + 4 + padding)
-	mod_name:set_x(name_padding)
-	mod_name:set_width(self._panel:w() - mod_name:x() - name_padding)
 	mod_name:set_top(math.round(self._panel:h() * (show_icon and 0.5 or 0.1)))
-	local _, _, _, th = mod_name:text_rect()
-	mod_name:set_h(th)
+	local _, _, tw, th = mod_name:text_rect()
+	mod_name:set_size(math.min(tw, self._panel:w() - (name_padding * 2)), th)
+	mod_name:set_x(math.round((self._panel:w() * 0.5) - (mod_name:w() * 0.5)))
 
 	-- Mod description
+	local desc = mod:GetDescription()
+	local max_desc_len = 240
 	local mod_desc = self._panel:text({
 		name = "mod_desc",
 		font_size = small_font_size,
 		font = small_font,
 		layer = 10,
 		color = text_color,
-		text = string.sub(mod:GetDescription(), 1, 120),
+		text = (desc:len() > max_desc_len) and (string.sub(desc, 1, max_desc_len - 3) .. "...") or desc,
 		align = "left",
 		vertical = "top",
 		wrap = true,
 		word_wrap = true,
-		w = self._panel:w() - padding * 2
+		w = self._panel:w() - (padding * 2)
 	})
 	mod_desc:set_top(math.round(mod_name:bottom()) + 5)
-	local _, _, tw, th = mod_desc:text_rect()
-	mod_desc:set_size(tw, math.min(th, self._panel:h() - mod_desc:y() - padding))
-	mod_desc:set_center_x(math.round(self._panel:w() * 0.5))
+	local _, _, dw, dh = mod_desc:text_rect()
+	mod_desc:set_size(dw, math.min(dh, self._panel:h() - mod_desc:y() - padding))
+	mod_desc:set_x(math.round((self._panel:w() * 0.5) - (mod_desc:w() * 0.5)))
 
 	-- Mod image
 	local image_path
@@ -109,7 +110,7 @@ function BLTModItem:init(panel, index, mod, show_icon)
 			w = BLTModItem.image_size,
 			h = BLTModItem.image_size
 		})
-		image:set_center_x(self._panel:w() * 0.5)
+		image:set_x(math.round((self._panel:w() * 0.5) - (image:w() * 0.5)))
 		image:set_top(padding)
 	elseif show_icon then
 		local no_image_panel = self._panel:panel({
@@ -119,7 +120,7 @@ function BLTModItem:init(panel, index, mod, show_icon)
 			alpha = mod:IsEnabled() and 1 or 0.5,
 			layer = 10
 		})
-		no_image_panel:set_center_x(self._panel:w() * 0.5)
+		no_image_panel:set_x(math.round((self._panel:w() * 0.5) - (no_image_panel:w() * 0.5)))
 		no_image_panel:set_top(padding)
 
 		BoxGuiObject:new(no_image_panel, {sides = {1, 1, 1, 1}})
@@ -138,8 +139,6 @@ function BLTModItem:init(panel, index, mod, show_icon)
 	end
 
 	-- Mod settings
-	local icon_y = padding
-
 	if mod:HasUpdates() then
 		local icon_updates = self._panel:bitmap({
 			texture = "guis/blt/updates",
@@ -149,7 +148,7 @@ function BLTModItem:init(panel, index, mod, show_icon)
 			h = icon_size
 		})
 		icon_updates:set_left(padding)
-		icon_updates:set_top(icon_y)
+		icon_updates:set_top(padding)
 
 		-- Animate the icon. When the update is done, the animation ends and
 		-- sets the icon to the appropriate colour
@@ -173,7 +172,7 @@ function BLTModItem:_clbk_animate_update_icon(icon)
 			colour = 2 - colour
 		end
 
-		-- Lerb between white and blue to make it fade in and out
+		-- Lerp between white and blue to make it fade in and out
 		icon:set_color(math.lerp(Color.white, Color.blue, colour))
 	end
 

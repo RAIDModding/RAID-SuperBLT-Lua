@@ -4,6 +4,7 @@ if not _G then
 end
 
 -- Localise globals
+---@class _G
 local _G = _G
 local io = io
 local file = file
@@ -33,7 +34,7 @@ BLT.Base = {}
 -- BLT fonts table
 BLT.fonts = {
 	small = { font = "ui/fonts/pf_din_text_comp_pro_medium_20_mf", font_size = 20 },
-	medium = { font = "ui/fonts/pf_din_text_comp_pro_medium_26_mf", font_size = 28 },
+	medium = { font = "ui/fonts/pf_din_text_comp_pro_medium_26_mf", font_size = 26 },
 	large = { font = "ui/fonts/pf_din_text_comp_pro_medium_32_mf", font_size = 32 },
 	massive = { font = "ui/fonts/pf_din_text_comp_pro_medium_66_mf", font_size = 66 } -- raid has no massive in tweak_data.gui, used title which is 66
 }
@@ -263,27 +264,27 @@ function BLT:CheckDirectory(path)
 end
 
 function BLT:ToVersionTable(version)
-    local vt = {}
-    for num in version:gmatch("%d+") do
-        table.insert(vt, tonumber(num))
-    end
-    return vt
+	local vt = {}
+	for num in version:gmatch("%d+") do
+		table.insert(vt, tonumber(num))
+	end
+	return vt
 end
 
 -- returns 1 if version 1 is newer, 2 if version 2 is newer, or 0 if versions are equal.
 function BLT:CompareVersions(version1, version2)
-    local v1 = self:ToVersionTable(tostring(version1))
-    local v2 = self:ToVersionTable(tostring(version2))
-    for i = 1, math.max(#v1, #v2) do
-        local num1 = v1[i] or 0
-        local num2 = v2[i] or 0
-        if num1 > num2 then
-            return 1
-        elseif num1 < num2 then
-            return 2
-        end
-    end
-    return 0
+	local v1 = self:ToVersionTable(tostring(version1))
+	local v2 = self:ToVersionTable(tostring(version2))
+	for i = 1, math.max(#v1, #v2) do
+		local num1 = v1[i] or 0
+		local num2 = v2[i] or 0
+		if num1 > num2 then
+			return 1
+		elseif num1 < num2 then
+			return 2
+		end
+	end
+	return 0
 end
 
 function BLT:CheckUpdatesReluaPossible(downloads)
@@ -297,9 +298,9 @@ function BLT:CheckUpdatesReluaPossible(downloads)
 end
 
 function BLT:make_fine_text(text)
-    if not alive(text) then
-        return
-    end
+	if not alive(text) then
+		return
+	end
 	local _, _, w, h = text:text_rect()
 	text:set_size(w, h)
 	text:set_position(math.round(text:x()), math.round(text:y()))
@@ -308,9 +309,9 @@ end
 
 function BLT:make_fine_text_aligning(text)
 	-- Make fine text, but use the text rect X and Y in set_position
-    if not alive(text) then
-        return
-    end
+	if not alive(text) then
+		return
+	end
 	local x, y, w, h = text:text_rect()
 	text:set_size(w, h)
 	text:set_position(math.round(x), math.round(y))

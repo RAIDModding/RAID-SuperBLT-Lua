@@ -24,7 +24,7 @@ function BLTDownloadManagerGui:setup()
 	-- Again, this has already been added by make_into_listview
 
 	-- Add download items
-	local h = 80
+	local w, h = 80, 80
 	for i, download in ipairs(BLT.Downloads:pending_downloads()) do
 		local data = {
 			y = (h + padding) * (i - 1),
@@ -40,7 +40,6 @@ function BLTDownloadManagerGui:setup()
 
 	local num_downloads = table.size(BLT.Downloads:pending_downloads())
 	if num_downloads > 0 then
-		local w, h = 80, 80
 		local button = BLTUIButton:new(self._scroll:canvas(), {
 			x = self._scroll:canvas():w() - w,
 			y = (h + padding) * num_downloads,

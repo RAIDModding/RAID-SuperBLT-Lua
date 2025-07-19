@@ -148,11 +148,11 @@ function ScrollablePanel:init(parent_panel, name, data)
 	self._scroll_bar:set_center_x(scroll_down_indicator_arrow:center_x())
 
 	self._bar_minimum_size = data.bar_minimum_size or 5
-	self._thread = self._panel:animate(function (o, self)
+	self._thread = self._panel:animate(function (o, this)
 		while true do
 			local dt = coroutine.yield()
 
-			self:_update(dt)
+			this:_update(dt)
 		end
 	end, self)
 end

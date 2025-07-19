@@ -21,6 +21,7 @@ function BLTLogs:init()
 		BLTLogs.log_level = logs.log_level or BLTLogs.log_level
 	end
 
+	---@diagnostic disable-next-line: undefined-field
 	BLTLogs.super.init(self)
 end
 

@@ -421,16 +421,12 @@ function BLTNotificationsGui:update(t, dt)
 
 	self._next_time = self._next_time or t + TIME_PER_PAGE
 
-	if self._block_change then
+	if t >= self._next_time then
+		self:_next_notification()
 		self._next_time = t + TIME_PER_PAGE
-	else
-		if t >= self._next_time then
-			self:_next_notification()
-			self._next_time = t + TIME_PER_PAGE
-		end
-
-		self:set_bar_width(BAR_W * (1 - (self._next_time - t) / TIME_PER_PAGE))
 	end
+
+	self:set_bar_width(BAR_W * (1 - (self._next_time - t) / TIME_PER_PAGE))
 
 	if not animating and self._queued then
 		self:_move_to_notification(self._queued)
@@ -463,8 +459,8 @@ function BLTNotificationsGui:mouse_moved(o, x, y)
 	end
 end
 
-function BLTNotificationsGui:_mouse_pressed(button, x, y)
-	if not self._enabled or button ~= Idstring("0") then
+function BLTNotificationsGui:_mouse_pressed(btn, x, y)
+	if not self._enabled or btn ~= Idstring("0") then
 		return
 	end
 
@@ -483,7 +479,7 @@ function BLTNotificationsGui:_mouse_pressed(button, x, y)
 		return true
 	end
 
-	for i, button in ipairs(self._buttons) do
+	for _, button in ipairs(self._buttons) do
 		if button:inside(x, y) then
 			local i = tonumber(button:name())
 			if self._current ~= i then
