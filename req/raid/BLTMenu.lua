@@ -250,8 +250,40 @@ function BLTMenu:SortItems(panel)
 	end
 end
 
+function BLTMenu:AutoBindNamedControlsBegin()
+	self.auto_route_controls = true
+	self.auto_route_first_control = nil
+	self.auto_route_last_control = nil
+end
+
+function BLTMenu:AutoBindNamedControlsEnd()
+	if self.auto_route_first_control and self.auto_route_first_control._on_menu_move then
+		self.auto_route_first_control._on_menu_move.up = self.auto_route_last_control._params.name
+		if self.auto_route_first_control.set_selected then
+			self.auto_route_first_control:set_selected(true)
+		end
+	end
+	if self.auto_route_last_control and self.auto_route_last_control._on_menu_move then
+		self.auto_route_last_control._on_menu_move.down = self.auto_route_first_control._params.name
+	end
+	self.auto_route_first_control = nil
+	self.auto_route_last_control = nil
+	self.auto_route_controls = nil
+end
+
 function BLTMenu:CreateSimple(typ, params, create_data)
 	create_data = create_data or {}
+	local auto_route_controls = false
+	if self.auto_route_controls and params.name and (not params.on_menu_move) then
+		auto_route_controls = true
+		params.on_menu_move = {}
+		if self.auto_route_last_control then
+			params.on_menu_move.up = self.auto_route_last_control._params.name
+		end
+		if self.auto_route_last_control and self.auto_route_last_control._on_menu_move then
+			self.auto_route_last_control._on_menu_move.down = params.name
+		end
+	end
 	local data = BLTMenu.BasicItemData(self, params, create_data.no_clone, typ)
 	local parent = data.parent
 	if parent then
@@ -289,6 +321,12 @@ function BLTMenu:CreateSimple(typ, params, create_data)
 		table.insert(self._all_ctrls, item)
 		self:SortItems(parent)
 		self:Align(parent)
+		if auto_route_controls then
+			if not self.auto_route_first_control then
+				self.auto_route_first_control = item
+			end
+			self.auto_route_last_control = item
+		end
 		return item
 	end
 end
