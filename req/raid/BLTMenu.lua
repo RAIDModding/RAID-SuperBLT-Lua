@@ -287,12 +287,11 @@ function BLTMenu:CreateSimple(typ, params, create_data)
 	local data = BLTMenu.BasicItemData(self, params, create_data.no_clone, typ)
 	local parent = data.parent
 	if parent then
-		if params.desc then
-			if params.localize_desc == nil then
-				params.localize_desc = true
+		if data.desc then
+			if data.localize_desc == nil then
+				data.localize_desc = true
 			end
-			data.on_mouse_exit_callback = callback(self, self, "_hide_description")
-			data.on_mouse_enter_callback = callback(self, self, "_show_description", params)
+			self:_bind_description(data)
 		end
 		local clbk_key = create_data.clbk_key or "on_click_callback"
 		data[clbk_key] = data.callback and (create_data.default_clbk or function(a, item, value)
@@ -327,7 +326,50 @@ function BLTMenu:CreateSimple(typ, params, create_data)
 			end
 			self.auto_route_last_control = item
 		end
+		if data.auto_select_on_hover and item.set_selected then
+			self:_bind_auto_select_on_hover(item, parent)
+		end
 		return item
+	end
+end
+
+function BLTMenu:_bind_description(data)
+	if data.on_mouse_exit_callback then
+		data.on_mouse_exit_callback_no_desc = data.on_mouse_exit_callback
+	end
+	if data.on_mouse_enter_callback then
+		data.on_mouse_enter_callback_no_desc = data.on_mouse_enter_callback
+	end
+	data.on_mouse_exit_callback = function(button, _data)
+		self:_hide_description()
+		if data.on_mouse_exit_callback_no_desc then
+			data.on_mouse_exit_callback_no_desc(button, _data)
+		end
+	end
+	data.on_mouse_enter_callback = function(button, _data)
+		self:_show_description(data)
+		if data.on_mouse_enter_callback_no_desc then
+			data.on_mouse_enter_callback_no_desc(button, _data)
+		end
+	end
+end
+
+function BLTMenu:_bind_auto_select_on_hover(item, parent)
+	if item._on_mouse_enter_callback then
+		item._on_mouse_enter_callback_no_auto_select = item._on_mouse_enter_callback
+	end
+	item._on_mouse_enter_callback = function(button, _data)
+		if item and item.set_selected and parent._controls then
+			for _, ctl in ipairs(parent._controls) do
+				if ctl.set_selected and (ctl ~= item) then
+					ctl:set_selected(false)
+				end
+			end
+			item:set_selected(true)
+		end
+		if item._on_mouse_enter_callback_no_auto_select then
+			item._on_mouse_enter_callback_no_auto_select(button, _data)
+		end
 	end
 end
 
