@@ -209,7 +209,7 @@ function BLTNotificationsGui:add_notification(parameters)
 	local title = new_notif:text({
 		text = parameters.title or "No Title",
 		font = small_font,
-		font_size = large_font_size * 0.5,
+		font_size = small_font_size,
 		x = _x,
 		y = padding
 	})
