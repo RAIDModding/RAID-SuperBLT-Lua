@@ -842,7 +842,10 @@ function MenuHelper:AddComponent(name, clss, args)
 		end
 
 		-- function MenuComponentManager:close_name_gui()
-		MenuComponentManager[close] = function(this)
+		MenuComponentManager[close] = function(this, node, component)
+			if component then
+				this._active_controls[component] = {}
+			end
 			if this[u_name] then
 				if this[u_name].update then
 					this:remove_update_component(this[u_name])
