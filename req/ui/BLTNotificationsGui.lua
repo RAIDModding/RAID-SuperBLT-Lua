@@ -9,7 +9,7 @@ local SPOT_W = 32
 local SPOT_H = 8
 local BAR_W = 32
 local BAR_H = 6
-local BAR_X = (SPOT_W - BAR_W) / 2
+local BAR_X = math.round((SPOT_W - BAR_W) / 2)
 local BAR_Y = 0
 local TIME_PER_PAGE = 6
 local CHANGE_TIME = 0.5
@@ -189,7 +189,7 @@ function BLTNotificationsGui:add_notification(parameters)
 	-- Create notification panel
 	local new_notif = self._content_panel:panel({})
 
-	local icon_size = new_notif:h() - padding * 2
+	local icon_size = math.round(new_notif:h() - padding * 2)
 	local icon
 	if parameters.icon then
 		icon = new_notif:bitmap({
@@ -204,11 +204,11 @@ function BLTNotificationsGui:add_notification(parameters)
 		})
 	end
 
-	local _x = (icon and icon:right() or 0) + padding
+	local _x = math.round((icon and icon:right() or 0) + padding)
 
 	local title = new_notif:text({
 		text = parameters.title or "No Title",
-		font = large_font,
+		font = small_font,
 		font_size = large_font_size * 0.5,
 		x = _x,
 		y = padding
@@ -221,7 +221,7 @@ function BLTNotificationsGui:add_notification(parameters)
 		font_size = small_font_size,
 		x = _x,
 		w = new_notif:w() - _x,
-		y = title:bottom(),
+		y = math.ceil(title:bottom()),
 		h = new_notif:h() - title:bottom(),
 		color = tweak_data.screen_colors.text,
 		alpha = 0.8,
@@ -288,8 +288,8 @@ function BLTNotificationsGui:_update_bars()
 			h = 8,
 			alpha = 0.25
 		})
-		page_button:set_center_x(( i / (self._notifications_count + 1)) * self._buttons_panel:w() / 2 + self._buttons_panel:w() / 4)
-		page_button:set_center_y((self._buttons_panel:h() - page_button:h()) / 2)
+		page_button:set_x(math.round((( i / (self._notifications_count + 1)) * self._buttons_panel:w() * 0.5 + self._buttons_panel:w() / 4) - (page_button:w() * 0.5)))
+		page_button:set_y(math.round(((self._buttons_panel:h() - page_button:h()) * 0.5) - (page_button:h() * 0.5)))
 		table.insert(self._buttons, page_button)
 	end
 
