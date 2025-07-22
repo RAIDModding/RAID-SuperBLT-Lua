@@ -17,6 +17,7 @@ function QuickMenu:init(title, text, options, show_immediately)
 	local add_default = false
 	if (not options) or (options ~= nil and type(options) ~= "table") or (options ~= nil and type(options) == "table" and #options == 0) then
 		add_default = true
+		options = options or {}
 	end
 	if add_default then
 		local tbl = {
