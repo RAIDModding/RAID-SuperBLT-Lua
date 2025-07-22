@@ -381,15 +381,15 @@ function Utils.OpenUrlSafe(url)
 		managers.localization:text("blt_openurl_title"),
 		string.format(Steam and Steam:overlay_enabled() and managers.localization:text("blt_openurl_text_steamoverlay") or managers.localization:text("blt_openurl_text_browser"), url),
 		{
-			[1] = {
-				text = math.random() < 0.02 and "NEIN!" or managers.localization:text("dialog_no"),
-				is_cancel_button = true,
-			},
-			[2] = {
+			{
 				text = managers.localization:text("dialog_yes"),
 				callback = function()
 					Utils.OpenUrl(url)
 				end,
+			},
+			{
+				text = math.random() < 0.02 and "NEIN!" or managers.localization:text("dialog_no"),
+				is_cancel_button = true,
 			},
 		},
 		true

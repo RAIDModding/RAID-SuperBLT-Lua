@@ -1,5 +1,5 @@
 ---@class QuickMenu
----@field new fun(self, title: string, text: string, options: table, show_immediately: boolean?):QuickMenu
+---@field new fun(self, title: string, text: string, options: table|nil, show_immediately: boolean?):QuickMenu
 QuickMenu = QuickMenu or blt_class()
 QuickMenu._menu_id_key = "quick_menu_id_"
 QuickMenu._menu_id_index = 0

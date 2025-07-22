@@ -77,16 +77,16 @@ function BLTDownloadManagerGui:clbk_relua_button()
 			managers.localization:text("blt_download_relua_title"),
 			managers.localization:text("blt_download_relua_text"),
 			{
-				[1] = {
-					text = math.random() < 0.02 and "NEIN!" or managers.localization:text("dialog_no"),
-					is_cancel_button = true,
-				},
-				[2] = {
+				{
 					text = managers.localization:text("dialog_yes"),
 					callback = function()
 						setup.exit_to_main_menu = true
 						setup:quit_to_main_menu()
 					end,
+				},
+				{
+					text = math.random() < 0.02 and "NEIN!" or managers.localization:text("dialog_no"),
+					is_cancel_button = true,
 				},
 			},
 			true

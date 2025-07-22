@@ -112,7 +112,7 @@ function BLTDownloadManager:start_download(update)
 		QuickMenu:new(
 			"Update Blocked", -- TODO i18n
 			"Mercurial or Git version control are in use for this mod, update blocked", -- TODO i18n
-			{},
+			nil,
 			true
 		)
 		return false

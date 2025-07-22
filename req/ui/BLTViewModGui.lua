@@ -473,24 +473,14 @@ function BLTViewModGui:clbk_check_for_updates_finished(cache)
 		QuickMenu:new(
 			managers.localization:text("blt_update_mod_title", {name = self._mod:GetName()}),
 			managers.localization:text("blt_update_mod_error", {reason = error_reason}),
-			{
-				{
-					text = managers.localization:text("dialog_ok"),
-					is_cancel_button = true
-				}
-			},
+			nil,
 			true
 		)
 	elseif not requires_update then
 		QuickMenu:new(
 			managers.localization:text("blt_update_mod_title", {name = self._mod:GetName()}),
 			managers.localization:text("blt_update_mod_up_to_date", {name = self._mod:GetName()}),
-			{
-				{
-					text = managers.localization:text("dialog_ok"),
-					is_cancel_button = true
-				}
-			},
+			nil,
 			true
 		)
 	else
