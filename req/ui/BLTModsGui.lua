@@ -19,7 +19,6 @@ BLTModsGui.SECONDARY_PAPER_PADDING_LEFT = -4
 BLTModsGui.SETTINGS_PADDING = 32
 BLTModsGui.COLUMN_MODS = 1
 BLTModsGui.COLUMN_INFO = 2
-BLTModsGui.COLUMN_SETTINGS = 3
 BLTModsGui.TABS_REGULAR_MODS = "regular_mods"
 BLTModsGui.TABS_CORE_MODS = "core_mods"
 
@@ -409,8 +408,6 @@ function BLTModsGui:_layout_info_buttons()
 	self._info_button_mod_update_check = make_button("waypoint_special_where",
 		"_on_info_button_check_for_updates_clicked",
 		"CHECK NOW")
-	self._info_button_mod_dev_info = make_button("ico_play_audio", "_on_info_button_dev_info_clicked",
-		"DETAILS")
 
 	self:_update_info_buttons(nil)
 end
@@ -559,7 +556,6 @@ function BLTModsGui:_on_list_tabs_left()
 	if self._selected_tab == BLTModsGui.TABS_REGULAR_MODS or not self._list_tabs:enabled() then
 		return
 	end
-	self:_unselect_right_column()
 	self:_unselect_middle_column()
 	self._list_tabs:_move_left()
 	self._selected_column = BLTModsGui.COLUMN_MODS
@@ -571,7 +567,6 @@ function BLTModsGui:_on_list_tabs_right()
 	if self._selected_tab == BLTModsGui.TABS_CORE_MODS or not self._list_tabs:enabled() then
 		return
 	end
-	self:_unselect_right_column()
 	self:_unselect_middle_column()
 	self._list_tabs:_move_right()
 	self._selected_column = BLTModsGui.COLUMN_MODS
@@ -589,16 +584,13 @@ function BLTModsGui:_on_column_left()
 	if self._selected_column == BLTModsGui.COLUMN_MODS then
 		self:_unselect_middle_column()
 		self._list_tabs:set_selected(true)
-	elseif self._selected_column == BLTModsGui.COLUMN_INFO then
-		self:_unselect_right_column()
-		-- self._info_button:set_selected(true)
 	end
 
 	return true
 end
 
 function BLTModsGui:_on_column_right()
-	if self._selected_column == BLTModsGui.COLUMN_INFO then -- BLTModsGui.COLUMN_SETTINGS then -- FIXME
+	if self._selected_column == BLTModsGui.COLUMN_INFO then
 		return true
 	end
 
@@ -607,10 +599,6 @@ function BLTModsGui:_on_column_right()
 	if (self._selected_column == BLTModsGui.COLUMN_INFO) then
 		self:_unselect_left_column()
 		self._info_buttons[1]:set_selected(true)
-		-- TODO?
-		-- elseif (self._selected_column == BLTModsGui.COLUMN_SETTINGS) and not self._secondary_paper_shown then
-		-- self:_unselect_middle_column()
-		-- self._difficulty_stepper:set_selected(true)
 	end
 
 	return true
@@ -626,14 +614,6 @@ function BLTModsGui:_unselect_middle_column()
 	for _, btn in ipairs(self._info_buttons) do
 		btn:set_selected(false)
 	end
-end
-
-function BLTModsGui:_unselect_right_column()
-	-- TODO
-	-- self._difficulty_stepper:set_selected(false)
-	-- self._team_ai_checkbox:set_selected(false)
-	-- self._permission_stepper:set_selected(false)
-	-- self._drop_in_checkbox:set_selected(false)
 end
 
 function BLTModsGui:refresh_mods()
@@ -692,11 +672,9 @@ function BLTModsGui:_animate_change_primary_paper_control(control, mid_callback,
 	self._active_primary_paper_control:set_alpha(1)
 end
 
-function BLTModsGui:_animate_show_secondary_paper()
+function BLTModsGui:_animate_show_secondary_paper(done_callback)
 	local duration = 0.5
 	local t = self._paper_animation_t * duration
-
-	-- self._show_icons_toggle:set_selectable(false)
 
 	self._secondary_paper_shown = true
 
@@ -751,13 +729,15 @@ function BLTModsGui:_animate_show_secondary_paper()
 	self._secondary_paper_panel:set_alpha(1)
 
 	self._paper_animation_t = 1
+
+	if done_callback then
+		done_callback()
+	end
 end
 
 function BLTModsGui:_animate_hide_secondary_paper()
 	local duration = 0.5
 	local t = (1 - self._paper_animation_t) * duration
-
-	-- self._show_icons_toggle:set_selectable(true)
 
 	self._secondary_paper_shown = false
 
@@ -856,7 +836,6 @@ function BLTModsGui:_update_info_buttons(mod)
 		[self._info_button_mod_contact] = has_mod and mod:GetContact() and mod:IsContactWebsite(),
 		[self._info_button_mod_toggle_updates] = has_mod and mod:HasUpdates(),
 		[self._info_button_mod_update_check] = has_mod and mod:HasUpdates(),
-		[self._info_button_mod_dev_info] = has_mod
 	}
 
 	if has_mod then
@@ -1012,21 +991,6 @@ function BLTModsGui:refresh_mod_details(mod_data)
 		self._mod_contact:hide()
 	end
 
-	-- TODO: move dev info to second paper
-	-- local min_sblt_version = mod:GetMinSBLTVer()
-	-- if min_sblt_version then
-	-- 	self._mod_min_sblt_version:set_y(next_y)
-	-- 	self._mod_min_sblt_version:set_w(self._mod_details_panel:w())
-	-- 	self._mod_min_sblt_version:set_text(self:translate("blt_mod_info_min_sblt_version") ..
-	-- 		": " .. min_sblt_version)
-	-- 	next_y = self._mod_min_sblt_version:bottom() + padding
-	-- 	self._mod_min_sblt_version:show()
-	-- else
-	-- 	self._mod_min_sblt_version:hide()
-	-- end
-	-- self._mod_dev_info:set_text(mod_data.mod:Getx())
-	-- next_y = self._mod_dev_info:bottom() + padding
-
 	-- mod errors
 	if mod:Errors() then
 		-- Build the errors string
@@ -1062,14 +1026,36 @@ function BLTModsGui:refresh_mod_details(mod_data)
 		self._mod_errors:hide()
 	end
 
+	if not self._secondary_paper_shown then
+		self._secondary_paper:stop()
+		self._secondary_paper:animate(callback(self, self, "_animate_show_secondary_paper"),
+			callback(self, self, "refresh_mod_details_secondary_paper"))
+	end
+
 	self:_update_info_buttons(mod)
 	self._selected_mod = mod -- re-enable info buttons
-
 
 	for _, update in ipairs(self._selected_mod:GetUpdates()) do
 		update:register_event_handler("blt_mods_gui_on_update_change",
 			callback(self, self, "_on_update_change"))
 	end
+end
+
+function BLTModsGui:refresh_mod_details_secondary_paper()
+	-- TODO: fill secondary paper with dev info etc
+	-- local min_sblt_version = mod:GetMinSBLTVer()
+	-- if min_sblt_version then
+	-- 	self._mod_min_sblt_version:set_y(next_y)
+	-- 	self._mod_min_sblt_version:set_w(self._mod_details_panel:w())
+	-- 	self._mod_min_sblt_version:set_text(self:translate("blt_mod_info_min_sblt_version") ..
+	-- 		": " .. min_sblt_version)
+	-- 	next_y = self._mod_min_sblt_version:bottom() + padding
+	-- 	self._mod_min_sblt_version:show()
+	-- else
+	-- 	self._mod_min_sblt_version:hide()
+	-- end
+	-- self._mod_dev_info:set_text(mod_data.mod:Getx())
+	-- next_y = self._mod_dev_info:bottom() + padding
 end
 
 function BLTModsGui:clbk_open_download_manager()
@@ -1112,15 +1098,6 @@ function BLTModsGui:_on_info_button_check_for_updates_clicked(i)
 	if not self._selected_mod:IsCheckingForUpdates() then
 		self._selected_mod:CheckForUpdates(callback(self, self, "clbk_check_for_updates_finished"))
 	end
-end
-
-function BLTModsGui:_on_info_button_dev_info_clicked(i)
-	if not self._selected_mod then
-		return
-	end
-	self:_set_active_info_button(i, not self._info_buttons[i]:active())
-
-	-- TODO: toggle second paper & dev info
 end
 
 function BLTModsGui:clbk_check_for_updates_finished(cache)
