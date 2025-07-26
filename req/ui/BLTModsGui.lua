@@ -16,7 +16,6 @@ BLTModsGui.BACKGROUND_PAPER_ROTATION = 5
 BLTModsGui.BACKGROUND_PAPER_SCALE = 0.9
 BLTModsGui.FOREGROUND_PAPER_COLOR = Color("ffffff")
 BLTModsGui.SECONDARY_PAPER_PADDING_LEFT = -4
-BLTModsGui.SETTINGS_PADDING = 32
 BLTModsGui.COLUMN_MODS = 1
 BLTModsGui.COLUMN_INFO = 2
 BLTModsGui.TABS_REGULAR_MODS = "regular_mods"
@@ -104,16 +103,6 @@ function BLTModsGui:_layout()
 	self._primary_lists_panel = self._list_panel:panel({
 		name = "primary_lists_panel",
 	})
-
-	-- -- _right_panel
-	self._right_panel = self._root_panel:panel({
-		h = 690,
-		layer = 1,
-		name = "right_panel",
-		w = 480,
-		y = 78,
-	})
-	self._right_panel:set_x(self._root_panel:w() - self._right_panel:w())
 
 	-- _actions_panel
 	self._actions_panel = self._root_panel:panel({
@@ -683,10 +672,6 @@ function BLTModsGui:_animate_show_secondary_paper(done_callback)
 
 		t = t + dt
 
-		local setting_alpha = Easing.cubic_in_out(t, 1, -1, duration)
-
-		self._right_panel:set_alpha(setting_alpha)
-
 		local alpha = Easing.cubic_in_out(t, BLTModsGui.BACKGROUND_PAPER_ALPHA, 1 - BLTModsGui.BACKGROUND_PAPER_ALPHA,
 			duration)
 		local color_r = Easing.cubic_in_out(t, BLTModsGui.BACKGROUND_PAPER_COLOR.r,
@@ -718,8 +703,6 @@ function BLTModsGui:_animate_show_secondary_paper(done_callback)
 		self._paper_animation_t = t / duration
 	end
 
-	self._right_panel:set_alpha(0)
-	self._right_panel:set_visible(false)
 	self._secondary_paper_panel:set_x(self._primary_paper_panel:x() + self._primary_paper_panel:w() +
 		BLTModsGui.SECONDARY_PAPER_PADDING_LEFT)
 	self._secondary_paper_panel:set_rotation(0)
@@ -741,16 +724,10 @@ function BLTModsGui:_animate_hide_secondary_paper()
 
 	self._secondary_paper_shown = false
 
-	self._right_panel:set_visible(true)
-
 	while t < duration do
 		local dt = coroutine.yield()
 
 		t = t + dt
-
-		local setting_alpha = Easing.cubic_in_out(t, 0, 1, duration)
-
-		self._right_panel:set_alpha(setting_alpha)
 
 		local alpha = Easing.cubic_in_out(t, 1, BLTModsGui.BACKGROUND_PAPER_ALPHA - 1, duration)
 		local color_r = Easing.cubic_in_out(t, BLTModsGui.FOREGROUND_PAPER_COLOR.r,
@@ -781,7 +758,6 @@ function BLTModsGui:_animate_hide_secondary_paper()
 		self._paper_animation_t = 1 - t / duration
 	end
 
-	self._right_panel:set_alpha(1)
 	self._secondary_paper_panel:set_x(self._primary_paper_panel:x())
 	self._secondary_paper_panel:set_rotation(BLTModsGui.BACKGROUND_PAPER_ROTATION)
 	self._secondary_paper_panel:set_w(self._primary_paper_panel:w() * BLTModsGui.BACKGROUND_PAPER_SCALE)
