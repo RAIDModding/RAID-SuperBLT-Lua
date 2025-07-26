@@ -74,7 +74,7 @@ function BLTNotificationsGui:_setup()
 	local bg_rect =self._content_panel:rect({
 		name = "background",
 		color = Color.black,
-		alpha = 0,
+		alpha = 0.8,
 		layer = -1,
 		halign = "scale",
 		valign = "scale"
