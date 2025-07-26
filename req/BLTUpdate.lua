@@ -24,6 +24,8 @@ function BLTUpdate:init(parent_mod, data)
 	self.version_func = data.version_func or nil
 	self.misc_data = data.misc_data or nil
 
+	self._event_handlers = {}
+
 	return true
 end
 
@@ -166,6 +168,7 @@ end
 function BLTUpdate:_run_update_callback(clbk, requires_update, error_reason)
 	self._requires_update = requires_update
 	clbk(self, requires_update, error_reason)
+	self:call_event_handlers(requires_update, error_reason)
 	return requires_update
 end
 
@@ -274,4 +277,20 @@ function BLTUpdate:HasAssets()
 		end
 	end
 	return true
+end
+
+function BLTUpdate:register_event_handler(id, callback)
+	self._event_handlers[id] = callback
+end
+
+function BLTUpdate:remove_event_handler(id)
+	self._event_handlers[id] = nil
+end
+
+function BLTUpdate:call_event_handlers(requires_update, error_reason)
+	for handler, callback in pairs(self._event_handlers) do
+		if callback then
+			callback(self, requires_update, error_reason)
+		end
+	end
 end

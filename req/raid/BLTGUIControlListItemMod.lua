@@ -37,16 +37,21 @@ function BLTGUIControlListItemMod:init(parent, params, data)
 	self:_layout_panel(params)
 	self:_layout_background(params)
 	self:_layout_highlight_marker()
-	self:_layout_icon(params, data)
-	self:_layout_mod_name(params, data)
-	self:_layout_mod_version(params, data)
-	self:_layout_mod_status(params, data)
+	self:_layout_icon(data)
+	self:_layout_mod_name()
+	self:_layout_mod_version()
+	self:_layout_mod_status()
 
 	self._selectable = self._data.selectable
 	self._selected = false
 
 	if self._mod:HasUpdates() then
 		self:_layout_breadcrumb()
+
+		for _, update in ipairs(self._mod:GetUpdates()) do
+			update:register_event_handler("blt_mods_gui_list_on_update_change",
+				callback(self, self, "_on_update_change"))
+		end
 	end
 
 	self:highlight_off()
@@ -57,6 +62,12 @@ function BLTGUIControlListItemMod:init(parent, params, data)
 		self:_apply_enabled_layout()
 	else
 		self:_apply_disabled_layout()
+	end
+end
+
+function BLTGUIControlListItemMod:close()
+	for _, update in ipairs(self._mod:GetUpdates()) do
+		update:remove_event_handler("blt_mods_gui_list_on_update_change")
 	end
 end
 
@@ -132,7 +143,7 @@ function BLTGUIControlListItemMod:_layout_highlight_marker()
 	})
 end
 
-function BLTGUIControlListItemMod:_layout_icon(params, data)
+function BLTGUIControlListItemMod:_layout_icon(data)
 	self._item_icon = self._object:image({
 		color = tweak_data.gui.colors.raid_dirty_white,
 		name = "list_item_icon_" .. self._name,
@@ -168,33 +179,33 @@ function BLTGUIControlListItemMod:_layout_icon(params, data)
 	end
 end
 
-function BLTGUIControlListItemMod:_layout_mod_name(params, data)
+function BLTGUIControlListItemMod:_layout_mod_name()
 	self._item_label = self._object:label({
 		color = tweak_data.gui.colors.raid_dirty_white,
 		font = tweak_data.gui.fonts.din_compressed,
 		font_size = tweak_data.gui.font_sizes.small,
 		name = "list_item_label_" .. self._name,
-		text = data.mod:GetName(),
+		text = self._mod:GetName(),
 		x = self._item_icon:x() + self._item_icon:w() + BLTGUIControlListItemMod.ICON_PADDING,
 		fit_text = true,
 	})
 	self._item_label:set_center_y(BLTGUIControlListItemMod.NAME_CENTER_Y)
 end
 
-function BLTGUIControlListItemMod:_layout_mod_version(params, data)
+function BLTGUIControlListItemMod:_layout_mod_version()
 	self._version_label = self._object:label({
 		color = tweak_data.gui.colors.raid_dark_grey,
 		font = tweak_data.gui.fonts.din_compressed,
 		font_size = tweak_data.gui.font_sizes.small,
 		name = "version_label_" .. self._name,
-		text = data.mod:GetVersion(),
+		text = self._mod:GetVersion(),
 		x = self._item_label:x() + self._item_label:w() + BLTGUIControlListItemMod.ICON_PADDING,
 		fit_text = true,
 	})
 	self._version_label:set_center_y(BLTGUIControlListItemMod.NAME_CENTER_Y)
 end
 
-function BLTGUIControlListItemMod:_layout_mod_status(params, data)
+function BLTGUIControlListItemMod:_layout_mod_status()
 	-- Mod update status
 	self._mod_status = self._object:label({
 		color = tweak_data.gui.colors.raid_dark_grey,
@@ -207,21 +218,34 @@ function BLTGUIControlListItemMod:_layout_mod_status(params, data)
 		fit_text = true,
 	})
 
-	if data.mod:GetUpdateError() then
+	self:_refresh_mod_status()
+end
+
+function BLTGUIControlListItemMod:_refresh_mod_status()
+	if not (self._mod_status and self._mod) then
+		return
+	end
+
+	if self._mod:GetUpdateError() then
 		self._mod_status:set_text(managers.localization:text("blt_update_mod_error", {
-			reason = data.mod:GetUpdateError()
+			reason = self._mod:GetUpdateError()
 		}))
 		self._mod_status:set_color(tweak_data.gui.colors.raid_red)
-	elseif data.mod:IsCheckingForUpdates() then
+	elseif self._mod:IsCheckingForUpdates() then
 		self._mod_status:set_text(managers.localization:text("blt_checking_updates"))
-	elseif BLT.Downloads:get_pending_downloads_for(data.mod) then
+	elseif BLT.Downloads:get_pending_downloads_for(self._mod) then
 		self._mod_status:set_text(managers.localization:text("blt_update_mod_available_short", {
-			name = data.mod:GetName()
+			name = self._mod:GetName()
 		}))
 		self._mod_status:set_color(tweak_data.gui.colors.progress_yellow)
 	else
 		self._mod_status:hide()
 	end
+end
+
+function BLTGUIControlListItemMod:_on_update_change(update, requires_update, error_reason)
+	log("BLTGUIControlListItemMod:_on_update_change")
+	self:_refresh_mod_status()
 end
 
 ---

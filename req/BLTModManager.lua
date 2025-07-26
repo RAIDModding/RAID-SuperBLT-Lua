@@ -192,7 +192,7 @@ Hooks:Add("BLTOnSaveData", "BLTOnSaveData.BLTModManager", function(save_data)
 	for _, mod in pairs(BLT.Mods:Mods()) do
 		-- Save mod updates enabled data
 		local updates = {}
-		for _, update in pairs(mod:GetUpdates()) do
+		for _, update in ipairs(mod:GetUpdates()) do
 			updates[update:GetId()] = update:IsEnabled()
 		end
 

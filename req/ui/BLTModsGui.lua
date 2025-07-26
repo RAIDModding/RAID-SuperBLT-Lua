@@ -58,6 +58,12 @@ function BLTModsGui:_set_initial_data()
 end
 
 function BLTModsGui:close()
+	if self._selected_mod then
+		for _, update in ipairs(self._selected_mod:GetUpdates()) do
+			update:remove_event_handler("blt_mods_gui_on_update_change")
+		end
+	end
+
 	MenuCallbackHandler:perform_blt_save()
 
 	self._primary_paper:stop()
@@ -917,6 +923,11 @@ function BLTModsGui:_set_active_info_button(i, state)
 end
 
 function BLTModsGui:_on_mod_selected(mod_data)
+	if self._selected_mod then
+		for _, update in ipairs(self._selected_mod:GetUpdates()) do
+			update:remove_event_handler("blt_mods_gui_on_update_change")
+		end
+	end
 	self._selected_mod = nil -- temp disable info buttons
 
 	if self._secondary_paper_shown then
@@ -960,35 +971,7 @@ function BLTModsGui:refresh_mod_details(mod_data)
 	self._mod_version:set_text(mod:GetVersion())
 
 	-- mod update status
-	local show_mod_update_status
-	-- if mod:GetUpdateError() then
-	-- 	self._mod_update_status:set_text(managers.localization:text("blt_update_mod_error", {
-	-- 		reason = mod:GetUpdateError()
-	-- 	}))
-	-- 	self._mod_update_status:set_color(tweak_data.gui.colors.raid_red)
-	-- 	show_mod_update_status = true
-	-- elseif mod:IsCheckingForUpdates() then
-	-- 	self._mod_update_status:set_text(self:translate("blt_checking_updates"))
-	-- 	show_mod_update_status = true
-	-- elseif BLT.Downloads:get_pending_downloads_for(mod) then
-	-- 	self._mod_update_status:set_text(managers.localization:text("blt_update_mod_available_short", {
-	-- 		name = mod:GetName()
-	-- 	}))
-	-- 	-- self._mod_update_status:set_color(tweak_data.gui.colors.progress_yellow)
-	-- 	show_mod_update_status = true
-	-- end
-
-	self._mod_update_status:set_text(managers.localization:text("blt_update_mod_error", {
-		reason = "No valid mod ID was returned by the server."
-	}))
-	self._mod_update_status:set_color(tweak_data.gui.colors.raid_red)
-	show_mod_update_status = true
-
-	if show_mod_update_status then
-		self._mod_update_status:show()
-	else
-		self._mod_update_status:hide()
-	end
+	self:_refresh_mod_update_status()
 
 	self:_align_paper_titles() -- align name / version / update status x
 
@@ -1081,6 +1064,12 @@ function BLTModsGui:refresh_mod_details(mod_data)
 
 	self:_update_info_buttons(mod)
 	self._selected_mod = mod -- re-enable info buttons
+
+
+	for _, update in ipairs(self._selected_mod:GetUpdates()) do
+		update:register_event_handler("blt_mods_gui_on_update_change",
+			callback(self, self, "_on_update_change"))
+	end
 end
 
 function BLTModsGui:clbk_open_download_manager()
@@ -1268,4 +1257,41 @@ function BLTModsGui:_additional_active_controls()
 		table.insert(res, btn)
 	end
 	return res
+end
+
+function BLTModsGui:_refresh_mod_update_status()
+	if not (self._selected_mod and self._mod_update_status) then
+		return
+	end
+
+	-- mod update status
+	local show_mod_update_status
+	if self._selected_mod:GetUpdateError() then
+		self._mod_update_status:set_text(managers.localization:text("blt_update_mod_error", {
+			reason = self._selected_mod:GetUpdateError()
+		}))
+		self._mod_update_status:set_color(tweak_data.gui.colors.raid_red)
+		show_mod_update_status = true
+	elseif self._selected_mod:IsCheckingForUpdates() then
+		self._mod_update_status:set_text(self:translate("blt_checking_updates"))
+		show_mod_update_status = true
+	elseif BLT.Downloads:get_pending_downloads_for(self._selected_mod) then
+		self._mod_update_status:set_text(managers.localization:text("blt_update_mod_available_short", {
+			name = self._selected_mod:GetName()
+		}))
+	end
+	if show_mod_update_status then
+		self._mod_update_status:show()
+	else
+		self._mod_update_status:hide()
+	end
+end
+
+function BLTModsGui:_on_update_change(update, requires_update, error_reason)
+	local mod = update:GetParentMod()
+	if mod ~= self._selected_mod then
+		return
+	end
+	log("BLTModsGui:_on_update_change")
+	self:_refresh_mod_update_status()
 end
