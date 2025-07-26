@@ -106,9 +106,4 @@ Hooks:Add("MenuComponentManagerInitialize", "BLT.MenuComponentManagerInitialize"
 		name_id = "blt_download_manager",
 		class = BLTDownloadManagerGui,
 	})
-
-	RaidMenuHelper:CreateMenu({
-		name = "view_blt_mod",
-		class = BLTViewModGui
-	})
 end)

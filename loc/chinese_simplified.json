@@ -60,7 +60,6 @@
 	"blt_update_later" : "稍后更新",
 	
 	"blt_download_manager" : "下载管理器",
-	"blt_download_manager_help" : "记得更新您的 BLT 模组。\n看在上帝的份上，记得更新您的模组。",
 	"blt_download_ready" : "准备下载",
 	"blt_download_waiting" : "请稍后...",
 	"blt_download_downloading" : "正在下载... $current; $unit; / $total; $unit;",

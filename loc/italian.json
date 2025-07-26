@@ -56,7 +56,6 @@
 	"blt_update_later" : "Aggiorna in seguito",
 	
 	"blt_download_manager" : "Coda dei download",
-	"blt_download_manager_help" : "Aggiorna le mod BLT che hai installato.\nPer l'amor di Dio aggiornale.",
 	"blt_download_ready" : "Pronto a scaricare",
 	"blt_download_waiting" : "In attesa...",
 	"blt_download_downloading" : "Scaricando... $current; $unit; / $total; $unit;",

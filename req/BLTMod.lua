@@ -555,7 +555,8 @@ function BLTMod:clbk_check_for_updates(update, required, reason)
 	self._update_cache[update:GetId()] = {
 		requires_update = required,
 		reason = reason,
-		update = update
+		update = update,
+		mod = update:GetParentMod(),
 	}
 
 	if self._update_cache.clbk and not self:IsCheckingForUpdates() then

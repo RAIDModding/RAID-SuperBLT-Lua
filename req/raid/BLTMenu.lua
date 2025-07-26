@@ -1,23 +1,3 @@
-function RaidExperienceManager:cash_string(cash, cash_sign)
-	local sign = ""
-
-	if cash < 0 then
-		sign = "-"
-	end
-
-	local total = tostring(math.round(math.abs(cash)))
-	local reverse = string.reverse(total)
-	local s = ""
-
-	for i = 1, string.len(reverse) do
-		s = s .. string.sub(reverse, i, i) .. (math.mod(i, 3) == 0 and i ~= string.len(reverse) and self._cash_tousand_separator or "")
-	end
-
-	local final_cash_sign = type(cash_sign) == "string" and (cash_sign or self._cash_sign) or self._cash_sign
-
-	return sign .. final_cash_sign .. string.reverse(s)
-end
-
 require("lib/managers/menu/raid_menu/controls/raidguicontrol")
 require("lib/managers/menu/raid_menu/controls/raidguicontrolbutton")
 require("lib/managers/menu/raid_menu/controls/raidguicontrolsteppersimple")

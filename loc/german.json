@@ -19,8 +19,8 @@
 
 	"blt_mod_info_author" : "Autor",
 	"blt_mod_info_contact" : "Kontakt",
-	"blt_mod_info_min_sblt_version" : "Minimale SBLT Version",
-	"blt_mod_info_min_sblt_ver_not_met" : "Diese Mod benötigt eine neuere Version von SBLT",
+	"blt_mod_info_min_sblt_version" : "Benötigte RAID-SuperBLT Version",
+	"blt_mod_info_min_sblt_ver_not_met" : "Diese Mod benötigt eine neuere Version von RAID-SuperBLT",
 
 	"blt_mod_state_enabled" : "Aktiviert",
 	"blt_mod_state_enabled_desc" : "Dieser Mod wird geladen, wenn das Spiel gestartet wird.",
@@ -65,7 +65,6 @@
 	"blt_update_later" : "Später aktualisieren",
 	
 	"blt_download_manager" : "Download Manager",
-	"blt_download_manager_help" : "Aktualisiere deine BLT-Mods.\nAktualisiere deine Mods um Himmels Willen.",
 	"blt_download_ready" : "Bereit zum Download",
 	"blt_download_waiting" : "Warten...",
 	"blt_download_downloading" : "Herunterladen... $current; $unit; / $total; $unit;",

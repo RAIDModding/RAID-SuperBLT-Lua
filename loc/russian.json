@@ -60,7 +60,6 @@
 	"blt_update_later" : "Обновить позже",
 	
 	"blt_download_manager" : "Менеджер загрузок",
-	"blt_download_manager_help" : "Обновите свои BLT моды.\nРади всего святого, обновите их!",
 	"blt_download_ready" : "Готов к загрузке",
 	"blt_download_waiting" : "Ожидание...",
 	"blt_download_downloading" : "Загрузка... $current; $unit; / $total; $unit;",

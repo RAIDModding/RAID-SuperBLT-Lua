@@ -409,7 +409,7 @@ function BLTNotificationsGui:update(t, dt)
 	local pending_downloads_count = table.size(BLT.Downloads:pending_downloads())
 	if pending_downloads_count > 0 then
 		self._downloads_panel:set_visible(true)
-		self._downloads_count:set_text(managers.experience:cash_string(pending_downloads_count, ""))
+		self._downloads_count:set_text(tostring(pending_downloads_count))
 	else
 		self._downloads_panel:set_visible(false)
 	end
@@ -459,7 +459,7 @@ function BLTNotificationsGui:mouse_moved(o, x, y)
 	end
 end
 
-function BLTNotificationsGui:_mouse_pressed(btn, x, y)
+function BLTNotificationsGui:_mouse_released(btn, x, y)
 	if not self._enabled or btn ~= Idstring("0") then
 		return
 	end

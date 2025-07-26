@@ -60,7 +60,6 @@
 	"blt_update_later" : "Actualizar más tarde",
 	
 	"blt_download_manager" : "Gestor de descargas",
-	"blt_download_manager_help" : "Actualiza tus mods BLT.\nPor el amor de Sydney, ¡actualiza tus mods!",
 	"blt_download_ready" : "Listo para descargar",
 	"blt_download_waiting" : "Esperando...",
 	"blt_download_downloading" : "Descargando... $current; $unit; / $total; $unit;",

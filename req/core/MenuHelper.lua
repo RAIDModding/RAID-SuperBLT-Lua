@@ -829,8 +829,9 @@ function MenuHelper:AddComponent(name, clss, args)
 				this._active_controls[component] = {}
 				if this[u_name]._root_panel then
 					local final_list = this._active_controls[component]
-					for _, control in ipairs(this[u_name]._root_panel._controls) do
-						this:_collect_controls(control, final_list)
+					this:_collect_controls(this[u_name]._root_panel, final_list)
+					if this[u_name]._additional_active_controls then
+						this:_collect_controls(this[u_name]:_additional_active_controls(), final_list)
 					end
 				end
 			end

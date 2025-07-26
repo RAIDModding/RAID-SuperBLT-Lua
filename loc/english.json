@@ -10,17 +10,21 @@
 	"blt_libraries" : "$count Libraries",
 	"blt_mod_icons" : "Mod Icons",
 
+	"blt_regular_mods_tab" : "Mods",
+	"blt_core_mods_tab" : "Core/Libs",
+
 	"blt_mod_outdated" : "This mod is for an older BLT version and is no longer supported; the developer must update this mod to the latest version of the BLT. You will get errors and crashes by leaving this mod installed.",
 	"blt_mod_missing_dependencies" : "This mod requires other mods to function which are not installed, so it has been disabled.",
 	"blt_mod_missing_dependency" : "    Missing: $dependency",
 	"blt_mod_missing_dependency_download" : "    Missing: $dependency, added to Download Manager",
+	"blt_mod_missing_dependencies_short" : "Missing dependency",
 	"blt_mod_dependency_disabled" : "This mod requires other mods which are not enabled, so it has been disabled.",
 	"blt_mod_disabled_dependency" : "    Disabled: $dependency",
 
 	"blt_mod_info_author" : "Author",
 	"blt_mod_info_contact" : "Contact",
-	"blt_mod_info_min_sblt_version" : "Minimum SBLT Version",
-	"blt_mod_info_min_sblt_ver_not_met" : "This mod requires a newer version of SBLT",
+	"blt_mod_info_min_sblt_version" : "Required RAID-SuperBLT version",
+	"blt_mod_info_min_sblt_ver_not_met" : "This mod requires a newer version of RAID-SuperBLT",
 
 	"blt_mod_state_enabled" : "Enabled",
 	"blt_mod_state_enabled_desc" : "This mod is loaded when the game is started.",
@@ -57,6 +61,7 @@
 	"blt_update_mod_up_to_date" : "$name is already up to date.",
 	"blt_update_mod_error" : "Could not check if the mod is already up to date.\n$reason",
 	"blt_update_mod_available" : "An update to $name is available! It has been added to the Download Manager!",
+	"blt_update_mod_available_short" : "Update available!",
 	"blt_update_mod_goto_manager" : "Go to Downloads",
 
 	"blt_update_dll_title" : "Critical Update",
@@ -65,7 +70,9 @@
 	"blt_update_later" : "Update Later",
 	
 	"blt_download_manager" : "Download Manager",
-	"blt_download_manager_help" : "Update your BLT Mods.\nFor the love of god update your mods.",
+	"blt_downloads_available_sin" : "$COUNT update available.",
+	"blt_downloads_available_plu" : "$COUNT updates available.",
+
 	"blt_download_ready" : "Ready to Download",
 	"blt_download_waiting" : "Waiting...",
 	"blt_download_downloading" : "Downloading... $current; $unit; / $total; $unit;",
