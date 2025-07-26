@@ -13,18 +13,6 @@ local medium_font = BLT.fonts.medium.font
 local small_font_size = BLT.fonts.small.font_size
 local medium_font_size = BLT.fonts.medium.font_size
 
--- attaches white corners to panel, which will align correctly when 'panel' changes size
-local function attach_corners(parent)
-	local top_left = BoxGuiObject:new(parent, {sides = {3, 0, 3, 0}})
-	top_left:set_aligns("left", "top")
-	local bottom_left = BoxGuiObject:new(parent, {sides = {4, 0, 0, 3}})
-	bottom_left:set_aligns("left", "bottom")
-	local top_right = BoxGuiObject:new(parent, {sides = {0, 3, 4, 0}})
-	top_right:set_aligns("right", "top")
-	local bottom_right = BoxGuiObject:new(parent, {sides = {0, 4, 0, 4}})
-	bottom_right:set_aligns("right", "bottom")
-end
-
 function BLTViewModGui:setup()
 	-- Background
 	self:make_background()
@@ -71,7 +59,6 @@ function BLTViewModGui:_setup_mod_info(mod)
 		w = self._panel:w() * 0.5 - padding * 2,
 		h = self._panel:h() - title:bottom() - padding * 2
 	})
-	attach_corners(info_panel)
 	self._info_panel = info_panel
 
 	self._info_scroll = ScrollablePanel:new(info_panel, "info_scroll")
@@ -246,7 +233,6 @@ function BLTViewModGui:_setup_dev_info(mod)
 		h = (self._panel:h() - self._title:bottom() + padding) * 0.5 - padding * 2
 	})
 	dev_panel:set_bottom(self._panel:h() - padding * 4)
-	BoxGuiObject:new(dev_panel:panel({layer = 100}), {sides = {1, 1, 1, 1}})
 	self._dev_panel = dev_panel
 
 	self._dev_scroll = ScrollablePanel:new(dev_panel, "dev_scroll")

@@ -8,7 +8,7 @@ BLTDownloadManagerGui._add_back_button = BLTDownloadManagerGui._add_custom_back_
 local padding = 10
 
 function BLTDownloadManagerGui:setup()
-	self:make_into_listview("downloads_scroll", managers.localization:text("blt_download_manager"), true)
+	self:make_into_listview("downloads_scroll", managers.localization:text("blt_download_manager"))
 	self._downloads_map = {}
 
 	-- Background

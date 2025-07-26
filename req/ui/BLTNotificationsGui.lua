@@ -59,7 +59,6 @@ function BLTNotificationsGui:_setup()
 	})
 
 	self._panel:set_bottom(profile_panel and profile_panel:y() or self._ws:panel():h() - 90)
-	-- BoxGuiObject:new(self._panel:panel({ layer = 100 }), { sides = { 1, 1, 1, 1 } })
 
 	self._content_panel =self._panel:panel({
 		h = self._panel:h() * 0.8
@@ -79,10 +78,6 @@ function BLTNotificationsGui:_setup()
 		halign = "scale",
 		valign = "scale"
 	})
-
-	-- Outline
-	BoxGuiObject:new(self._content_panel, {sides = {1, 1, 1, 1}})
-	self._content_outline = BoxGuiObject:new(self._content_panel, {sides = {2, 2, 2, 2}})
 
 	-- Setup notification buttons
 	self._bar =self._buttons_panel:bitmap({
@@ -443,13 +438,6 @@ function BLTNotificationsGui:mouse_moved(o, x, y)
 
 	if alive(self._downloads_panel) and self._downloads_panel:visible() and self._downloads_panel:inside(x, y) then
 		return true, "link"
-	end
-
-	if alive(self._content_panel) and self._content_panel:inside(x, y) then
-		self._content_outline:set_visible(true)
-		return true, "link"
-	else
-		self._content_outline:set_visible(false)
 	end
 
 	for i, button in ipairs(self._buttons) do

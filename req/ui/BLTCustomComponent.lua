@@ -48,20 +48,15 @@ function BLTCustomComponent:setup() end
 --[[
 	Set this component up as a list (eg, the download manager)
 ]]
-function BLTCustomComponent:make_into_listview(name, title, add_frame)
+function BLTCustomComponent:make_into_listview(name, title)
 	self:make_background()
-	self:make_title(title, add_frame and -12 or nil)
+	self:make_title(title)
 
 	local scroll_panel = self._panel:panel({
 		name = name .. "_scroll_panel",
 		h = self._panel:h() - large_font_size * 2 - padding * 2,
 		y = large_font_size,
 	})
-
-	if add_frame then
-		BoxGuiObject:new(scroll_panel:panel({layer = 100}), {sides = {1, 1, 1, 1}})
-		BoxGuiObject:new(scroll_panel:panel({layer = 100}), {sides = {1, 1, 2, 2}})
-	end
 
 	self._scroll = ScrollablePanel:new(scroll_panel, name, {})
 end
@@ -83,11 +78,11 @@ end
 --[[
 	Create this component's title text
 ]]
-function BLTCustomComponent:make_title(title, offset)
+function BLTCustomComponent:make_title(title)
 	local _title = self._panel:text({
 		name = "title",
 		x = padding,
-		y = padding + (offset or 0),
+		y = padding,
 		font_size = large_font_size,
 		font = large_font,
 		layer = 10,

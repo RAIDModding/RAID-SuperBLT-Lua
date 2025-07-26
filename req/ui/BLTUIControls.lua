@@ -32,8 +32,6 @@ function BLTUIButton:init(panel, parameters)
 		alpha = 0.4,
 		layer = -1
 	})
-	BoxGuiObject:new(self._panel, {sides = {1, 1, 1, 1}})
-
 
 	local title = self._panel:text({
 		name = "title",
@@ -159,7 +157,6 @@ function BLTDownloadControl:init(panel, parameters)
 		alpha = 0.4,
 		layer = -1
 	})
-	BoxGuiObject:new(self._download_panel, {sides = {1, 1, 1, 1}})
 
 	local image = self._download_panel:bitmap({
 		name = "image",
@@ -186,7 +183,6 @@ function BLTDownloadControl:init(panel, parameters)
 		alpha = 0.4,
 		layer = -1
 	})
-	BoxGuiObject:new(self._patch_panel, {sides = {1, 1, 1, 1}})
 
 	self._patch_panel:text({
 		font_size = small_font_size,
@@ -206,8 +202,6 @@ function BLTDownloadControl:init(panel, parameters)
 	self._info_panel = self._panel:panel({
 		w = self._panel:w() - self._download_panel:w() - self._patch_panel:w() - padding * 2
 	})
-
-	BoxGuiObject:new(self._info_panel, {sides = {1, 1, 1, 1}})
 
 	local download_name = parameters.update:GetName() or "No Name"
 	if mod:GetName() ~= download_name then
@@ -240,7 +234,6 @@ function BLTDownloadControl:init(panel, parameters)
 			h = image_size,
 			layer = 10
 		})
-		BoxGuiObject:new(no_image_panel, {sides = {1, 1, 1, 1}})
 
 		no_image_panel:text({
 			name = "no_image_text",

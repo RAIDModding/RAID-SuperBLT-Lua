@@ -52,7 +52,6 @@ function BLTModItem:init(panel, index, mod, show_icon)
 		alpha = 0.2,
 		layer = -1
 	})
-	BoxGuiObject:new(self._panel, {sides = {1, 1, 1, 1}})
 
 	-- Mod name
 	local mod_name = self._panel:text({
@@ -122,8 +121,6 @@ function BLTModItem:init(panel, index, mod, show_icon)
 		})
 		no_image_panel:set_x(math.round((self._panel:w() * 0.5) - (no_image_panel:w() * 0.5)))
 		no_image_panel:set_top(padding)
-
-		BoxGuiObject:new(no_image_panel, {sides = {1, 1, 1, 1}})
 
 		no_image_panel:text({
 			name = "no_image_text",
