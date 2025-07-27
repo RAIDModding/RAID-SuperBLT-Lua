@@ -773,7 +773,7 @@ function MenuHelper:ResetItemsToDefaultValue(item, items_table, value)
 	managers.viewport:resolution_changed()
 end
 
----Registers a new BLTCustomComponent  
+---Registers a new Gui Component (RaidGuiBase based or similar)
 ---Note that you still need to set up your component in BLTMenuNodes
 ---
 ---This does the following:
