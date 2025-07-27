@@ -404,6 +404,18 @@ function Utils.OpenUrl(url)
 	end
 end
 
+function Utils._setup_blt_icon_tweakdata(self)
+	-- setting up tweak_data.gui.icons entrys for BLTs icons
+	self.icons.ico_blt_lock = {
+		texture = "guis/blt/lock",
+		texture_rect = {0, 0, 36, 36}
+	}
+	self.icons.ico_blt_questionmark = {
+		texture = "guis/blt/questionmark",
+		texture_rect = {0, 0, 36, 36}
+	}
+end
+
 function Utils._setup_fixed_fonts_table()
 	if Utils._fixed_fonts and Utils._fixed_font_sizes then -- init Utils._fixed_fonts on first call since tweak_data == nil when this file is ran
 		return

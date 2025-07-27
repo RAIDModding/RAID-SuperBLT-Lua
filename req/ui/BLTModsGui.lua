@@ -409,13 +409,13 @@ function BLTModsGui:_layout_info_buttons()
 		return btn
 	end
 
-	self._info_button_mod_toggle_enable = make_button("ico_locker", "_on_info_button_toggle_mod_enabled_clicked",
+	self._info_button_mod_toggle_enable = make_button("ico_blt_lock", "_on_info_button_toggle_mod_enabled_clicked",
 		"TOGGLE")
 	self._info_button_mod_contact = make_button("ico_info", "_on_info_button_contact_clicked",
 		"CONTACT")
 	self._info_button_mod_toggle_updates = make_button("ico_dlc", "_on_info_button_toggle_auto_updates_clicked",
 		"TOGGLE AUTO UPD.")
-	self._info_button_mod_update_check = make_button("waypoint_special_where",
+	self._info_button_mod_update_check = make_button("ico_blt_questionmark",
 		"_on_info_button_check_for_updates_clicked",
 		"CHECK NOW")
 
