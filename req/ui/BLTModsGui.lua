@@ -354,6 +354,42 @@ function BLTModsGui:_layout_secondary_paper()
 
 	self._secondary_paper_shown = false
 	self._paper_animation_t = 0
+
+	self:_layout_dev_info()
+end
+
+function BLTModsGui:_layout_dev_info()
+	self._dev_info_panel = self._secondary_paper_panel:panel({
+		layer = self._secondary_paper_panel:layer() + 1,
+		name = "dev_info_panel",
+		w = self._secondary_paper_panel:w(),
+		h = self._secondary_paper_panel:h(),
+	})
+
+	self._mod_min_sblt_version = self._dev_info_panel:label({
+		color = tweak_data.gui.colors.raid_black,
+		font = tweak_data.gui.fonts.lato,
+		font_size = tweak_data.gui.font_sizes.paragraph,
+		name = "mod_min_sblt_version",
+		text = "",
+		wrap = true,
+		fit_text = true,
+		w = 432,
+		x = padding
+	})
+
+	self._mod_dev_info = self._dev_info_panel:label({
+		color = tweak_data.gui.colors.raid_black,
+		font = tweak_data.gui.fonts.lato,
+		font_size = tweak_data.gui.font_sizes.paragraph,
+		name = "mod_dev_info",
+		text = "",
+		--wrap = true,
+		fit_text = true,
+		x = padding,
+		w = 432,
+	})
+
 end
 
 function BLTModsGui:_layout_info_buttons()
@@ -435,16 +471,6 @@ function BLTModsGui:_layout_mod_details()
 		font = tweak_data.gui.fonts.lato,
 		font_size = tweak_data.gui.font_sizes.paragraph,
 		name = "mod_contact",
-		text = "",
-		wrap = true,
-		fit_text = true,
-		w = 432,
-	})
-	self._mod_min_sblt_version = self._mod_details_panel:label({
-		color = tweak_data.gui.colors.raid_black,
-		font = tweak_data.gui.fonts.lato,
-		font_size = tweak_data.gui.font_sizes.paragraph,
-		name = "mod_min_sblt_version",
 		text = "",
 		wrap = true,
 		fit_text = true,
@@ -897,7 +923,9 @@ function BLTModsGui:_on_mod_selected(mod_data)
 
 	if self._secondary_paper_shown then
 		self._secondary_paper:stop()
-		self._secondary_paper:animate(callback(self, self, "_animate_hide_secondary_paper"))
+		self._secondary_paper:animate(
+			callback(self, self, "_animate_hide_secondary_paper")
+		)
 	end
 
 	self._primary_paper:stop()
@@ -977,26 +1005,6 @@ function BLTModsGui:refresh_mod_details(mod_data)
 		self._mod_contact:hide()
 	end
 
-	-- mod min sblt version
-
-	local min_sblt_version = mod:GetMinSBLTVer()
-	if min_sblt_version then
-		self._mod_min_sblt_version:set_y(next_y)
-		self._mod_min_sblt_version:set_w(self._mod_details_panel:w())
-		self._mod_min_sblt_version:set_text(self:translate("blt_mod_info_min_sblt_version") ..
-			": " .. min_sblt_version)
-		next_y = self._mod_min_sblt_version:bottom() + padding
-		if BLT:CompareVersions(BLT:GetBaseVersion(), min_sblt_version) == 2 then
-			self._mod_min_sblt_version:set_color(tweak_data.gui.colors.raid_red)
-		else
-			self._mod_min_sblt_version:set_color(tweak_data.gui.colors.raid_black)
-		end
-		self._mod_min_sblt_version:show()
-	else
-		self._mod_min_sblt_version:hide()
-
-	end
-
 	-- mod errors
 	if mod:Errors() then
 		-- Build the errors string
@@ -1031,11 +1039,14 @@ function BLTModsGui:refresh_mod_details(mod_data)
 	else
 		self._mod_errors:hide()
 	end
+	
+	self:refresh_mod_details_secondary_paper(mod)
 
 	if not self._secondary_paper_shown then
 		self._secondary_paper:stop()
-		self._secondary_paper:animate(callback(self, self, "_animate_show_secondary_paper"),
-			callback(self, self, "refresh_mod_details_secondary_paper"))
+		self._secondary_paper:animate(
+			callback(self, self, "_animate_show_secondary_paper")
+		)
 	end
 
 	self:_update_info_buttons(mod)
@@ -1047,21 +1058,33 @@ function BLTModsGui:refresh_mod_details(mod_data)
 	end
 end
 
-function BLTModsGui:refresh_mod_details_secondary_paper()
-	-- TODO: fill secondary paper with dev info etc
-	-- local min_sblt_version = mod:GetMinSBLTVer()
-	-- if min_sblt_version then
-	-- 	self._mod_min_sblt_version:set_y(next_y)
-	-- 	self._mod_min_sblt_version:set_w(self._mod_details_panel:w())
-	-- 	self._mod_min_sblt_version:set_text(self:translate("blt_mod_info_min_sblt_version") ..
-	-- 		": " .. min_sblt_version)
-	-- 	next_y = self._mod_min_sblt_version:bottom() + padding
-	-- 	self._mod_min_sblt_version:show()
-	-- else
-	-- 	self._mod_min_sblt_version:hide()
-	-- end
-	-- self._mod_dev_info:set_text(mod_data.mod:Getx())
-	-- next_y = self._mod_dev_info:bottom() + padding
+function BLTModsGui:refresh_mod_details_secondary_paper(mod)
+	local next_y = 0 + padding
+	-- mod min sblt version
+
+	local min_sblt_version = mod:GetMinSBLTVer()
+	if min_sblt_version then
+		self._mod_min_sblt_version:set_y(next_y)
+		self._mod_min_sblt_version:set_w(self._mod_details_panel:w())
+		self._mod_min_sblt_version:set_text(self:translate("blt_mod_info_min_sblt_version") ..
+			": " .. min_sblt_version)
+		next_y = self._mod_min_sblt_version:bottom() + padding
+		if BLT:CompareVersions(BLT:GetBaseVersion(), min_sblt_version) == 2 then
+			self._mod_min_sblt_version:set_color(tweak_data.gui.colors.raid_red)
+		else
+			self._mod_min_sblt_version:set_color(tweak_data.gui.colors.raid_black)
+		end
+		self._mod_min_sblt_version:show()
+	else
+		self._mod_min_sblt_version:hide()
+
+	end
+
+	-- mod dev info
+
+	self._mod_dev_info:set_text("Dev Info:\n" .. mod:GetDeveloperInfo())
+	self._mod_dev_info:set_y(next_y)
+	self._mod_dev_info:show()
 end
 
 function BLTModsGui:clbk_open_download_manager()
