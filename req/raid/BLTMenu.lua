@@ -254,7 +254,7 @@ end
 function BLTMenu:CreateSimple(typ, params, create_data)
 	create_data = create_data or {}
 	local auto_route_controls = false
-	if self.auto_route_controls and params.name and (not params.on_menu_move) then
+	if self.auto_route_controls and params.name and (not params.no_auto_bind) and (not params.on_menu_move) then
 		auto_route_controls = true
 		params.on_menu_move = {}
 		if self.auto_route_last_control then
