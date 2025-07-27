@@ -962,9 +962,6 @@ function BLTModsGui:refresh_mod_details(mod_data)
 	-- mod version
 	self._mod_version:set_text(mod:GetVersion())
 
-	-- mod update status
-	self:_refresh_mod_update_status()
-
 	self:_align_paper_titles() -- align name / version / update status x
 
 	----
@@ -1007,9 +1004,21 @@ function BLTModsGui:refresh_mod_details(mod_data)
 	-- mod autoupdates
 
 	if mod:HasUpdates() then
+		local text = self:translate(mod:AreUpdatesEnabled() and "blt_mod_updates_enabled" or "blt_mod_updates_disabled")
+		local color = tweak_data.gui.colors.raid_black
+		if mod:GetUpdateError() then
+			text = text .. "\n" .. managers.localization:text("blt_update_mod_error", {reason = mod:GetUpdateError()})
+			color = tweak_data.gui.colors.raid_red
+		elseif mod:IsCheckingForUpdates() then
+			text = text .. "\n" .. self:translate("blt_checking_updates")
+		elseif BLT.Downloads:get_pending_downloads_for(mod) then
+			text = text .. "\n" .. managers.localization:text("blt_update_mod_available_short", {name = mod:GetName()})
+			--color = tweak_data.gui.colors.raid_gold -- TODO: find better color for "update found"
+		end
 		self._mod_autoupdate:set_y(next_y)
 		self._mod_autoupdate:set_w(self._mod_details_panel:w())
-		self._mod_autoupdate:set_text(self:translate(mod:AreUpdatesEnabled() and "blt_mod_updates_enabled" or "blt_mod_updates_disabled"))
+		self._mod_autoupdate:set_text(text)
+		self._mod_autoupdate:set_color(color)
 		next_y = self._mod_autoupdate:bottom() + padding
 		self._mod_autoupdate:show()
 	else
@@ -1258,6 +1267,7 @@ function BLTModsGui:_additional_active_controls()
 end
 
 function BLTModsGui:_refresh_mod_update_status()
+	--TODO: remove?
 	if not (self._selected_mod and self._mod_update_status) then
 		return
 	end
@@ -1286,6 +1296,7 @@ function BLTModsGui:_refresh_mod_update_status()
 end
 
 function BLTModsGui:_on_update_change(update, requires_update, error_reason)
+	--TODO: remove?
 	local mod = update:GetParentMod()
 	if mod ~= self._selected_mod then
 		return
