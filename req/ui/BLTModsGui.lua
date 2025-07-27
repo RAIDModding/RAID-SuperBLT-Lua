@@ -471,6 +471,16 @@ function BLTModsGui:_layout_mod_details()
 		fit_text = true,
 		w = 432,
 	})
+	self._mod_special = self._mod_details_panel:label({
+		color = tweak_data.gui.colors.raid_black,
+		font = tweak_data.gui.fonts.lato,
+		font_size = tweak_data.gui.font_sizes.paragraph,
+		name = "mod_special",
+		text = "",
+		--wrap = true,
+		fit_text = true,
+		w = 432,
+	})
 	self._mod_errors = self._mod_details_panel:label({
 		color = tweak_data.gui.colors.raid_red,
 		font = tweak_data.gui.fonts.lato,
@@ -1013,7 +1023,7 @@ function BLTModsGui:refresh_mod_details(mod_data)
 			text = text .. "\n" .. self:translate("blt_checking_updates")
 		elseif BLT.Downloads:get_pending_downloads_for(mod) then
 			text = text .. "\n" .. managers.localization:text("blt_update_mod_available_short", {name = mod:GetName()})
-			--color = tweak_data.gui.colors.raid_gold -- TODO: find better color for "update found"
+			color = tweak_data.gui.colors.raid_dark_gold
 		end
 		self._mod_autoupdate:set_y(next_y)
 		self._mod_autoupdate:set_w(self._mod_details_panel:w())
@@ -1023,6 +1033,29 @@ function BLTModsGui:refresh_mod_details(mod_data)
 		self._mod_autoupdate:show()
 	else
 		self._mod_autoupdate:hide()
+	end
+
+	-- mod state
+	if mod then -- TODO: better condition?
+		local text = "Status: "
+		local color = tweak_data.gui.colors.raid_black
+		if mod:IsEnabled() then
+			text = text .. self:translate("blt_mod_state_enabled")
+		else
+			text = text .. self:translate("blt_mod_state_disabled")
+		end
+		if mod:WasEnabledAtStart() ~= mod:IsEnabled() then
+			text = text .. "\n" .. self:translate(mod:WasEnabledAtStart() == false and "blt_mod_state_enabled_on_restart" or "blt_mod_state_disabled_on_restart")
+			color = tweak_data.gui.colors.raid_red
+		end
+		self._mod_special:set_y(next_y)
+		self._mod_autoupdate:set_w(self._mod_details_panel:w())
+		self._mod_special:set_text(text)
+		self._mod_special:set_color(color)
+		next_y = self._mod_special:bottom() + padding
+		self._mod_special:show()
+	else
+		self._mod_special:hide()
 	end
 
 	-- mod errors
@@ -1267,7 +1300,6 @@ function BLTModsGui:_additional_active_controls()
 end
 
 function BLTModsGui:_on_update_change(update, requires_update, error_reason)
-	--TODO: remove?
 	local mod = update:GetParentMod()
 	if mod ~= self._selected_mod then
 		return
