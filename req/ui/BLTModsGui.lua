@@ -295,15 +295,6 @@ function BLTModsGui:_layout_primary_paper()
 		y = 78,
 	})
 
-	self._mod_update_status = self._primary_paper_panel:label({
-		color = tweak_data.gui.colors.raid_dark_grey,
-		font = tweak_data.gui.fonts.din_compressed,
-		font_size = tweak_data.gui.font_sizes.extra_small,
-		name = "mod_update_status",
-		text = "",
-		y = 112,
-	})
-
 	self:_align_paper_titles()
 
 	self._primary_paper_separator = self._primary_paper_panel:rect({
@@ -846,7 +837,6 @@ end
 function BLTModsGui:_align_paper_titles()
 	self._primary_paper_title:set_x(self._primary_paper_mission_icon:right() + padding)
 	self._mod_version:set_x(self._primary_paper_title:x())
-	self._mod_update_status:set_x(self._primary_paper_title:x())
 end
 
 function BLTModsGui:_update_info_buttons(mod)
