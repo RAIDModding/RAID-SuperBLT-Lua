@@ -251,7 +251,7 @@ function BLTModsGui:_layout_primary_paper()
 		name = "primary_paper_panel",
 		w = 524,
 		x = 580,
-		y = 117,
+		y = 118,
 	})
 
 	self._primary_paper = self._primary_paper_panel:bitmap({
@@ -320,18 +320,16 @@ function BLTModsGui:_layout_primary_paper()
 end
 
 function BLTModsGui:_layout_secondary_paper()
-	local secondary_paper_panel_params = {
+	self._secondary_paper_panel = self._root_panel:panel({
 		h = 768,
 		layer = RaidGuiBase.FOREGROUND_LAYER,
 		name = "secondary_paper_panel",
 		w = 524,
 		x = 580,
 		y = 118,
-	}
+	})
 
-	self._secondary_paper_panel = self._root_panel:panel(secondary_paper_panel_params)
-
-	local secondary_paper_params = {
+	self._secondary_paper = self._secondary_paper_panel:bitmap({
 		h = self._secondary_paper_panel:h(),
 		name = "secondary_paper",
 		texture = tweak_data.gui.images[paper_image].texture,
@@ -339,12 +337,10 @@ function BLTModsGui:_layout_secondary_paper()
 		w = self._secondary_paper_panel:w(),
 		x = 0,
 		y = 0,
-	}
+	})
 
-	self._secondary_paper = self._secondary_paper_panel:bitmap(secondary_paper_params)
+	self:_layout_dev_info()
 
-	-- self:_layout_secondary_intel()
-	-- self:_layout_secondary_save_info()
 	self._secondary_paper_panel:set_x(self._primary_paper_panel:x())
 	self._secondary_paper_panel:set_rotation(BLTModsGui.BACKGROUND_PAPER_ROTATION)
 	self._secondary_paper_panel:set_w(self._primary_paper_panel:w() * BLTModsGui.BACKGROUND_PAPER_SCALE)
@@ -354,42 +350,31 @@ function BLTModsGui:_layout_secondary_paper()
 
 	self._secondary_paper_shown = false
 	self._paper_animation_t = 0
-
-	self:_layout_dev_info()
 end
 
 function BLTModsGui:_layout_dev_info()
-	self._dev_info_panel = self._secondary_paper_panel:panel({
+	local x, y = 38, 44
+	self._dev_info_panel = self._secondary_paper_panel:scrollable_area({
 		layer = self._secondary_paper_panel:layer() + 1,
 		name = "dev_info_panel",
-		w = self._secondary_paper_panel:w(),
-		h = self._secondary_paper_panel:h(),
+		scroll_step = 35,
+		x = x,
+		y = y,
+		w = self._secondary_paper_panel:w() - x * 2,
+		h = self._secondary_paper_panel:h() - y * 2,
 	})
 
-	self._mod_min_sblt_version = self._dev_info_panel:label({
+	self._mod_dev_info = self._dev_info_panel:get_panel():label({
 		color = tweak_data.gui.colors.raid_black,
 		font = tweak_data.gui.fonts.lato,
-		font_size = tweak_data.gui.font_sizes.paragraph,
-		name = "mod_min_sblt_version",
-		text = "",
-		wrap = true,
-		fit_text = true,
-		w = 432,
-		x = padding
-	})
-
-	self._mod_dev_info = self._dev_info_panel:label({
-		color = tweak_data.gui.colors.raid_black,
-		font = tweak_data.gui.fonts.lato,
-		font_size = tweak_data.gui.font_sizes.paragraph,
+		font_size = tweak_data.gui.font_sizes.size_12,
 		name = "mod_dev_info",
 		text = "",
-		--wrap = true,
 		fit_text = true,
-		x = padding,
-		w = 432,
+		w = self._dev_info_panel:w(),
 	})
 
+	self._dev_info_panel:setup_scroll_area()
 end
 
 function BLTModsGui:_layout_info_buttons()
@@ -697,7 +682,7 @@ function BLTModsGui:_animate_change_primary_paper_control(control, mid_callback,
 	self._active_primary_paper_control:set_alpha(1)
 end
 
-function BLTModsGui:_animate_show_secondary_paper(done_callback)
+function BLTModsGui:_animate_show_secondary_paper(_, done_callback)
 	local duration = 0.5
 	local t = self._paper_animation_t * duration
 
@@ -749,6 +734,8 @@ function BLTModsGui:_animate_show_secondary_paper(done_callback)
 
 	self._paper_animation_t = 1
 
+	self._dev_info_panel:show()
+
 	if done_callback then
 		done_callback()
 	end
@@ -759,6 +746,8 @@ function BLTModsGui:_animate_hide_secondary_paper()
 	local t = (1 - self._paper_animation_t) * duration
 
 	self._secondary_paper_shown = false
+
+	self._dev_info_panel:hide()
 
 	while t < duration do
 		local dt = coroutine.yield()
@@ -1039,13 +1028,12 @@ function BLTModsGui:refresh_mod_details(mod_data)
 	else
 		self._mod_errors:hide()
 	end
-	
-	self:refresh_mod_details_secondary_paper(mod)
 
 	if not self._secondary_paper_shown then
 		self._secondary_paper:stop()
 		self._secondary_paper:animate(
-			callback(self, self, "_animate_show_secondary_paper")
+			callback(self, self, "_animate_show_secondary_paper"),
+			callback(self, self, "refresh_mod_details_secondary_paper", mod)
 		)
 	end
 
@@ -1059,32 +1047,11 @@ function BLTModsGui:refresh_mod_details(mod_data)
 end
 
 function BLTModsGui:refresh_mod_details_secondary_paper(mod)
-	local next_y = 0 + padding
-	-- mod min sblt version
-
-	local min_sblt_version = mod:GetMinSBLTVer()
-	if min_sblt_version then
-		self._mod_min_sblt_version:set_y(next_y)
-		self._mod_min_sblt_version:set_w(self._mod_details_panel:w())
-		self._mod_min_sblt_version:set_text(self:translate("blt_mod_info_min_sblt_version") ..
-			": " .. min_sblt_version)
-		next_y = self._mod_min_sblt_version:bottom() + padding
-		if BLT:CompareVersions(BLT:GetBaseVersion(), min_sblt_version) == 2 then
-			self._mod_min_sblt_version:set_color(tweak_data.gui.colors.raid_red)
-		else
-			self._mod_min_sblt_version:set_color(tweak_data.gui.colors.raid_black)
-		end
-		self._mod_min_sblt_version:show()
-	else
-		self._mod_min_sblt_version:hide()
-
-	end
 
 	-- mod dev info
-
 	self._mod_dev_info:set_text("Dev Info:\n" .. mod:GetDeveloperInfo())
-	self._mod_dev_info:set_y(next_y)
-	self._mod_dev_info:show()
+
+	self._dev_info_panel:setup_scroll_area()
 end
 
 function BLTModsGui:clbk_open_download_manager()

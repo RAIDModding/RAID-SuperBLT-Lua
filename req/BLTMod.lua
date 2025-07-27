@@ -684,7 +684,7 @@ function BLTMod:GetDeveloperInfo()
 
 	append("Path:", self:GetPath())
 	append("Load Priority:", self:GetPriority())
-	append("Version:", self:GetVersion())
+	append("Minimum SBLT Version:", self:GetMinSBLTVer())
 	append("Disablable:", not self:IsUndisablable())
 	append("Allow Safe Mode:", not self:DisableSafeMode())
 
