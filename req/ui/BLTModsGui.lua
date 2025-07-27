@@ -964,7 +964,7 @@ function BLTModsGui:refresh_mod_details(mod_data)
 	self._mod_description:set_w(self._mod_details_panel:w())
 	self._mod_description:set_text(mod:GetDescription())
 
-	local next_y = self._mod_details_panel:h() / 2
+	local next_y = self._mod_description:h() + padding
 
 	-- mod author
 
