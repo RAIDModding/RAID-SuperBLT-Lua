@@ -22,6 +22,14 @@ function BLTMenu:init(ws, fullscreen_ws, node, name, args)
 	if self.PreInit then
 		self:PreInit(self._root_panel, args)
 	end
+	self._description_label = self:Label({
+		name = "bltmenu_description_label",
+		text = "",
+		ignore_align = true,
+		color = tweak_data.gui.colors.raid_dirty_white,
+		font = tweak_data.gui.fonts.din_compressed,
+		font_size = tweak_data.gui.font_sizes.small,
+	})
 	if self.Init then
 		self:Init(self._root_panel, args)
 	end
@@ -44,14 +52,6 @@ function BLTMenu:init(ws, fullscreen_ws, node, name, args)
 			end
 		end
 	end
-	self._description_label = self:Label({
-		name = "bltmenu_description_label",
-		text = "",
-		ignore_align = true,
-		color = tweak_data.gui.colors.raid_dirty_white,
-		font = tweak_data.gui.fonts.din_compressed,
-		font_size = tweak_data.gui.font_sizes.small,
-	})
 	self:adjust_description_label()
 	self:Align()
 	self:Finalize()
@@ -271,7 +271,9 @@ function BLTMenu:CreateSimple(typ, params, create_data)
 			if data.localize_desc == nil then
 				data.localize_desc = true
 			end
-			self:_bind_description(data)
+			if not data.auto_select_on_hover then
+				self:_bind_hover_description(data)
+			end
 		end
 		local clbk_key = create_data.clbk_key or "on_click_callback"
 		data[clbk_key] = data.callback and (create_data.default_clbk or function(a, item, value)
@@ -306,14 +308,19 @@ function BLTMenu:CreateSimple(typ, params, create_data)
 			end
 			self.auto_route_last_control = item
 		end
-		if data.auto_select_on_hover and item.set_selected then
-			self:_bind_auto_select_on_hover(item, parent)
+		if data.auto_select_on_hover then
+			if data.desc then
+				self:_bind_auto_select_description(item, data)
+			end
+			if item.set_selected then
+				self:_bind_auto_select_on_hover(item, parent)
+			end
 		end
 		return item
 	end
 end
 
-function BLTMenu:_bind_description(data)
+function BLTMenu:_bind_hover_description(data)
 	if data.on_mouse_exit_callback then
 		data.on_mouse_exit_callback_no_desc = data.on_mouse_exit_callback
 	end
@@ -330,6 +337,18 @@ function BLTMenu:_bind_description(data)
 		self:_show_description(data)
 		if data.on_mouse_enter_callback_no_desc then
 			data.on_mouse_enter_callback_no_desc(button, _data)
+		end
+	end
+end
+
+function BLTMenu:_bind_auto_select_description(item, data)
+	item.set_selected_no_desc = item.set_selected
+	item.set_selected = function(this, value, ...)
+		this:set_selected_no_desc(value, ...)
+		if value then
+			self:_show_description(data)
+		else
+			self:_hide_description()
 		end
 	end
 end
