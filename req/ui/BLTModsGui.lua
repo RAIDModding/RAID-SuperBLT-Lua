@@ -1289,10 +1289,40 @@ function BLTModsGui:_additional_active_controls()
 	return res
 end
 
+function BLTModsGui:_refresh_mod_update_status()
+	--TODO: remove?
+	if not (self._selected_mod and self._mod_update_status) then
+		return
+	end
+
+	-- mod update status
+	local show_mod_update_status
+	if self._selected_mod:GetUpdateError() then
+		self._mod_update_status:set_text(managers.localization:text("blt_update_mod_error", {
+			reason = self._selected_mod:GetUpdateError()
+		}))
+		self._mod_update_status:set_color(tweak_data.gui.colors.raid_red)
+		show_mod_update_status = true
+	elseif self._selected_mod:IsCheckingForUpdates() then
+		self._mod_update_status:set_text(self:translate("blt_checking_updates"))
+		show_mod_update_status = true
+	elseif BLT.Downloads:get_pending_downloads_for(self._selected_mod) then
+		self._mod_update_status:set_text(managers.localization:text("blt_update_mod_available_short", {
+			name = self._selected_mod:GetName()
+		}))
+	end
+	if show_mod_update_status then
+		self._mod_update_status:show()
+	else
+		self._mod_update_status:hide()
+	end
+end
+
 function BLTModsGui:_on_update_change(update, requires_update, error_reason)
 	local mod = update:GetParentMod()
 	if mod ~= self._selected_mod then
 		return
 	end
 	log("BLTModsGui:_on_update_change")
+	self:_refresh_mod_update_status()
 end
