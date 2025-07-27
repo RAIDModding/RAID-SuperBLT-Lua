@@ -308,12 +308,10 @@ function BLTMenu:CreateSimple(typ, params, create_data)
 			end
 			self.auto_route_last_control = item
 		end
-		if data.auto_select_on_hover then
+		if data.auto_select_on_hover and item.set_selected then
+			self:_bind_auto_select_on_hover(item, parent)
 			if data.desc then
 				self:_bind_auto_select_description(item, data)
-			end
-			if item.set_selected then
-				self:_bind_auto_select_on_hover(item, parent)
 			end
 		end
 		return item
