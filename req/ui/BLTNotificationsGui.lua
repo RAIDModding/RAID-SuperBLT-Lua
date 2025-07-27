@@ -1,6 +1,11 @@
 ---@class BLTNotificationsGui
 ---@field new fun(self, ws, fullscreen_ws, node):BLTNotificationsGui
-BLTNotificationsGui = BLTNotificationsGui or blt_class(BLTCustomComponent)
+---@field translate fun(self, string, upper_case)
+---@field super table
+---@field _root_panel table
+BLTNotificationsGui = BLTNotificationsGui or blt_class(RaidGuiBase)
+BLTNotificationsGui.BACKGROUND = "backgrounds_chat_bg"
+BLTNotificationsGui.DOWNLOADS_ICON = "teammate_interact_fill_large"
 
 local padding = 10
 
@@ -23,12 +28,6 @@ local medium_font_size = BLT.fonts.medium.font_size
 local large_font_size = BLT.fonts.large.font_size
 
 function BLTNotificationsGui:init(ws, fullscreen_ws, node)
-	self._ws = ws
-	self._fullscreen_ws = fullscreen_ws
-	self._panel = self._ws:panel():panel({})
-	self._init_layer = self._ws:panel():layer()
-
-	self._data = node:parameters().menu_component_data or {}
 	self._buttons = {}
 	self._next_time = Application:time() + TIME_PER_PAGE
 
@@ -37,50 +36,48 @@ function BLTNotificationsGui:init(ws, fullscreen_ws, node)
 	self._notifications_count = 0
 	self._uid = 1000
 
-	self:_setup()
+	BLTNotificationsGui.super.init(self, ws, fullscreen_ws, node, "blt_notifications")
+	self._root_panel.ctrls = self._root_panel.ctrls or {}
 end
 
-function BLTNotificationsGui:close()
-	self._ws:panel():remove(self._panel)
-end
-
-function BLTNotificationsGui:_setup()
+function BLTNotificationsGui:_layout()
 	self._enabled = true
 
 	-- Get player profile panel
-	local profile_panel = managers.menu_component._player_profile_gui and managers.menu_component._player_profile_gui._panel
+	local profile_panel = managers.menu_component._player_profile_gui and
+		managers.menu_component._player_profile_gui._panel
 
 	-- Create panels
-	self._panel =self._ws:panel():panel({
+	self._object = self._root_panel:panel({
 		layer = 50,
 		x = profile_panel and profile_panel:x() or 0,
 		w = profile_panel and profile_panel:w() or 524,
 		h = 128
 	})
 
-	self._panel:set_bottom(profile_panel and profile_panel:y() or self._ws:panel():h() - 90)
+	self._object:set_bottom(profile_panel and profile_panel:y() or self._root_panel:h() - 90)
 
-	self._content_panel =self._panel:panel({
-		h = self._panel:h() * 0.8
+	self._content_panel = self._object:panel({
+		h = self._object:h() * 0.8
 	})
 
-	self._buttons_panel =self._panel:panel({
-		h = self._panel:h() * 0.2
+	self._buttons_panel = self._object:panel({
+		h = self._object:h() * 0.2
 	})
 	self._buttons_panel:set_top(self._content_panel:h())
 
-	-- Blur background
-	local bg_rect =self._content_panel:rect({
+	-- Background
+	self._content_panel:bitmap({
 		name = "background",
-		color = Color.black,
-		alpha = 0.8,
+		texture = tweak_data.gui.icons[BLTNotificationsGui.BACKGROUND].texture,
+		texture_rect = tweak_data.gui.icons[BLTNotificationsGui.BACKGROUND].texture_rect,
 		layer = -1,
-		halign = "scale",
-		valign = "scale"
+		w = self._content_panel:w(),
+		h = self._content_panel:h(),
 	})
 
 	-- Setup notification buttons
-	self._bar =self._buttons_panel:bitmap({
+	self._bar = self._buttons_panel:bitmap({
 		halign = "grow",
 		valign = "grow",
 		wrap_mode = "wrap",
@@ -93,47 +90,39 @@ function BLTNotificationsGui:_setup()
 	self._bar:set_visible(false)
 
 	-- Downloads notification
-	self._downloads_panel =self._panel:panel({
+	self._downloads_panel = self._object:panel({
 		name = "downloads",
 		w = 48,
 		h = 48,
 		layer = 100
 	})
-
 	self._downloads_panel:bitmap({
-		texture = "guis/blt/download",
+		texture = tweak_data.gui.icons[BLTNotificationsGui.DOWNLOADS_ICON].texture,
+		texture_rect = tweak_data.gui.icons[BLTNotificationsGui.DOWNLOADS_ICON].texture_rect,
 		w = self._downloads_panel:w(),
 		h = self._downloads_panel:h(),
-		color = Color.red
+		color = tweak_data.gui.colors.raid_gold,
+		alpha = 1,
 	})
-	self._downloads_panel:rect({
-		x = 38 / 2.5 - 2,
-		y = 28 / 2.5,
-		w = 54 / 2.5,
-		h = 72 / 2.5 - 2,
-		color = Color.red
-	})
-
-	self._downloads_count =self._downloads_panel:text({
+	self._downloads_count = self._downloads_panel:text({
 		font_size = medium_font_size,
 		font = medium_font,
 		layer = 10,
-		color = tweak_data.screen_colors.title,
+		color = tweak_data.gui.colors.raid_white,
 		text = "2",
 		align = "center",
 		vertical = "center"
 	})
-
 	self._downloads_panel:set_visible(false)
 
 	-- Move other panels to fit the downloads notification in nicely
-	self._panel:set_w(self._panel:w() + 24)
-	self._panel:set_h(self._panel:h() + 24)
-	self._panel:set_top(self._panel:top() - 24)
+	self._object:set_w(self._object:w() + 24)
+	self._object:set_h(self._object:h() + 24)
+	self._object:set_top(self._object:top() - 24)
 	self._content_panel:set_top(self._content_panel:top() + 24)
 	self._buttons_panel:set_top(self._buttons_panel:top() + 24)
 
-	self._downloads_panel:set_right(self._panel:w())
+	self._downloads_panel:set_right(self._object:w())
 	self._downloads_panel:set_top(0)
 
 	-- Add notifications that have already been registered
@@ -143,12 +132,6 @@ function BLTNotificationsGui:_setup()
 
 	-- Check for updates when creating the notification UI as we show the check here
 	BLT.Mods:RunAutoCheckForUpdates()
-end
-
-function BLTNotificationsGui:close()
-	if alive(self._panel) then
-		self._ws:panel():remove(self._panel)
-	end
 end
 
 function BLTNotificationsGui:_rec_round_object(object)
@@ -182,7 +165,7 @@ end
 
 function BLTNotificationsGui:add_notification(parameters)
 	-- Create notification panel
-	local new_notif = self._content_panel:panel({})
+	local new_notif = self._content_panel:panel({}, true)
 
 	local icon_size = math.round(new_notif:h() - padding * 2)
 	local icon
@@ -218,7 +201,7 @@ function BLTNotificationsGui:add_notification(parameters)
 		w = new_notif:w() - _x,
 		y = math.ceil(title:bottom()),
 		h = new_notif:h() - title:bottom(),
-		color = tweak_data.screen_colors.text,
+		color = tweak_data.gui.colors.raid_white,
 		alpha = 0.8,
 		wrap = true,
 		word_wrap = true
@@ -258,7 +241,7 @@ function BLTNotificationsGui:remove_notification(uid)
 	local _, idx = self:_get_notification(uid)
 	if idx then
 		local notif = self._notifications[idx]
-		self._content_panel:remove(notif.panel)
+		self._content_panel:remove(notif.panel:get_engine_panel())
 
 		table.remove(self._notifications, idx)
 		self._notifications_count = table.size(self._notifications)
@@ -269,9 +252,9 @@ end
 function BLTNotificationsGui:_update_bars()
 	-- Remove old buttons
 	for i, btn in ipairs(self._buttons) do
-		self._buttons_panel:remove(btn)
+		self._buttons_panel:get_engine_panel():remove(btn)
 	end
-	self._buttons_panel:remove(self._bar)
+	self._buttons_panel:get_engine_panel():remove(self._bar)
 
 	self._buttons = {}
 
@@ -283,7 +266,8 @@ function BLTNotificationsGui:_update_bars()
 			h = 8,
 			alpha = 0.25
 		})
-		page_button:set_x(math.round((( i / (self._notifications_count + 1)) * self._buttons_panel:w() * 0.5 + self._buttons_panel:w() / 4) - (page_button:w() * 0.5)))
+		page_button:set_x(math.round(((i / (self._notifications_count + 1)) * self._buttons_panel:w() * 0.5 + self._buttons_panel:w() / 4) -
+			(page_button:w() * 0.5)))
 		page_button:set_y(math.round(((self._buttons_panel:h() - page_button:h()) * 0.5) - (page_button:h() * 0.5)))
 		table.insert(self._buttons, page_button)
 	end
@@ -335,7 +319,7 @@ end
 function BLTNotificationsGui:_move_to_notification(destination)
 	-- Animation
 	local swipe_func = function(o, other_object, duration)
-		if not alive(o) or not alive(other_object) then
+		if not o or not other_object then
 			return
 		end
 
@@ -346,17 +330,17 @@ function BLTNotificationsGui:_move_to_notification(destination)
 		o:set_visible(true)
 		other_object:set_visible(true)
 
-		while alive(o) and alive(other_object) and o:right() >= 0 do
+		while o and other_object and o:right() >= 0 do
 			local dt = coroutine.yield()
 			o:move(-dt * speed, 0)
 			other_object:set_x(o:right())
 		end
 
-		if alive(o) then
+		if o then
 			o:set_x(0)
 			o:set_visible(false)
 		end
-		if alive(other_object) then
+		if other_object then
 			other_object:set_x(0)
 			other_object:set_visible(true)
 		end
@@ -367,7 +351,7 @@ function BLTNotificationsGui:_move_to_notification(destination)
 
 	-- Stop all animations
 	for _, notification in ipairs(self._notifications) do
-		if alive(notification.panel) then
+		if notification.panel then
 			notification.panel:stop()
 			notification.panel:set_x(0)
 			notification.panel:set_visible(false)
@@ -436,7 +420,7 @@ function BLTNotificationsGui:mouse_moved(o, x, y)
 		return
 	end
 
-	if alive(self._downloads_panel) and self._downloads_panel:visible() and self._downloads_panel:inside(x, y) then
+	if self._downloads_panel and self._downloads_panel:visible() and self._downloads_panel:inside(x, y) then
 		return true, "link"
 	end
 
@@ -447,17 +431,17 @@ function BLTNotificationsGui:mouse_moved(o, x, y)
 	end
 end
 
-function BLTNotificationsGui:_mouse_released(btn, x, y)
+function BLTNotificationsGui:mouse_released(o, btn, x, y)
 	if not self._enabled or btn ~= Idstring("0") then
 		return
 	end
 
-	if alive(self._downloads_panel) and self._downloads_panel:visible() and self._downloads_panel:inside(x, y) then
+	if self._downloads_panel and self._downloads_panel:visible() and self._downloads_panel:inside(x, y) then
 		MenuHelper:OpenMenu("blt_download_manager")
 		return true
 	end
 
-	if alive(self._content_panel) and self._content_panel:inside(x, y) then
+	if self._content_panel and self._content_panel:inside(x, y) then
 		local current = self._notifications[self._current]
 		if current and current.callback then
 			current.callback(current.id)
@@ -477,10 +461,6 @@ function BLTNotificationsGui:_mouse_released(btn, x, y)
 			return true
 		end
 	end
-end
-
-function BLTNotificationsGui:input_focus()
-	return nil
 end
 
 MenuHelper:AddComponent("blt_notifications", BLTNotificationsGui)
