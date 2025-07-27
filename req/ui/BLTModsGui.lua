@@ -939,6 +939,9 @@ end
 function BLTModsGui:refresh_mod_details(mod_data)
 	local mod = mod_data.mod
 
+	self:_update_info_buttons(mod)
+	self._selected_mod = mod -- re-enable info buttons
+
 	-- mod icon
 	self:_recreate_paper_mission_icon()
 	self._primary_paper_mission_icon:set_image(mod_data.icon.texture)
@@ -1004,21 +1007,8 @@ function BLTModsGui:refresh_mod_details(mod_data)
 	-- mod autoupdates
 
 	if mod:HasUpdates() then
-		local text = self:translate(mod:AreUpdatesEnabled() and "blt_mod_updates_enabled" or "blt_mod_updates_disabled")
-		local color = tweak_data.gui.colors.raid_black
-		if mod:GetUpdateError() then
-			text = text .. "\n" .. managers.localization:text("blt_update_mod_error", {reason = mod:GetUpdateError()})
-			color = tweak_data.gui.colors.raid_red
-		elseif mod:IsCheckingForUpdates() then
-			text = text .. "\n" .. self:translate("blt_checking_updates")
-		elseif BLT.Downloads:get_pending_downloads_for(mod) then
-			text = text .. "\n" .. managers.localization:text("blt_update_mod_available_short", {name = mod:GetName()})
-			color = tweak_data.gui.colors.raid_dark_gold
-		end
 		self._mod_autoupdate:set_y(next_y)
-		self._mod_autoupdate:set_w(self._mod_details_panel:w())
-		self._mod_autoupdate:set_text(text)
-		self._mod_autoupdate:set_color(color)
+		self:_refresh_mod_update_status(false)
 		next_y = self._mod_autoupdate:bottom() + padding
 		self._mod_autoupdate:show()
 	else
@@ -1091,9 +1081,6 @@ function BLTModsGui:refresh_mod_details(mod_data)
 		)
 	end
 
-	self:_update_info_buttons(mod)
-	self._selected_mod = mod -- re-enable info buttons
-
 	for _, update in ipairs(self._selected_mod:GetUpdates()) do
 		update:register_event_handler("blt_mods_gui_on_update_change",
 			callback(self, self, "_on_update_change"))
@@ -1101,7 +1088,6 @@ function BLTModsGui:refresh_mod_details(mod_data)
 end
 
 function BLTModsGui:refresh_mod_details_secondary_paper(mod)
-
 	-- mod dev info
 	self._mod_dev_info:set_text("Dev Info:\n" .. mod:GetDeveloperInfo())
 
@@ -1289,32 +1275,35 @@ function BLTModsGui:_additional_active_controls()
 	return res
 end
 
-function BLTModsGui:_refresh_mod_update_status()
-	--TODO: remove?
-	if not (self._selected_mod and self._mod_update_status) then
+function BLTModsGui:_refresh_mod_update_status(realign_mod_errors)
+	if not (self._selected_mod and self._selected_mod:HasUpdates() and self._mod_autoupdate) then
 		return
 	end
 
 	-- mod update status
-	local show_mod_update_status
+	local text = self:translate(self._selected_mod:AreUpdatesEnabled() and "blt_mod_updates_enabled" or
+		"blt_mod_updates_disabled")
+	local color = tweak_data.gui.colors.raid_black
 	if self._selected_mod:GetUpdateError() then
-		self._mod_update_status:set_text(managers.localization:text("blt_update_mod_error", {
-			reason = self._selected_mod:GetUpdateError()
-		}))
-		self._mod_update_status:set_color(tweak_data.gui.colors.raid_red)
+		text = text ..
+			"\n" .. managers.localization:text("blt_update_mod_error", { reason = self._selected_mod:GetUpdateError() })
+		color = tweak_data.gui.colors.raid_red
 		show_mod_update_status = true
 	elseif self._selected_mod:IsCheckingForUpdates() then
-		self._mod_update_status:set_text(self:translate("blt_checking_updates"))
+		text = text .. "\n" .. self:translate("blt_checking_updates")
 		show_mod_update_status = true
 	elseif BLT.Downloads:get_pending_downloads_for(self._selected_mod) then
-		self._mod_update_status:set_text(managers.localization:text("blt_update_mod_available_short", {
-			name = self._selected_mod:GetName()
-		}))
+		text = text ..
+			"\n" .. managers.localization:text("blt_update_mod_available_short", { name = self._selected_mod:GetName() })
+		--color = tweak_data.gui.colors.raid_gold -- TODO: find better color for "update found"
+		show_mod_update_status = true
 	end
-	if show_mod_update_status then
-		self._mod_update_status:show()
-	else
-		self._mod_update_status:hide()
+	self._mod_autoupdate:set_w(self._mod_details_panel:w())
+	self._mod_autoupdate:set_text(text)
+	self._mod_autoupdate:set_color(color)
+
+	if self._mod_errors and realign_mod_errors then
+		self._mod_errors:set_y(self._mod_autoupdate:bottom() + padding)
 	end
 end
 
@@ -1323,6 +1312,5 @@ function BLTModsGui:_on_update_change(update, requires_update, error_reason)
 	if mod ~= self._selected_mod then
 		return
 	end
-	log("BLTModsGui:_on_update_change")
-	self:_refresh_mod_update_status()
+	self:_refresh_mod_update_status(true)
 end
