@@ -1087,6 +1087,9 @@ function BLTModsGui:_on_info_button_toggle_mod_enabled_clicked(i)
 	if self._selected_mod:IsUndisablable() then
 		return
 	end
+	if not self._selected_mod:AreDependenciesInstalled() then
+		return
+	end
 	self._selected_mod:SetEnabled(not self._selected_mod:IsEnabled())
 	self:refresh_mods()
 end
