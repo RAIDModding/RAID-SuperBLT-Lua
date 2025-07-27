@@ -440,6 +440,16 @@ function BLTModsGui:_layout_mod_details()
 		fit_text = true,
 		w = 432,
 	})
+	self._mod_min_sblt_version = self._mod_details_panel:label({
+		color = tweak_data.gui.colors.raid_black,
+		font = tweak_data.gui.fonts.lato,
+		font_size = tweak_data.gui.font_sizes.paragraph,
+		name = "mod_min_sblt_version",
+		text = "",
+		wrap = true,
+		fit_text = true,
+		w = 432,
+	})
 	self._mod_errors = self._mod_details_panel:label({
 		color = tweak_data.gui.colors.raid_red,
 		font = tweak_data.gui.fonts.lato,
@@ -965,6 +975,26 @@ function BLTModsGui:refresh_mod_details(mod_data)
 		self._mod_contact:show()
 	else
 		self._mod_contact:hide()
+	end
+
+	-- mod min sblt version
+
+	local min_sblt_version = mod:GetMinSBLTVer()
+	if min_sblt_version then
+		self._mod_min_sblt_version:set_y(next_y)
+		self._mod_min_sblt_version:set_w(self._mod_details_panel:w())
+		self._mod_min_sblt_version:set_text(self:translate("blt_mod_info_min_sblt_version") ..
+			": " .. min_sblt_version)
+		next_y = self._mod_min_sblt_version:bottom() + padding
+		if BLT:CompareVersions(BLT:GetBaseVersion(), min_sblt_version) == 2 then
+			self._mod_min_sblt_version:set_color(tweak_data.gui.colors.raid_red)
+		else
+			self._mod_min_sblt_version:set_color(tweak_data.gui.colors.raid_black)
+		end
+		self._mod_min_sblt_version:show()
+	else
+		self._mod_min_sblt_version:hide()
+
 	end
 
 	-- mod errors
