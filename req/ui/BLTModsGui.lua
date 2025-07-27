@@ -1025,7 +1025,7 @@ function BLTModsGui:refresh_mod_details(mod_data)
 			text = text .. self:translate("blt_mod_state_disabled")
 		end
 		if mod:WasEnabledAtStart() ~= mod:IsEnabled() then
-			text = text .. "\n" .. self:translate(mod:WasEnabledAtStart() == false and "blt_mod_state_enabled_on_restart" or "blt_mod_state_disabled_on_restart")
+			text = text .. " (" .. self:translate(mod:WasEnabledAtStart() == false and "blt_mod_state_enabled_on_restart" or "blt_mod_state_disabled_on_restart") .. ")"
 			color = tweak_data.gui.colors.raid_red
 		end
 		self._mod_special:set_y(next_y)
@@ -1288,15 +1288,12 @@ function BLTModsGui:_refresh_mod_update_status(realign_mod_errors)
 		text = text ..
 			"\n" .. managers.localization:text("blt_update_mod_error", { reason = self._selected_mod:GetUpdateError() })
 		color = tweak_data.gui.colors.raid_red
-		show_mod_update_status = true
 	elseif self._selected_mod:IsCheckingForUpdates() then
 		text = text .. "\n" .. self:translate("blt_checking_updates")
-		show_mod_update_status = true
 	elseif BLT.Downloads:get_pending_downloads_for(self._selected_mod) then
 		text = text ..
 			"\n" .. managers.localization:text("blt_update_mod_available_short", { name = self._selected_mod:GetName() })
-		--color = tweak_data.gui.colors.raid_gold -- TODO: find better color for "update found"
-		show_mod_update_status = true
+		color = tweak_data.gui.colors.raid_dark_gold
 	end
 	self._mod_autoupdate:set_w(self._mod_details_panel:w())
 	self._mod_autoupdate:set_text(text)
