@@ -227,9 +227,7 @@ function BLTGUIControlListItemMod:_refresh_mod_status()
 	end
 
 	if self._mod:GetUpdateError() then
-		self._mod_status:set_text(managers.localization:text("blt_update_mod_error", {
-			reason = self._mod:GetUpdateError()
-		}))
+		self._mod_status:set_text(managers.localization:text("blt_update_mod_error_short"))
 		self._mod_status:set_color(tweak_data.gui.colors.raid_red)
 	elseif self._mod:IsCheckingForUpdates() then
 		self._mod_status:set_text(managers.localization:text("blt_checking_updates"))

@@ -60,6 +60,7 @@
 	"blt_update_mod_title" : "$name Update",
 	"blt_update_mod_up_to_date" : "$name is already up to date.",
 	"blt_update_mod_error" : "Could not check if the mod is already up to date.\n$reason",
+	"blt_update_mod_error_short" : "ERROR: Check update status",
 	"blt_update_mod_available" : "An update to $name is available! It has been added to the Download Manager!",
 	"blt_update_mod_available_short" : "Update available!",
 	"blt_update_mod_goto_manager" : "Go to Downloads",
