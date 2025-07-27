@@ -681,10 +681,13 @@ function BLTMod:GetDeveloperInfo()
 	local hooks = self:GetHooks() or {}
 	local prehooks = self:GetPreHooks() or {}
 	local persists = self:GetPersistScripts() or {}
+	local min_sblt_version = self:GetMinSBLTVer() or nil
 
 	append("Path:", self:GetPath())
 	append("Load Priority:", self:GetPriority())
-	append("Minimum SBLT Version:", self:GetMinSBLTVer())
+	if min_sblt_version then
+		append("Minimum SBLT Version:", min_sblt_version)
+	end
 	append("Disablable:", not self:IsUndisablable())
 	append("Allow Safe Mode:", not self:DisableSafeMode())
 
