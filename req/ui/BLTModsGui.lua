@@ -461,6 +461,16 @@ function BLTModsGui:_layout_mod_details()
 		fit_text = true,
 		w = 432,
 	})
+	self._mod_autoupdate = self._mod_details_panel:label({
+		color = tweak_data.gui.colors.raid_black,
+		font = tweak_data.gui.fonts.lato,
+		font_size = tweak_data.gui.font_sizes.paragraph,
+		name = "mod_autoupdate",
+		text = "",
+		wrap = true,
+		fit_text = true,
+		w = 432,
+	})
 	self._mod_errors = self._mod_details_panel:label({
 		color = tweak_data.gui.colors.raid_red,
 		font = tweak_data.gui.fonts.lato,
@@ -992,6 +1002,18 @@ function BLTModsGui:refresh_mod_details(mod_data)
 		self._mod_contact:show()
 	else
 		self._mod_contact:hide()
+	end
+
+	-- mod autoupdates
+
+	if mod:HasUpdates() then
+		self._mod_autoupdate:set_y(next_y)
+		self._mod_autoupdate:set_w(self._mod_details_panel:w())
+		self._mod_autoupdate:set_text(self:translate(mod:AreUpdatesEnabled() and "blt_mod_updates_enabled" or "blt_mod_updates_disabled"))
+		next_y = self._mod_autoupdate:bottom() + padding
+		self._mod_autoupdate:show()
+	else
+		self._mod_autoupdate:hide()
 	end
 
 	-- mod errors
