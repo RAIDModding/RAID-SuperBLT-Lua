@@ -871,7 +871,7 @@ function BLTModsGui:_animate_hide_secondary_paper()
 	self._paper_animation_t = 0
 end
 
-function BLTModsGui:_recreate_paper_mission_icon()
+function BLTModsGui:_recreate_paper_mission_icon(missing_icon_text)
 	if self._primary_paper_mission_icon then
 		self._primary_paper_panel:remove(self._primary_paper_mission_icon)
 	end
@@ -893,7 +893,7 @@ function BLTModsGui:_recreate_paper_mission_icon()
 		font_size = tweak_data.gui.font_sizes.small,
 		font = tweak_data.gui.fonts.din_compressed,
 		layer = 11,
-		text = self:translate("blt_no_image", true),
+		text = missing_icon_text or self:translate("blt_no_image", true),
 		align = "center",
 		vertical = "center",
 	})
@@ -979,7 +979,7 @@ function BLTModsGui:refresh_mod_details(mod_data)
 	self._selected_mod = mod -- re-enable info buttons
 
 	-- mod icon
-	self:_recreate_paper_mission_icon()
+	self:_recreate_paper_mission_icon(mod_data.missing_icon_text)
 	self._primary_paper_mission_icon:set_image(mod_data.icon.texture)
 	if mod_data.icon.texture_rect then
 		self._primary_paper_mission_icon:set_texture_rect(unpack(mod_data.icon.texture_rect))
