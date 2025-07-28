@@ -242,7 +242,6 @@ function BLTGUIControlListItemMod:_refresh_mod_status()
 end
 
 function BLTGUIControlListItemMod:_on_update_change(update, requires_update, error_reason)
-	log("BLTGUIControlListItemMod:_on_update_change")
 	self:_refresh_mod_status()
 end
 
