@@ -382,6 +382,33 @@ function BLTModsGui:_layout_info_buttons()
 
 	self._info_buttons = {}
 
+	local move_tbl = {
+		["11"] = {
+			right = "info_button_2",
+			left = nil,
+			up = nil,
+			down = "info_button_3"
+		},
+		["12"] = {
+			right = nil,
+			left = "info_button_1",
+			up = nil,
+			down = "info_button_4"
+		},
+		["21"] = {
+			right = "info_button_4",
+			left = nil,
+			up = "info_button_1",
+			down = nil
+		},
+		["22"] = {
+			right = nil,
+			left = "info_button_3",
+			up = "info_button_2",
+			down = nil
+		},
+	}
+
 	local function make_button(icon, clbk_func, text, row, num)
 		local icon_is_table = type(icon) == "table"
 		local i = #self._info_buttons + 1
@@ -406,6 +433,7 @@ function BLTModsGui:_layout_info_buttons()
 		btn._y = math.floor(row == 1 and 48 or 144)
 		btn:set_center_y(btn._y)
 		btn:set_center_x(btn._x)
+		btn:set_menu_move_controls(move_tbl[tostring(row) .. tostring(num)])
 		table.insert(self._info_buttons, i, btn)
 		return btn
 	end
@@ -888,45 +916,11 @@ function BLTModsGui:_update_info_buttons(mod)
 		end
 	end
 
-	local enabled_btn_count = 0
-	for _, v in pairs(enabled_buttons) do
-		if v then
-			enabled_btn_count = enabled_btn_count + 1
-		end
-	end
-
-	local last_info_btn = nil
-	local next_info_btn = nil
-	local enabled_i = 0
-	for i, btn in ipairs(self._info_buttons) do
+	for _, btn in ipairs(self._info_buttons) do
 		if enabled_buttons[btn] then
-			enabled_i = enabled_i + 1
-			btn:set_center_x(btn._x)
-			btn._params.on_menu_move = btn._params.on_menu_move or {}
-			if last_info_btn then
-				btn._params.on_menu_move.left = "info_button_" .. tostring(last_info_btn)
-			else
-				btn._params.on_menu_move.left = nil
-			end
-			for j = i + 1, #self._info_buttons do -- get next enabled btn
-				if enabled_buttons[self._info_buttons[j]] then
-					next_info_btn = j
-					break
-				end
-			end
-			if next_info_btn then
-				btn._params.on_menu_move.right = "info_button_" .. tostring(next_info_btn)
-			else
-				btn._params.on_menu_move.right = nil
-			end
-			btn:set_menu_move_controls(btn._params.on_menu_move)
-
-			last_info_btn = i
-			next_info_btn = nil
-
-			btn:show()
+			btn:enable()
 		else
-			btn:hide()
+			btn:disable()
 		end
 	end
 end
