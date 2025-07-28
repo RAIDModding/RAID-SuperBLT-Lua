@@ -43,9 +43,9 @@
 	"blt_mod_safemode_disabled" : "Safe Mode:\nDisabled",
 	"blt_mod_safemode_disabled_help" : "This mod will not be disabled automatically after major game updates.",
 
-	"blt_mod_updates_enabled" : "Automatic Updates:\nEnabled",
+	"blt_mod_updates_enabled" : "Automatic Updates: Enabled",
 	"blt_mod_updates_enabled_help" : "Automatically check for newer versions of this mod.",
-	"blt_mod_updates_disabled" : "Automatic Updates:\nDisabled",
+	"blt_mod_updates_disabled" : "Automatic Updates: Disabled",
 	"blt_mod_updates_disabled_help" : "This mod will not be checked for newer versions.",
 
 	"blt_mod_check_for_updates" : "Check for Updates",
@@ -121,5 +121,17 @@
 
 	"blt_openurl_title" : "Open Url",
 	"blt_openurl_text_browser" : "Do you want to open this URL in your browser?\nURL: %s",
-	"blt_openurl_text_steamoverlay" : "Do you want to open this URL in your steam overlay?\nURL: %s"
+	"blt_openurl_text_steamoverlay" : "Do you want to open this URL in your steam overlay?\nURL: %s",
+
+	"blt_devinfo" : "Developer Info",
+	"blt_devinfo_path" : "Path",
+	"blt_devinfo_loadprio" : "Priority",
+	"blt_devinfo_disablable" : "Disablable",
+	"blt_devinfo_allowsafemode" : "Allow Safe Mode",
+	"blt_devinfo_hooks" : "Hooks",
+	"blt_devinfo_nohooks" : "No Hooks",
+	"blt_devinfo_prehooks" : "Pre-Hooks",
+	"blt_devinfo_noprehooks" : "No Pre-Hooks",
+	"blt_devinfo_persistentscripts" : "Persistent Scripts",
+	"blt_devinfo_nopersistentscripts" : "No Persistent Scripts"
 }

@@ -37,9 +37,9 @@
 	"blt_mod_safemode_disabled" : "Mode sans échec:\nDésactivé",
 	"blt_mod_safemode_disabled_help" : "Ce mod ne sera pas désactivé automatiquement après les mises à jour majeures du jeu.",
 
-	"blt_mod_updates_enabled" : "Mises à jour automatique:\nActivée",
+	"blt_mod_updates_enabled" : "Mises à jour automatique: Activée",
 	"blt_mod_updates_enabled_help" : "Vérifier automatiquement les nouvelles versions de ce mod.",
-	"blt_mod_updates_disabled" : "Mises à jour automatique:\nDésactivée",
+	"blt_mod_updates_disabled" : "Mises à jour automatique: Désactivée",
 	"blt_mod_updates_disabled_help" : "Ce mod ne sera pas vérifié pour les versions plus récentes.",
 
 	"blt_mod_check_for_updates" : "Vérifier les mises à jour",

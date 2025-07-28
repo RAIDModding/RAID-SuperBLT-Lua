@@ -37,9 +37,9 @@
 	"blt_mod_safemode_disabled" : "Безопасный режим:\nОтключено",
 	"blt_mod_safemode_disabled_help" : "Данный мод не будет выключен после основных обновлений игры.",
 
-	"blt_mod_updates_enabled" : "Автообновления:\nВключено",
+	"blt_mod_updates_enabled" : "Автообновления: Включено",
 	"blt_mod_updates_enabled_help" : "Автоматически проверять обновления на сервере PaydayMods для актуализации версии мода.",
-	"blt_mod_updates_disabled" : "Автообновления:\nОтключено",
+	"blt_mod_updates_disabled" : "Автообновления: Отключено",
 	"blt_mod_updates_disabled_help" : "Данный мод не будет автоматически проверяться на сервере PaydayMods для актуализации версии мода.",
 
 	"blt_mod_check_for_updates" : "Проверить обновления",

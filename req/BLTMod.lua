@@ -682,37 +682,38 @@ function BLTMod:GetDeveloperInfo()
 	local prehooks = self:GetPreHooks() or {}
 	local persists = self:GetPersistScripts() or {}
 	local min_sblt_version = self:GetMinSBLTVer() or nil
+	local loc = managers.localization
 
-	append("Path:", self:GetPath())
-	append("Load Priority:", self:GetPriority())
+	append(loc:text("blt_devinfo_path") .. ":", self:GetPath())
+	append(loc:text("blt_devinfo_loadprio") .. ":", self:GetPriority())
 	if min_sblt_version then
-		append("Minimum SBLT Version:", min_sblt_version)
+		append(loc:text("blt_mod_info_min_sblt_version") .. ":", min_sblt_version)
 	end
-	append("Disablable:", not self:IsUndisablable())
-	append("Allow Safe Mode:", not self:DisableSafeMode())
+	append(loc:text("blt_devinfo_disablable") .. ":", not self:IsUndisablable())
+	append(loc:text("blt_devinfo_allowsafemode") .. ":", not self:DisableSafeMode())
 
 	if table.size(hooks) < 1 then
-		append("No Hooks")
+		append(loc:text("blt_devinfo_nohooks"))
 	else
-		append("Hooks:")
+		append(loc:text("blt_devinfo_hooks") .. ":")
 		for _, hook in ipairs(hooks) do
 			append("   ", tostring(hook))
 		end
 	end
 
 	if table.size(prehooks) < 1 then
-		append("No Pre-Hooks")
+		append(loc:text("blt_devinfo_noprehooks"))
 	else
-		append("Pre-Hooks:")
+		append(loc:text("blt_devinfo_prehooks") .. ":")
 		for _, hook in ipairs(prehooks) do
 			append("   ", tostring(hook))
 		end
 	end
 
 	if table.size(persists) < 1 then
-		append("No Persistent Scripts")
+		append(loc:text("blt_devinfo_nopersistentscripts"))
 	else
-		append("Persistent Scripts:")
+		append(loc:text("blt_devinfo_persistentscripts") .. ":")
 		for _, script in ipairs(persists) do
 			append("   ", script.global, "->", script.file)
 		end

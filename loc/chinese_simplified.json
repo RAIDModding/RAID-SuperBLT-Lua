@@ -37,9 +37,9 @@
 	"blt_mod_safemode_disabled" : "安全模式：\n已禁用",
 	"blt_mod_safemode_disabled_help" : "本模组将在重大更新以后取消自动禁用。",
 
-	"blt_mod_updates_enabled" : "自动更新：\n启用",
+	"blt_mod_updates_enabled" : "自动更新： 启用",
 	"blt_mod_updates_enabled_help" : "将自动检查本模组的最新版本。",
-	"blt_mod_updates_disabled" : "自动更新：\n禁用",
+	"blt_mod_updates_disabled" : "自动更新： 禁用",
 	"blt_mod_updates_disabled_help" : "本模组将不再自动检查最新版本。",
 
 	"blt_mod_check_for_updates" : "现在检查更新",

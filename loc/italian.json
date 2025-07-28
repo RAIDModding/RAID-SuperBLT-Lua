@@ -33,9 +33,9 @@
 	"blt_mod_safemode_disabled" : "Modalità Sicura:\nDisabilitata",
 	"blt_mod_safemode_disabled_help" : "Questa mod non verrà disabilitata dopo un aggiornamento importante del gioco.",
 
-	"blt_mod_updates_enabled" : "Aggiornamenti Automatici:\nAbilitati",
+	"blt_mod_updates_enabled" : "Aggiornamenti Automatici: Abilitati",
 	"blt_mod_updates_enabled_help" : "Controlla automaticamente la presenza di aggiornamenti con il server PaydayMods per questa mod.",
-	"blt_mod_updates_disabled" : "Aggiornamenti Automatici:\nDisabilitati",
+	"blt_mod_updates_disabled" : "Aggiornamenti Automatici: Disabilitati",
 	"blt_mod_updates_disabled_help" : "Disabilita il controllo automatico degli aggiornamenti con il server PaydayMods per questa mod.",
 
 	"blt_mod_check_for_updates" : "Controlla aggiornamenti",

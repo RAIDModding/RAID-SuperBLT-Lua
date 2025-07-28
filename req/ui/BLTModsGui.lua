@@ -1106,7 +1106,7 @@ end
 
 function BLTModsGui:refresh_mod_details_secondary_paper(mod)
 	-- mod dev info
-	self._mod_dev_info:set_text("Dev Info:\n" .. mod:GetDeveloperInfo())
+	self._mod_dev_info:set_text(self:translate("blt_devinfo") .. ":\n" .. mod:GetDeveloperInfo())
 
 	self._dev_info_panel:setup_scroll_area()
 end
