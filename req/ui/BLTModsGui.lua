@@ -383,13 +383,20 @@ function BLTModsGui:_layout_info_buttons()
 	self._info_buttons = {}
 
 	local function make_button(icon, clbk_func, text)
+		local icon_is_table = type(icon) == "table"
 		local i = #self._info_buttons + 1
 		local btn = self._info_buttons_panel:info_button({
 			name = "info_button_" .. tostring(i),
-			icon = icon,
+			icon = icon_is_table and BLTModsGui.FALLBACK_GUI_ICON or icon, -- info_button needs gui.icons, we override below
 			on_click_callback = callback(self, self, clbk_func, i),
 			text = text,
 		})
+		if icon_is_table then -- override fallback
+			btn._icon:set_image(icon.texture)
+			if icon.texture_rect then
+				btn._icon:set_texture_rect(icon.texture_rect)
+			end
+		end
 		btn._icon:set_w(36)
 		btn._icon:set_h(36)
 		btn._icon_w = 36
@@ -400,13 +407,20 @@ function BLTModsGui:_layout_info_buttons()
 		return btn
 	end
 
-	self._info_button_mod_toggle_enable = make_button("ico_blt_lock", "_on_info_button_toggle_mod_enabled_clicked",
+	self._info_button_mod_toggle_enable = make_button(
+		{ texture = "guis/blt/lock" },
+		"_on_info_button_toggle_mod_enabled_clicked",
 		"TOGGLE")
-	self._info_button_mod_contact = make_button("ico_info", "_on_info_button_contact_clicked",
+	self._info_button_mod_contact = make_button(
+		"ico_info",
+		"_on_info_button_contact_clicked",
 		"CONTACT")
-	self._info_button_mod_toggle_updates = make_button("ico_dlc", "_on_info_button_toggle_auto_updates_clicked",
+	self._info_button_mod_toggle_updates = make_button(
+		"ico_dlc",
+		"_on_info_button_toggle_auto_updates_clicked",
 		"TOGGLE AUTO UPD.")
-	self._info_button_mod_update_check = make_button("ico_blt_questionmark",
+	self._info_button_mod_update_check = make_button(
+		{ texture = "guis/blt/questionmark" },
 		"_on_info_button_check_for_updates_clicked",
 		"CHECK NOW")
 
@@ -1025,7 +1039,10 @@ function BLTModsGui:refresh_mod_details(mod_data)
 			text = text .. self:translate("blt_mod_state_disabled")
 		end
 		if mod:WasEnabledAtStart() ~= mod:IsEnabled() then
-			text = text .. " (" .. self:translate(mod:WasEnabledAtStart() == false and "blt_mod_state_enabled_on_restart" or "blt_mod_state_disabled_on_restart") .. ")"
+			text = text ..
+				" (" ..
+				self:translate(mod:WasEnabledAtStart() == false and "blt_mod_state_enabled_on_restart" or
+					"blt_mod_state_disabled_on_restart") .. ")"
 			color = tweak_data.gui.colors.raid_red
 		end
 		self._mod_special:set_y(next_y)
