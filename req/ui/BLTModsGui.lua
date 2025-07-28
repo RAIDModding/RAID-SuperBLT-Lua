@@ -417,6 +417,8 @@ function BLTModsGui:_layout_info_buttons()
 			icon = icon_is_table and BLTModsGui.FALLBACK_GUI_ICON or icon, -- info_button needs gui.icons, we override below
 			on_click_callback = callback(self, self, clbk_func, i),
 			text = text,
+			y = (row == 1) and 0 or 96,
+			on_menu_move = move_tbl[tostring(row) .. tostring(num)],
 		})
 		if icon_is_table then -- override fallback
 			btn._icon:set_image(icon.texture)
@@ -429,11 +431,10 @@ function BLTModsGui:_layout_info_buttons()
 		btn._icon_w = 36
 		btn._icon_h = 36
 		btn:_fit_size()
-		btn._x = math.floor(num == 1 and 131 or 393)
-		btn._y = math.floor(row == 1 and 48 or 144)
-		btn:set_center_y(btn._y)
+		btn._x = math.round(self._info_buttons_panel:w() / 4 * ((num == 2) and 3 or 1))
 		btn:set_center_x(btn._x)
-		btn:set_menu_move_controls(move_tbl[tostring(row) .. tostring(num)])
+		btn._text:set_x(math.round(btn._text:x()))
+		btn._text:set_y(math.round(btn._text:y()))
 		table.insert(self._info_buttons, i, btn)
 		return btn
 	end
