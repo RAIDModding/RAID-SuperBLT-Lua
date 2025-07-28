@@ -409,7 +409,7 @@ function BLTModsGui:_layout_info_buttons()
 		},
 	}
 
-	local function make_button(icon, clbk_func, text, row, num)
+	local function make_button(icon, clbk_func, text, row, num, is_default)
 		local icon_is_table = type(icon) == "table"
 		local i = #self._info_buttons + 1
 		local btn = self._info_buttons_panel:info_button({
@@ -419,6 +419,7 @@ function BLTModsGui:_layout_info_buttons()
 			text = text,
 			y = (row == 1) and 0 or 96,
 			on_menu_move = move_tbl[tostring(row) .. tostring(num)],
+			is_default = is_default,
 		})
 		if icon_is_table then -- override fallback
 			btn._icon:set_image(icon.texture)
@@ -456,7 +457,8 @@ function BLTModsGui:_layout_info_buttons()
 		"_on_info_button_toggle_mod_enabled_clicked",
 		self:translate("btl_infobtn_toggle_state"),
 		2,
-		1)
+		1,
+		true)
 	self._info_button_mod_contact = make_button(
 		"ico_info",
 		"_on_info_button_contact_clicked",
@@ -668,19 +670,15 @@ function BLTModsGui:_on_column_right()
 	if self._selected_column == BLTModsGui.COLUMN_INFO then
 		return true
 	end
-	local btn_check = false
-	local default_btn_check = false
-	local active_btns = {}
+	local selectable_btn
 	for i, btn in ipairs(self._info_buttons) do
 		if btn._enabled == true then
-			btn_check = true
-			active_btns[i] = i
-			if i == 3 then
-				default_btn_check = true
+			if btn._params.is_default or not selectable_btn then
+				selectable_btn = btn
 			end
 		end
 	end
-	if btn_check == false then
+	if not selectable_btn then
 		return true
 	end
 
@@ -688,7 +686,7 @@ function BLTModsGui:_on_column_right()
 
 	if (self._selected_column == BLTModsGui.COLUMN_INFO) then
 		self:_unselect_left_column()
-		self._info_buttons[default_btn_check and 3 or active_btns[1]]:set_selected(true)
+		selectable_btn:set_selected(true)
 	end
 
 	return true
