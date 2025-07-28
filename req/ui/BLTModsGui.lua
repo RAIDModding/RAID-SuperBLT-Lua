@@ -667,12 +667,27 @@ function BLTModsGui:_on_column_right()
 	if self._selected_column == BLTModsGui.COLUMN_INFO then
 		return true
 	end
+	local btn_check = false
+	local default_btn_check = false
+	local active_btns = {}
+	for i, btn in ipairs(self._info_buttons) do
+		if btn._enabled == true then
+			btn_check = true
+			active_btns[i] = i
+			if i == 3 then
+				default_btn_check = true
+			end
+		end
+	end
+	if btn_check == false then
+		return true
+	end
 
 	self._selected_column = self._selected_column + 1
 
 	if (self._selected_column == BLTModsGui.COLUMN_INFO) then
 		self:_unselect_left_column()
-		self._info_buttons[3]:set_selected(true)
+		self._info_buttons[default_btn_check and 3 or active_btns[1]]:set_selected(true)
 	end
 
 	return true
