@@ -48,6 +48,7 @@ function BLTKeybindsMenu:Init(root)
 	self:Title({text = "menu_header_options_main_screen_name"})
 	self:SubTitle({text = "blt_options_menu_keybinds"})
 	local last_mod
+	self:AutoBindNamedControlsBegin()
 	for i, bind in ipairs(BLT.Keybinds:keybinds()) do
 		if bind:IsActive() and bind:ShowInMenu() then
 			-- Separate keybinds by mod
@@ -67,6 +68,7 @@ function BLTKeybindsMenu:Init(root)
 			last_mod = bind:ParentMod()
 		end
 	end
+	self:AutoBindNamedControlsEnd()
 end
 
 function BLTKeybindsMenu:on_escape()
