@@ -384,27 +384,27 @@ function BLTModsGui:_layout_info_buttons()
 
 	local move_tbl = {
 		["11"] = {
-			right = "info_button_2",
+			right = "info_button_12",
 			left = nil,
 			up = nil,
-			down = "info_button_3"
+			down = "info_button_21"
 		},
 		["12"] = {
 			right = nil,
-			left = "info_button_1",
+			left = "info_button_11",
 			up = nil,
-			down = "info_button_4"
+			down = "info_button_22"
 		},
 		["21"] = {
-			right = "info_button_4",
+			right = "info_button_22",
 			left = nil,
-			up = "info_button_1",
+			up = "info_button_11",
 			down = nil
 		},
 		["22"] = {
 			right = nil,
-			left = "info_button_3",
-			up = "info_button_2",
+			left = "info_button_21",
+			up = "info_button_11",
 			down = nil
 		},
 	}
@@ -413,7 +413,7 @@ function BLTModsGui:_layout_info_buttons()
 		local icon_is_table = type(icon) == "table"
 		local i = #self._info_buttons + 1
 		local btn = self._info_buttons_panel:info_button({
-			name = "info_button_" .. tostring(i),
+			name = "info_button_" .. tostring(row) .. tostring(num),
 			icon = icon_is_table and BLTModsGui.FALLBACK_GUI_ICON or icon, -- info_button needs gui.icons, we override below
 			on_click_callback = callback(self, self, clbk_func, i),
 			text = text,
