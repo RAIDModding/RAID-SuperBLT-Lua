@@ -62,7 +62,8 @@ function BLTKeybindsMenu:Init(root)
 				x_offset = 10,
 				localize = false,
 				desc = bind:Description(),
-				localize_desc = false
+				localize_desc = false,
+				auto_select_on_hover = true,
 			})
 
 			last_mod = bind:ParentMod()
