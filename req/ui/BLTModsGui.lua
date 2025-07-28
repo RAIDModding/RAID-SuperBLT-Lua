@@ -482,7 +482,7 @@ function BLTModsGui:_layout_mod_details()
 		font_size = tweak_data.gui.font_sizes.paragraph,
 		name = "mod_special",
 		text = "",
-		--wrap = true,
+		wrap = true,
 		fit_text = true,
 		w = 432,
 	})
@@ -1046,7 +1046,7 @@ function BLTModsGui:refresh_mod_details(mod_data)
 			color = tweak_data.gui.colors.raid_red
 		end
 		self._mod_special:set_y(next_y)
-		self._mod_autoupdate:set_w(self._mod_details_panel:w())
+		self._mod_special:set_w(self._mod_details_panel:w())
 		self._mod_special:set_text(text)
 		self._mod_special:set_color(color)
 		next_y = self._mod_special:bottom() + padding
