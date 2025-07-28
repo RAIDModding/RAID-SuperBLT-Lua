@@ -682,38 +682,37 @@ function BLTMod:GetDeveloperInfo()
 	local prehooks = self:GetPreHooks() or {}
 	local persists = self:GetPersistScripts() or {}
 	local min_sblt_version = self:GetMinSBLTVer() or nil
-	local loc = managers.localization
 
-	append(loc:text("blt_devinfo_path") .. ":", self:GetPath())
-	append(loc:text("blt_devinfo_loadprio") .. ":", self:GetPriority())
+	append(managers.localization:text("blt_devinfo_path") .. ":", self:GetPath())
+	append(managers.localization:text("blt_devinfo_loadprio") .. ":", self:GetPriority())
 	if min_sblt_version then
-		append(loc:text("blt_mod_info_min_sblt_version") .. ":", min_sblt_version)
+		append(managers.localization:text("blt_mod_info_min_sblt_version") .. ":", min_sblt_version)
 	end
-	append(loc:text("blt_devinfo_disablable") .. ":", not self:IsUndisablable())
-	append(loc:text("blt_devinfo_allowsafemode") .. ":", not self:DisableSafeMode())
+	append(managers.localization:text("blt_devinfo_disablable") .. ":", not self:IsUndisablable())
+	append(managers.localization:text("blt_devinfo_allowsafemode") .. ":", not self:DisableSafeMode())
 
 	if table.size(hooks) < 1 then
-		append(loc:text("blt_devinfo_nohooks"))
+		append(managers.localization:text("blt_devinfo_nohooks"))
 	else
-		append(loc:text("blt_devinfo_hooks") .. ":")
+		append(managers.localization:text("blt_devinfo_hooks") .. ":")
 		for _, hook in ipairs(hooks) do
 			append("   ", tostring(hook))
 		end
 	end
 
 	if table.size(prehooks) < 1 then
-		append(loc:text("blt_devinfo_noprehooks"))
+		append(managers.localization:text("blt_devinfo_noprehooks"))
 	else
-		append(loc:text("blt_devinfo_prehooks") .. ":")
+		append(managers.localization:text("blt_devinfo_prehooks") .. ":")
 		for _, hook in ipairs(prehooks) do
 			append("   ", tostring(hook))
 		end
 	end
 
 	if table.size(persists) < 1 then
-		append(loc:text("blt_devinfo_nopersistentscripts"))
+		append(managers.localization:text("blt_devinfo_nopersistentscripts"))
 	else
-		append(loc:text("blt_devinfo_persistentscripts") .. ":")
+		append(managers.localization:text("blt_devinfo_persistentscripts") .. ":")
 		for _, script in ipairs(persists) do
 			append("   ", script.global, "->", script.file)
 		end

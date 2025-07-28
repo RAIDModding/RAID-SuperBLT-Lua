@@ -133,5 +133,12 @@
 	"blt_devinfo_prehooks" : "Pre-Hooks",
 	"blt_devinfo_noprehooks" : "No Pre-Hooks",
 	"blt_devinfo_persistentscripts" : "Persistent Scripts",
-	"blt_devinfo_nopersistentscripts" : "No Persistent Scripts"
+	"blt_devinfo_nopersistentscripts" : "No Persistent Scripts",
+
+	"btl_infobtn_enable_update" : "ENABLE AUTO UPDATES",
+	"btl_infobtn_disable_update" : "DISABLE AUTO UPDATES",
+	"btl_infobtn_checknow" : "CHECK NOW",
+	"btl_infobtn_enable_state" : "ENABLE",
+	"btl_infobtn_disable_state" : "DISABLE",
+	"btl_infobtn_contact" : "CONTACT"
 }

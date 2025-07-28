@@ -370,7 +370,7 @@ end
 
 function BLTModsGui:_layout_info_buttons()
 	self._info_buttons_panel = self._primary_paper_panel:panel({
-		h = 96,
+		h = 192,
 		layer = self._primary_paper_panel:layer() + 1,
 		name = "info_buttons_panel",
 		w = self._primary_paper_panel:w(),
@@ -382,7 +382,7 @@ function BLTModsGui:_layout_info_buttons()
 
 	self._info_buttons = {}
 
-	local function make_button(icon, clbk_func, text)
+	local function make_button(icon, clbk_func, text, row, num)
 		local icon_is_table = type(icon) == "table"
 		local i = #self._info_buttons + 1
 		local btn = self._info_buttons_panel:info_button({
@@ -402,27 +402,38 @@ function BLTModsGui:_layout_info_buttons()
 		btn._icon_w = 36
 		btn._icon_h = 36
 		btn:_fit_size()
-		btn:set_center_y(math.floor(self._info_buttons_panel:h() / 2))
+		btn._x = math.floor(num == 1 and 131 or 393)
+		btn._y = math.floor(row == 1 and 48 or 144)
+		btn:set_center_y(btn._y)
+		btn:set_center_x(btn._x)
 		table.insert(self._info_buttons, i, btn)
 		return btn
 	end
 
-	self._info_button_mod_toggle_enable = make_button(
-		{ texture = "guis/blt/lock" },
-		"_on_info_button_toggle_mod_enabled_clicked",
-		"TOGGLE")
-	self._info_button_mod_contact = make_button(
-		"ico_info",
-		"_on_info_button_contact_clicked",
-		"CONTACT")
 	self._info_button_mod_toggle_updates = make_button(
 		"ico_dlc",
 		"_on_info_button_toggle_auto_updates_clicked",
-		"TOGGLE AUTO UPD.")
+		self:translate("btl_infobtn_toggle_update"),
+		1,
+		1)
 	self._info_button_mod_update_check = make_button(
 		{ texture = "guis/blt/questionmark" },
 		"_on_info_button_check_for_updates_clicked",
-		"CHECK NOW")
+		self:translate("btl_infobtn_checknow"),
+		1,
+		2)
+	self._info_button_mod_toggle_enable = make_button(
+		{ texture = "guis/blt/lock" },
+		"_on_info_button_toggle_mod_enabled_clicked",
+		self:translate("btl_infobtn_toggle_state"),
+		2,
+		1)
+	self._info_button_mod_contact = make_button(
+		"ico_info",
+		"_on_info_button_contact_clicked",
+		self:translate("btl_infobtn_contact"),
+		2,
+		2)
 
 	self:_update_info_buttons(nil)
 end
@@ -865,14 +876,14 @@ function BLTModsGui:_update_info_buttons(mod)
 
 	if has_mod then
 		if not mod:IsUndisablable() then
-			self._info_button_mod_toggle_enable._text:set_text(mod:IsEnabled() and "DISABLE" or "ENABLE")
+			self._info_button_mod_toggle_enable._text:set_text(mod:IsEnabled() and self:translate("btl_infobtn_disable_state") or self:translate("btl_infobtn_enable_state"))
 			self._info_button_mod_toggle_enable:_fit_size()
 		end
 
 		if mod:HasUpdates() then
 			self._info_button_mod_toggle_updates._text:set_text((mod:HasUpdates() and mod:AreUpdatesEnabled()) and
-				"DIS. AUTO UPD." or
-				"EN. AUTO UPD.")
+				self:translate("btl_infobtn_disable_update") or
+				self:translate("btl_infobtn_enable_update"))
 			self._info_button_mod_toggle_updates:_fit_size()
 		end
 	end
@@ -890,7 +901,7 @@ function BLTModsGui:_update_info_buttons(mod)
 	for i, btn in ipairs(self._info_buttons) do
 		if enabled_buttons[btn] then
 			enabled_i = enabled_i + 1
-			btn:set_center_x(math.floor(self._info_buttons_panel:w() / (enabled_btn_count + 1) * enabled_i))
+			btn:set_center_x(btn._x)
 			btn._params.on_menu_move = btn._params.on_menu_move or {}
 			if last_info_btn then
 				btn._params.on_menu_move.left = "info_button_" .. tostring(last_info_btn)
