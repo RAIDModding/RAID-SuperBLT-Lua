@@ -952,6 +952,9 @@ function BLTModsGui:_on_mod_selected(mod_data)
 		end
 	end
 	self._selected_mod = nil -- temp disable info buttons
+	for _, btn in ipairs(self._info_buttons) do
+		btn:disable()
+	end
 
 	if self._secondary_paper_shown then
 		self._secondary_paper:stop()
