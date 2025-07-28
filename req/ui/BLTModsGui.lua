@@ -672,7 +672,7 @@ function BLTModsGui:_on_column_right()
 
 	if (self._selected_column == BLTModsGui.COLUMN_INFO) then
 		self:_unselect_left_column()
-		self._info_buttons[1]:set_selected(true)
+		self._info_buttons[3]:set_selected(true)
 	end
 
 	return true
