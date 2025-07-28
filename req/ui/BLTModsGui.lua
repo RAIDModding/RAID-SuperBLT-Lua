@@ -1050,30 +1050,25 @@ function BLTModsGui:refresh_mod_details(mod_data)
 	end
 
 	-- mod state
-	if mod then -- TODO: better condition?
-		local text = "Status: "
-		local color = tweak_data.gui.colors.raid_black
-		if mod:IsEnabled() then
-			text = text .. self:translate("blt_mod_state_enabled")
-		else
-			text = text .. self:translate("blt_mod_state_disabled")
-		end
-		if mod:WasEnabledAtStart() ~= mod:IsEnabled() then
-			text = text ..
-				" (" ..
-				self:translate(mod:WasEnabledAtStart() == false and "blt_mod_state_enabled_on_restart" or
-					"blt_mod_state_disabled_on_restart") .. ")"
-			color = tweak_data.gui.colors.raid_red
-		end
-		self._mod_special:set_y(next_y)
-		self._mod_special:set_w(self._mod_details_panel:w())
-		self._mod_special:set_text(text)
-		self._mod_special:set_color(color)
-		next_y = self._mod_special:bottom() + padding
-		self._mod_special:show()
+	local text = "Status: "
+	local color = tweak_data.gui.colors.raid_black
+	if mod:IsEnabled() then
+		text = text .. self:translate("blt_mod_state_enabled")
 	else
-		self._mod_special:hide()
+		text = text .. self:translate("blt_mod_state_disabled")
 	end
+	if mod:WasEnabledAtStart() ~= mod:IsEnabled() then
+		text = text ..
+			" (" ..
+			self:translate(mod:WasEnabledAtStart() == false and "blt_mod_state_enabled_on_restart" or
+				"blt_mod_state_disabled_on_restart") .. ")"
+		color = tweak_data.gui.colors.raid_red
+	end
+	self._mod_special:set_y(next_y)
+	self._mod_special:set_w(self._mod_details_panel:w())
+	self._mod_special:set_text(text)
+	self._mod_special:set_color(color)
+	next_y = self._mod_special:bottom() + padding
 
 	-- mod errors
 	if mod:Errors() then
@@ -1312,7 +1307,7 @@ function BLTModsGui:_additional_active_controls()
 	return res
 end
 
-function BLTModsGui:_refresh_mod_update_status(realign_mod_errors)
+function BLTModsGui:_refresh_mod_update_status(realign_following_labels)
 	if not (self._selected_mod and self._selected_mod:HasUpdates() and self._mod_autoupdate) then
 		return
 	end
@@ -1336,8 +1331,9 @@ function BLTModsGui:_refresh_mod_update_status(realign_mod_errors)
 	self._mod_autoupdate:set_text(text)
 	self._mod_autoupdate:set_color(color)
 
-	if self._mod_errors and realign_mod_errors then
-		self._mod_errors:set_y(self._mod_autoupdate:bottom() + padding)
+	if realign_following_labels then
+		self._mod_special:set_y(self._mod_autoupdate:bottom() + padding)
+		self._mod_errors:set_y(self._mod_special:bottom() + padding)
 	end
 end
 
