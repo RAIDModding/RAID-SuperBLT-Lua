@@ -135,10 +135,14 @@
 	"blt_devinfo_persistentscripts" : "Persistent Scripts",
 	"blt_devinfo_nopersistentscripts" : "No Persistent Scripts",
 
-	"btl_infobtn_enable_update" : "ENABLE AUTO UPDATES",
-	"btl_infobtn_disable_update" : "DISABLE AUTO UPDATES",
-	"btl_infobtn_checknow" : "CHECK NOW",
-	"btl_infobtn_enable_state" : "ENABLE",
-	"btl_infobtn_disable_state" : "DISABLE",
-	"btl_infobtn_contact" : "CONTACT"
+	"blt_infobtn_enable_update" : "ENABLE AUTO UPDATES",
+	"blt_infobtn_disable_update" : "DISABLE AUTO UPDATES",
+	"blt_infobtn_checknow" : "CHECK NOW",
+	"blt_infobtn_enable_state" : "ENABLE",
+	"blt_infobtn_disable_state" : "DISABLE",
+	"blt_infobtn_contact" : "CONTACT",
+
+	"blt_download_manager_header_1" : "Name",
+	"blt_download_manager_header_2" : "Progress",
+	"blt_download_manager_header_3" : "Controls"
 }

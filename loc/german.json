@@ -126,10 +126,10 @@
 	"blt_devinfo_persistentscripts" : "Beständige Skripte",
 	"blt_devinfo_nopersistentscripts" : "Keine beständigen Skripte",
 
-	"btl_infobtn_enable_update" : "AKTIVIERE AUTO-UPDATES",
-	"btl_infobtn_disable_update" : "DEAKTIVIERE AUTO-UPDATES",
-	"btl_infobtn_checknow" : "PRÜFE JETZT",
-	"btl_infobtn_enable_state" : "AKTIVIEREN",
-	"btl_infobtn_disable_state" : "DEAKTIVIEREN",
-	"btl_infobtn_contact" : "KONTAKT"
+	"blt_infobtn_enable_update" : "AKTIVIERE AUTO-UPDATES",
+	"blt_infobtn_disable_update" : "DEAKTIVIERE AUTO-UPDATES",
+	"blt_infobtn_checknow" : "PRÜFE JETZT",
+	"blt_infobtn_enable_state" : "AKTIVIEREN",
+	"blt_infobtn_disable_state" : "DEAKTIVIEREN",
+	"blt_infobtn_contact" : "KONTAKT"
 }

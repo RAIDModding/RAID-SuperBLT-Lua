@@ -443,26 +443,26 @@ function BLTModsGui:_layout_info_buttons()
 	self._info_button_mod_toggle_updates = make_button(
 		"ico_dlc",
 		"_on_info_button_toggle_auto_updates_clicked",
-		self:translate("btl_infobtn_toggle_update"),
+		self:translate("blt_infobtn_toggle_update"),
 		1,
 		1)
 	self._info_button_mod_update_check = make_button(
 		{ texture = "guis/blt/questionmark" },
 		"_on_info_button_check_for_updates_clicked",
-		self:translate("btl_infobtn_checknow"),
+		self:translate("blt_infobtn_checknow"),
 		1,
 		2)
 	self._info_button_mod_toggle_enable = make_button(
 		{ texture = "guis/blt/lock" },
 		"_on_info_button_toggle_mod_enabled_clicked",
-		self:translate("btl_infobtn_toggle_state"),
+		self:translate("blt_infobtn_toggle_state"),
 		2,
 		1,
 		true)
 	self._info_button_mod_contact = make_button(
 		"ico_info",
 		"_on_info_button_contact_clicked",
-		self:translate("btl_infobtn_contact"),
+		self:translate("blt_infobtn_contact"),
 		2,
 		2)
 
@@ -918,14 +918,14 @@ function BLTModsGui:_update_info_buttons(mod)
 
 	if has_mod then
 		if not mod:IsUndisablable() then
-			self._info_button_mod_toggle_enable._text:set_text(mod:IsEnabled() and self:translate("btl_infobtn_disable_state") or self:translate("btl_infobtn_enable_state"))
+			self._info_button_mod_toggle_enable._text:set_text(mod:IsEnabled() and self:translate("blt_infobtn_disable_state") or self:translate("blt_infobtn_enable_state"))
 			self._info_button_mod_toggle_enable:_fit_size()
 		end
 
 		if mod:HasUpdates() then
 			self._info_button_mod_toggle_updates._text:set_text((mod:HasUpdates() and mod:AreUpdatesEnabled()) and
-				self:translate("btl_infobtn_disable_update") or
-				self:translate("btl_infobtn_enable_update"))
+				self:translate("blt_infobtn_disable_update") or
+				self:translate("blt_infobtn_enable_update"))
 			self._info_button_mod_toggle_updates:_fit_size()
 		end
 	end
