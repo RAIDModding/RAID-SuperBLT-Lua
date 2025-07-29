@@ -1,4 +1,3 @@
-BLT:Require("req/ui/BLTUIControls")
 BLT:Require("req/raid/BLTGUIControlListItemMod")
 
 ---@class BLTModsGui

@@ -142,7 +142,7 @@
 	"blt_infobtn_disable_state" : "DISABLE",
 	"blt_infobtn_contact" : "CONTACT",
 
-	"blt_download_manager_header_1" : "Name",
-	"blt_download_manager_header_2" : "Progress",
-	"blt_download_manager_header_3" : "Controls"
+	"blt_download_manager_header_mod" : "Mod",
+	"blt_download_manager_header_download_status" : "Download Status",
+	"blt_download_manager_header_actions" : "Actions"
 }

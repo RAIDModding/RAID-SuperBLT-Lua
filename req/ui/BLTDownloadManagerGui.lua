@@ -1,3 +1,7 @@
+BLT:Require("req/raid/BLTGUIControlTableRow")
+BLT:Require("req/raid/BLTGUIControlTableCellImageText")
+BLT:Require("req/raid/BLTGuiControlTableCellDownloadStatus")
+
 ---@class BLTDownloadManagerGui
 ---@field new fun(self, ws, fullscreen_ws, node):BLTDownloadManagerGui
 ---@field translate fun(self, string, upper_case)
@@ -7,6 +11,9 @@
 ---@field _node table
 ---@field _root_panel table
 BLTDownloadManagerGui = BLTDownloadManagerGui or blt_class(RaidGuiBase)
+BLTDownloadManagerGui.TABLE_ROW_HEIGHT = 64
+BLTDownloadManagerGui.TABLE_MOD_ICON_SIZE = 48
+BLTDownloadManagerGui.FALLBACK_GUI_ICON = "grid_item_fg"
 
 local padding = 10
 
@@ -14,14 +21,15 @@ function BLTDownloadManagerGui:init(ws, fullscreen_ws, node)
 	BLTDownloadManagerGui.super.init(self, ws, fullscreen_ws, node, "blt_download_manager")
 	self._root_panel.ctrls = self._root_panel.ctrls or {}
 
-	self._listening_to = {}
-	for _, update in ipairs(BLT.Downloads:pending_downloads()) do
-		update.update:register_event_handler("blt_download_manager_gui_on_update_change", -- FIXME: dirty fix
-			callback(self, self, "_on_update_change"))
-		self._listening_to[update] = true
-	end
-	BLT.Downloads:register_event_handler(BLT.Downloads.EVENTS.added, "blt_download_manager_gui_on_update_added",
-		callback(self, self, "_on_update_added"))
+	-- TODO: redesign download events and fix this
+	-- self._listening_to = {}
+	-- for _, download in ipairs(BLT.Downloads:pending_downloads()) do
+	-- 	download.update:register_event_handler("blt_download_manager_gui_on_update_change", -- FIXME: dirty fix
+	-- 		callback(self, self, "_on_update_change"))
+	-- 	self._listening_to[download] = true
+	-- end
+	-- BLT.Downloads:register_event_handler(BLT.Downloads.EVENTS.added, "blt_download_manager_gui_on_update_added",
+	-- 	callback(self, self, "_on_update_added"))
 end
 
 function BLTDownloadManagerGui:_set_initial_data()
@@ -34,15 +42,15 @@ function BLTDownloadManagerGui:_layout()
 	local header_height = self._node.components.raid_menu_header._screen_subtitle_label:bottom()
 	local footer_height = self._node.components.raid_menu_footer._panel_h
 	local table_h = self._object:h() - header_height - footer_height
+	local actions_w = 250
 
 	-- relua button
 	self._relua_btn = self._object:long_secondary_button({
 		name = "blt_relua_btn",
 		text = self:translate("blt_download_relua_button", true),
 		on_click_callback = callback(self, self, "clbk_relua_button"),
-		y = math.floor(header_height * 0.75),
+		y = math.floor(header_height * 0.25),
 		x = math.floor(self._object:w() * 0.63),
-		visible = table.size(BLT.Downloads:pending_downloads()) > 0 and BLT:CheckUpdatesReluaPossible(BLT.Downloads:pending_downloads()) or false
 	})
 
 	-- download_all button
@@ -50,130 +58,172 @@ function BLTDownloadManagerGui:_layout()
 		name = "blt_download_all_btn",
 		text = self:translate("blt_download_all", true),
 		on_click_callback = callback(self, self, "clbk_download_all"),
-		y = math.floor(header_height * 0.75),
+		y = math.floor(header_height * 0.25),
 		x = math.floor(self._object:w() * 0.8),
-		visible = table.size(BLT.Downloads:pending_downloads()) > 0 or false
 	})
 
-	-- scroll
-	self._download_manager_scroll = self._object:scrollable_area({
+	-- download scroll/table
+	self._downloads_scroll = self._object:scrollable_area({
 		layer = self._object:layer() + 1,
 		name = "download_manager_scroll",
 		scroll_step = 35,
 		w = self._object:w(),
-		h = self._object:h() - table_h,
+		h = table_h,
 	})
-
-	-- table
-	-- TODO: layout dl table (inside scroll, with custom item/row class, bind to _data_source())
-	-- TODO: check callbacks
-	self._download_manager_table_params = {
-        loop_items = true,
-        name = "servers_table",
-        --on_selected_callback = callback(self, self, "bind_controller_inputs"),
-        scrollable_area_ref = self._download_manager_scroll,
-        table_params = {
-            columns = {
-                {
-                    align = "left",
-                    cell_class = RaidGUIControlTableCell,
-                    color = tweak_data.gui.colors.raid_grey,
-                    header_padding = 32,
-                    header_text = self:translate("blt_download_manager_header_1", true),
-                    highlight_color = tweak_data.gui.colors.raid_white,
-                    --on_cell_click_callback = callback(self, self, "on_cell_click_servers_table"),
-                    padding = 32,
-                    selected_color = tweak_data.gui.colors.raid_red,
-                    vertical = "center",
-                    w = 450,
-                },
-                {
-                    align = "left",
-                    cell_class = RaidGUIControlTableCell,
-                    color = tweak_data.gui.colors.raid_grey,
-                    header_padding = 0,
-                    header_text = self:translate("blt_download_manager_header_2", true),
-                    highlight_color = tweak_data.gui.colors.raid_white,
-                    --on_cell_click_callback = callback(self, self, "on_cell_click_servers_table"),
-                    padding = 0,
-                    selected_color = tweak_data.gui.colors.raid_red,
-                    vertical = "center",
-                    w = 450,
-                },
-                {
-                    align = "left",
-                    cell_class = RaidGUIControlTableCell,
-                    color = tweak_data.gui.colors.raid_grey,
-                    header_padding = 0,
-                    header_text = self:translate("blt_download_manager_header_3", true),
-                    highlight_color = tweak_data.gui.colors.raid_white,
-                    --on_cell_click_callback = callback(self, self, "on_cell_click_servers_table"),
-                    padding = 0,
-                    selected_color = tweak_data.gui.colors.raid_red,
-                    vertical = "center",
-                    w = 450,
-                }
-            },
-            data_source_callback = callback(self, self, "_data_source"),
-            header_params = {
-                font = tweak_data.gui.fonts.din_compressed,
-                font_size = tweak_data.gui.font_sizes.small,
-                header_height = 32,
-                text_color = tweak_data.gui.colors.raid_white,
-            },
-            row_params = {
-                color = tweak_data.gui.colors.raid_grey,
-                font = tweak_data.gui.fonts.din_compressed,
-                font_size = tweak_data.gui.font_sizes.extra_small,
-                height = MissionJoinGui.SERVER_TABLE_ROW_HEIGHT,
-                highlight_color = tweak_data.gui.colors.raid_white,
-                --on_row_click_callback = callback(self, self, "on_row_clicked_servers_table"),
-                --on_row_double_clicked_callback = callback(self, self, "on_row_double_clicked_servers_table"),
-                --on_row_select_callback = callback(self, self, "on_row_selected_servers_table"),
-                row_background_color = tweak_data.gui.colors.raid_white:with_alpha(0),
-                row_highlight_background_color = tweak_data.gui.colors.raid_white:with_alpha(0.1),
-                row_selected_background_color = tweak_data.gui.colors.raid_white:with_alpha(0.1),
-                selected_color = tweak_data.gui.colors.raid_red,
-                spacing = 0,
-            },
-        },
-        use_row_dividers = true,
-        use_selector_mark = true,
-        w = self._download_manager_scroll:w(),
+	self._downloads_table = self._downloads_scroll:get_panel():table({
+		loop_items = true,
+		name = "downloads_table",
+		on_selected_callback = callback(self, self, "bind_controller_inputs"),
+		scrollable_area_ref = self._downloads_scroll,
+		table_params = {
+			columns = {
+				-- mod icon/name cell
+				{
+					align = "left",
+					cell_class = BLTGUIControlTableCellImageText,
+					color = tweak_data.gui.colors.raid_grey,
+					header_padding = 32,
+					header_text = self:translate("blt_download_manager_header_mod", true),
+					highlight_color = tweak_data.gui.colors.raid_white,
+					padding = 32,
+					selected_color = tweak_data.gui.colors.raid_red,
+					vertical = "center",
+					w = (self._downloads_scroll:w() - actions_w) / 2,
+				},
+				-- download status cell
+				{
+					align = "left",
+					cell_class = BLTGuiControlTableCellDownloadStatus,
+					color = tweak_data.gui.colors.raid_grey,
+					header_padding = 0,
+					header_text = self:translate("blt_download_manager_header_download_status", true),
+					highlight_color = tweak_data.gui.colors.raid_white,
+					padding = 0,
+					selected_color = tweak_data.gui.colors.raid_red,
+					vertical = "center",
+					w = (self._downloads_scroll:w() - actions_w) / 2,
+				},
+				-- download actions cell
+				{
+					align = "left",
+					cell_class = RaidGUIControlTableCell, -- TODO: make custom Button cell: inherit RaidGUIControlTableCellButton and fix it (its not complete in vanilla)
+					color = tweak_data.gui.colors.raid_grey,
+					header_padding = 0,
+					header_text = self:translate("blt_download_manager_header_actions", true),
+					highlight_color = tweak_data.gui.colors.raid_white,
+					on_cell_click_callback = callback(self, self, "on_cell_click_downloads_table"),
+					padding = 0,
+					selected_color = tweak_data.gui.colors.raid_red,
+					vertical = "center",
+					w = actions_w,
+				}
+			},
+			data_source_callback = callback(self, self, "_data_source"),
+			header_params = {
+				font = tweak_data.gui.fonts.din_compressed,
+				font_size = tweak_data.gui.font_sizes.small,
+				header_height = 32,
+				text_color = tweak_data.gui.colors.raid_white,
+			},
+			row_params = {
+				row_class = BLTGUIControlTableRow,
+				color = tweak_data.gui.colors.raid_grey,
+				font = tweak_data.gui.fonts.din_compressed,
+				font_size = tweak_data.gui.font_sizes.extra_small,
+				height = BLTDownloadManagerGui.TABLE_ROW_HEIGHT,
+				highlight_color = tweak_data.gui.colors.raid_white,
+				row_background_color = tweak_data.gui.colors.raid_white:with_alpha(0),
+				row_highlight_background_color = tweak_data.gui.colors.raid_white:with_alpha(0.1),
+				row_selected_background_color = tweak_data.gui.colors.raid_white:with_alpha(0.1),
+				selected_color = tweak_data.gui.colors.raid_red,
+				spacing = 0,
+			},
+		},
+		use_row_dividers = true,
+		use_selector_mark = true,
+		w = self._downloads_scroll:w() - padding * 2,
 		y = header_height + padding,
 		x = padding
-    }
+	})
 
-	self._download_manager_table = self._download_manager_scroll:get_panel():table(self._download_manager_table_params)
+	self._downloads_scroll:setup_scroll_area()
+	self:update_buttons()
+end
 
-	self._download_manager_scroll:setup_scroll_area()
+function BLTDownloadManagerGui:update_buttons()
+	local pending_downloads = BLT.Downloads:pending_downloads()
+	local has_pending_downloads = (table.size(pending_downloads) > 0)
+
+	self._download_all_btn:set_visible(has_pending_downloads)
+	self._relua_btn:set_visible(has_pending_downloads and BLT:CheckUpdatesReluaPossible(pending_downloads))
+end
+
+function BLTDownloadManagerGui:bind_controller_inputs()
+	-- TODO
 end
 
 function BLTDownloadManagerGui:_data_source()
-	-- TODO: return initial update data for dl table
-	return {}
+	local result = {}
+	for _, download in ipairs(BLT.Downloads:pending_downloads()) do
+		local mod = download.update:GetParentMod()
+		table.insert(result, {
+			{
+				info = mod:GetName(),
+				text = mod:GetName(),
+				texture = mod:HasModImage() and mod:GetModImage() or
+					tweak_data.gui.icons[BLTDownloadManagerGui.FALLBACK_GUI_ICON].texture,
+				texture_rect = (not mod:HasModImage()) and
+					tweak_data.gui.icons[BLTDownloadManagerGui.FALLBACK_GUI_ICON].texture_rect or nil,
+				icon_w = BLTDownloadManagerGui.TABLE_MOD_ICON_SIZE,
+				icon_h = BLTDownloadManagerGui.TABLE_MOD_ICON_SIZE,
+				value = download,
+			},
+			{
+				info = "TODO: download status",
+				text = "TODO: download status",
+				value = download,
+				progress = 0,
+			},
+			{
+				info = "TODO: dl now btn",
+				text = "TODO: dl now btn",
+				value = download,
+			},
+		})
+	end
+	table.sort(result, function(a, b)
+		return a[1].info < b[1].info
+	end)
+	return result
 end
 
+function BLTDownloadManagerGui:on_cell_click_downloads_table(data)
+	-- TODO: update single mod of cell row
+end
+
+-- TODO: redesign download events and fix this
 function BLTDownloadManagerGui:_on_update_change(update, requires_update, error_reason)
-	-- TODO: update related list row in dl table
+	-- TODO: update related list row in dl table (find DownloadStatus cell and call set_text/set_progress on it)
 end
 
-function BLTDownloadManagerGui:_on_update_added(update)
-	update:register_event_handler("blt_download_manager_gui_on_update_change",
-		callback(self, self, "_on_update_change"))
-	self._listening_to[update] = true
+-- TODO: redesign download events and fix this
+function BLTDownloadManagerGui:_on_update_added(download)
+	-- download.update:register_event_handler("blt_download_manager_gui_on_update_change",
+	-- 	callback(self, self, "_on_update_change"))
+	-- self._listening_to[download] = true
 
-	-- TODO: refresh table to include newly added update
+	self._downloads_table:refresh_data()
 end
 
 function BLTDownloadManagerGui:close()
-	BLT.Downloads:remove_event_handler(BLT.Downloads.EVENTS.added, "blt_download_manager_gui_on_update_added")
-	for update, listening in pairs(self._listening_to) do
-		if update and listening then
-			update.update:remove_event_handler("blt_download_manager_gui_on_update_change") -- FIXME: dirty fix
-			self._listening_to[update] = nil
-		end
-	end
+	-- TODO: redesign download events and fix this
+	-- BLT.Downloads:remove_event_handler(BLT.Downloads.EVENTS.added, "blt_download_manager_gui_on_update_added")
+	-- for download, listening in pairs(self._listening_to) do
+	-- 	if download and listening then
+	-- 		download.update:remove_event_handler("blt_download_manager_gui_on_update_change") -- FIXME: dirty fix
+	-- 		self._listening_to[download] = nil
+	-- 	end
+	-- end
 
 	BLT.Downloads:flush_complete_downloads()
 

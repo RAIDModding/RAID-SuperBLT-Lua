@@ -205,7 +205,7 @@ function BLTMenu:BasicItemData(params, no_clone, typ)
 	end
 
 	if params.text then
-		params.text = (params.localize and managers.localization:to_upper_text(params.text) or params.upper and string.upper(params.text) or params.text)
+		params.text = (params.localize and self:translate(params.text, true) or params.upper and string.upper(params.text) or params.text)
 	else
 		params.text = ""
 	end
@@ -515,7 +515,7 @@ function BLTMenu:Tabs(params)
 			if tab.text then
 				local localize = tab.localize or (params.localize and tab.localize ~= false)
 				local upper = tab.upper or (params.upper and tab.upper ~= false)
-				tab.text = localize and managers.localization:to_upper_text(tab.text) or upper and string.upper(tab.text) or tab.text
+				tab.text = localize and self:translate(tab.text, true) or upper and string.upper(tab.text) or tab.text
 			end
 		end
 	end
