@@ -1,70 +1,63 @@
 ---@class BLTDownloadManagerGui
----@field new fun(self):BLTDownloadManagerGui
-BLTDownloadManagerGui = BLTDownloadManagerGui or blt_class(BLTCustomComponent)
-
--- Use the modified BLT back button
-BLTDownloadManagerGui._add_back_button = BLTDownloadManagerGui._add_custom_back_button
+---@field new fun(self, ws, fullscreen_ws, node):BLTDownloadManagerGui
+---@field translate fun(self, string, upper_case)
+---@field set_legend fun(self, legend)
+---@field set_controller_bindings fun(self, bindings, clear_old)
+---@field super table
+---@field _node table
+---@field _root_panel table
+BLTDownloadManagerGui = BLTDownloadManagerGui or blt_class(RaidGuiBase)
 
 local padding = 10
 
-function BLTDownloadManagerGui:setup()
-	self:make_into_listview("downloads_scroll", managers.localization:text("blt_download_manager"))
-	self._downloads_map = {}
+function BLTDownloadManagerGui:init(ws, fullscreen_ws, node)
+	BLTDownloadManagerGui.super.init(self, ws, fullscreen_ws, node, "blt_download_manager")
+	self._root_panel.ctrls = self._root_panel.ctrls or {}
 
-	-- Background
-	-- Added by make_into_listview
+	for _, update in ipairs(queued_updates or {}) do -- FIXME
+		update:register_event_handler("blt_mods_gui_on_update_change",
+			callback(self, self, "_on_update_change"))
+	end
+end
 
-	-- Back button
-	-- Automatically added by BLTCustomComponent
+function BLTDownloadManagerGui:_set_initial_data()
+	self._node.components.raid_menu_header:set_screen_name("blt_download_manager")
+end
 
-	-- Title
-	-- This has already been added, thanks to make_into_listview
+function BLTDownloadManagerGui:_layout()
+	self._object = self._root_panel:panel({}) -- our main panel
 
-	-- Download scroll panel
-	-- Again, this has already been added by make_into_listview
+	local header_height = self._node.components.raid_menu_header._screen_subtitle_label:bottom()
+	local footer_height = self._node.components.raid_menu_footer._panel_h
 
-	-- Add download items
-	local w, h = 80, 80
-	for i, download in ipairs(BLT.Downloads:pending_downloads()) do
-		local data = {
-			y = (h + padding) * (i - 1),
-			w = self._scroll:canvas():w(),
-			h = h,
-			update = download.update
-		}
-		local button = BLTDownloadControl:new(self._scroll:canvas(), data)
-		table.insert(self._buttons, button)
+	-- TODO: layout relua btn and link with clbk_relua_button()
 
-		self._downloads_map[download.update:GetId()] = button
+	-- TODO: layout dl all btn and link with clbk_download_all()
+
+	-- TODO: layout table headers (outside scroll)
+	-- TODO: layout scroll
+	local table_h = self._object:h() - header_height - footer_height
+	-- TODO: layout dl table (inside scroll, with custom item/row class, bind to _data_source())
+end
+
+function BLTDownloadManagerGui:_data_source()
+	-- TODO: return initial update data for dl table
+	return {}
+end
+
+function BLTDownloadManagerGui:_on_update_change(update, requires_update, error_reason)
+	-- TODO: update related list row in dl table
+end
+
+function BLTDownloadManagerGui:on_close()
+	for _, update in ipairs(queued_updates or {}) do -- FIXME
+		update:remove_event_handler("blt_mods_gui_on_update_change")
 	end
 
-	local num_downloads = table.size(BLT.Downloads:pending_downloads())
-	if num_downloads > 0 then
-		local button = BLTUIButton:new(self._scroll:canvas(), {
-			x = self._scroll:canvas():w() - w,
-			y = (h + padding) * num_downloads,
-			w = w,
-			h = h,
-			text = managers.localization:text("blt_download_all"),
-			center_text = true,
-			callback = callback(self, self, "clbk_download_all")
-		})
-		table.insert(self._buttons, button)
+	BLT.Downloads:flush_complete_downloads()
 
-		if BLT:CheckUpdatesReluaPossible(BLT.Downloads:pending_downloads()) then
-			-- relua btn
-			local relua_button = BLTUIButton:new(self._scroll:canvas(), {
-				x = self._scroll:canvas():w() - w * 2 - padding,
-				y = (h + padding) * num_downloads,
-				w = w,
-				h = h,
-				text = managers.localization:text("blt_download_relua_button"),
-				center_text = true,
-				callback = callback(self, self, "clbk_relua_button")
-			})
-			table.insert(self._buttons, relua_button)
-		end
-	end
+	self._root_panel:clear()
+	self._root_panel.ctrls = {}
 end
 
 function BLTDownloadManagerGui:clbk_download_all()
@@ -93,18 +86,75 @@ function BLTDownloadManagerGui:clbk_relua_button()
 		)
 	end
 end
---------------------------------------------------------------------------------
 
-function BLTDownloadManagerGui:update(t, dt)
-	for _, download in ipairs(BLT.Downloads:downloads()) do
-		local id = download.update:GetId()
-		local button = self._downloads_map[id]
-		if button then
-			button:update_download(download)
-		end
-	end
-end
+-- OLD CODE BELOW -- TODO?: something we need to rebuild?
 
-function BLTDownloadManagerGui:on_close()
-	BLT.Downloads:flush_complete_downloads()
-end
+-- function BLTDownloadManagerGui:setup()
+-- 	self:make_into_listview("downloads_scroll", managers.localization:text("blt_download_manager"))
+-- 	self._downloads_map = {}
+
+-- 	-- Background
+-- 	-- Added by make_into_listview
+
+-- 	-- Back button
+-- 	-- Automatically added by BLTCustomComponent
+
+-- 	-- Title
+-- 	-- This has already been added, thanks to make_into_listview
+
+-- 	-- Download scroll panel
+-- 	-- Again, this has already been added by make_into_listview
+
+-- 	-- Add download items
+-- 	local w, h = 80, 80
+-- 	for i, download in ipairs(BLT.Downloads:pending_downloads()) do
+-- 		local data = {
+-- 			y = (h + padding) * (i - 1),
+-- 			w = self._scroll:canvas():w(),
+-- 			h = h,
+-- 			update = download.update
+-- 		}
+-- 		local button = BLTDownloadControl:new(self._scroll:canvas(), data)
+-- 		table.insert(self._buttons, button)
+
+-- 		self._downloads_map[download.update:GetId()] = button
+-- 	end
+
+-- 	local num_downloads = table.size(BLT.Downloads:pending_downloads())
+-- 	if num_downloads > 0 then
+-- 		local button = BLTUIButton:new(self._scroll:canvas(), {
+-- 			x = self._scroll:canvas():w() - w,
+-- 			y = (h + padding) * num_downloads,
+-- 			w = w,
+-- 			h = h,
+-- 			text = managers.localization:text("blt_download_all"),
+-- 			center_text = true,
+-- 			callback = callback(self, self, "clbk_download_all")
+-- 		})
+-- 		table.insert(self._buttons, button)
+
+-- 		if BLT:CheckUpdatesReluaPossible(BLT.Downloads:pending_downloads()) then
+-- 			-- relua btn
+-- 			local relua_button = BLTUIButton:new(self._scroll:canvas(), {
+-- 				x = self._scroll:canvas():w() - w * 2 - padding,
+-- 				y = (h + padding) * num_downloads,
+-- 				w = w,
+-- 				h = h,
+-- 				text = managers.localization:text("blt_download_relua_button"),
+-- 				center_text = true,
+-- 				callback = callback(self, self, "clbk_relua_button")
+-- 			})
+-- 			table.insert(self._buttons, relua_button)
+-- 		end
+-- 	end
+-- end
+
+-- function BLTDownloadManagerGui:update(t, dt)
+-- 	for _, download in ipairs(BLT.Downloads:downloads()) do
+-- 		local id = download.update:GetId()
+-- 		local button = self._downloads_map[id]
+-- 		if button then
+-- 			button:update_download(download)
+-- 		end
+-- 	end
+-- end
