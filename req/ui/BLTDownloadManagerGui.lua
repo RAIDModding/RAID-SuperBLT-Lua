@@ -29,15 +29,40 @@ function BLTDownloadManagerGui:_layout()
 
 	local header_height = self._node.components.raid_menu_header._screen_subtitle_label:bottom()
 	local footer_height = self._node.components.raid_menu_footer._panel_h
+	local table_h = self._object:h() - header_height - footer_height
 
-	-- TODO: layout relua btn and link with clbk_relua_button()
+	-- relua button
+	self._relua_btn = self._object:long_secondary_button({
+		name = "blt_relua_btn",
+		text = self:translate("blt_download_relua_button", true),
+		on_click_callback = callback(self, self, "clbk_relua_button"),
+		y = math.floor(header_height * 0.75),
+		x = math.floor(self._object:w() * 0.63),
+		visible = table.size(BLT.Downloads:pending_downloads()) > 0 and BLT:CheckUpdatesReluaPossible(BLT.Downloads:pending_downloads()) or false
+	})
 
-	-- TODO: layout dl all btn and link with clbk_download_all()
+	-- download_all button
+	self._download_all_btn = self._object:long_secondary_button({
+		name = "blt_download_all_btn",
+		text = self:translate("blt_download_all", true),
+		on_click_callback = callback(self, self, "clbk_download_all"),
+		y = math.floor(header_height * 0.75),
+		x = math.floor(self._object:w() * 0.8),
+		visible = table.size(BLT.Downloads:pending_downloads()) > 0 or false
+	})
 
 	-- TODO: layout table headers (outside scroll)
-	-- TODO: layout scroll
-	local table_h = self._object:h() - header_height - footer_height
+	-- scroll
+	self._download_manager_scroll = self._object:scrollable_area({
+		layer = self._object:layer() + 1,
+		name = "download_manager_scroll",
+		scroll_step = 35,
+		w = self._object:w(),
+		h = self._object:h() - table_h,
+	})
 	-- TODO: layout dl table (inside scroll, with custom item/row class, bind to _data_source())
+
+	--self._download_manager_scroll:setup_scroll_area()
 end
 
 function BLTDownloadManagerGui:_data_source()
