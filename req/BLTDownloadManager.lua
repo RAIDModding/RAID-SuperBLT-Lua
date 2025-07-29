@@ -3,12 +3,21 @@
 BLTDownloadManager = BLTDownloadManager or blt_class(BLTModule)
 BLTDownloadManager.__type = "BLTDownloadManager"
 
+BLTDownloadManager.EVENTS = {
+	added = 'added',
+	remove = 'remove'
+}
+
 function BLTDownloadManager:init()
 	---@diagnostic disable-next-line: undefined-field
 	BLTDownloadManager.super.init(self)
 
 	self._pending_downloads = {}
 	self._downloads = {}
+	self._event_handlers = {}
+	for event in pairs(BLTDownloadManager.EVENTS) do
+		self._event_handlers[event] = {}
+	end
 end
 
 --------------------------------------------------------------------------------
@@ -45,7 +54,9 @@ function BLTDownloadManager:add_pending_download(update)
 	-- Check if the download already exists
 	for _, download in ipairs(self._pending_downloads) do
 		if download.update:GetId() == update:GetId() then
-			BLT:Log(LogLevel.INFO, string.format("[Downloads] Pending download already exists for %s (%s)", update:GetName(), update:GetParentMod():GetName()))
+			BLT:Log(LogLevel.INFO,
+				string.format("[Downloads] Pending download already exists for %s (%s)", update:GetName(),
+					update:GetParentMod():GetName()))
 			return false
 		end
 	end
@@ -55,7 +66,12 @@ function BLTDownloadManager:add_pending_download(update)
 		update = update
 	}
 	table.insert(self._pending_downloads, download)
-	BLT:Log(LogLevel.INFO, string.format("[Downloads] Added pending download for %s (%s)", update:GetName(), update:GetParentMod():GetName()))
+
+	-- trigger added event
+	self:call_event_handlers(BLTDownloadManager.EVENTS.added, download.update)
+
+	BLT:Log(LogLevel.INFO,
+		string.format("[Downloads] Added pending download for %s (%s)", update:GetName(), update:GetParentMod():GetName()))
 
 	return true
 end
@@ -95,7 +111,9 @@ end
 function BLTDownloadManager:start_download(update)
 	-- Check if the download already going
 	if self:get_download(update) then
-		BLT:Log(LogLevel.INFO, string.format("[Downloads] Download already exists for %s (%s)", update:GetName(), update:GetParentMod():GetName()))
+		BLT:Log(LogLevel.INFO,
+			string.format("[Downloads] Download already exists for %s (%s)", update:GetName(),
+				update:GetParentMod():GetName()))
 		return false
 	end
 
@@ -110,7 +128,7 @@ function BLTDownloadManager:start_download(update)
 	local moddir = Application:nice_path(update:GetInstallDirectory() .. "/" .. update:GetInstallFolder(), true)
 	if file.DirectoryExists(moddir .. ".hg") or file.DirectoryExists(moddir .. ".git") then
 		QuickMenu:new(
-			"Update Blocked", -- TODO i18n
+			"Update Blocked",                                                  -- TODO i18n
 			"Mercurial or Git version control are in use for this mod, update blocked", -- TODO i18n
 			nil,
 			true
@@ -120,7 +138,8 @@ function BLTDownloadManager:start_download(update)
 
 	-- Start the download
 	local url = update:GetDownloadURL()
-	local http_id = dohttpreq(url, callback(self, self, "clbk_download_finished"), callback(self, self, "clbk_download_progress"))
+	local http_id = dohttpreq(url, callback(self, self, "clbk_download_finished"),
+		callback(self, self, "clbk_download_progress"))
 
 	-- Cache the download for access
 	local download = {
@@ -161,9 +180,11 @@ function BLTDownloadManager:clbk_download_finished(data, http_id, request_info)
 			end
 		end
 
-		local file_path = Application:nice_path(BLTModManager.Constants:DownloadsDirectory() .. tostring(download.update:GetId()) .. ".zip")
+		local file_path = Application:nice_path(BLTModManager.Constants:DownloadsDirectory() ..
+			tostring(download.update:GetId()) .. ".zip")
 		local temp_install_dir = Application:nice_path(BLTModManager.Constants:DownloadsDirectory() .. tostring(http_id))
-		local install_path = Application:nice_path(download.update:GetInstallDirectory() .. download.update:GetInstallFolder())
+		local install_path = Application:nice_path(download.update:GetInstallDirectory() ..
+			download.update:GetInstallFolder())
 
 		local cleanup = function(full)
 			io.remove_directory_and_files(temp_install_dir)
@@ -220,15 +241,19 @@ function BLTDownloadManager:clbk_download_finished(data, http_id, request_info)
 		else
 			local definition_file = nil
 			local is_pure_xml = false
-			local mod_txt = extract_path .. "/mod.txt" -- Check the downloaded mod.txt (if it exists) to know we are downloading a valid mod with valid version.
-			local supermod_xml = extract_path .. "/supermod.xml" -- Check the downloaded supermod.xml (if it exists) to know we are downloading a valid mod with valid version.
+			local mod_txt = extract_path ..
+				"/mod.txt" -- Check the downloaded mod.txt (if it exists) to know we are downloading a valid mod with valid version.
+			local supermod_xml = extract_path ..
+				"/supermod.xml" -- Check the downloaded supermod.xml (if it exists) to know we are downloading a valid mod with valid version.
 			if file.FileExists(mod_txt) then
 				definition_file = mod_txt
 			elseif file.FileExists(supermod_xml) then
 				definition_file = supermod_xml
 				is_pure_xml = true
 			else
-				BLT:Log(LogLevel.ERROR, string.format("[Downloads] Could not read mod data of '%s' (no mod.txt/supermod.xml found)", download_name))
+				BLT:Log(LogLevel.ERROR,
+					string.format("[Downloads] Could not read mod data of '%s' (no mod.txt/supermod.xml found)",
+						download_name))
 			end
 
 			if definition_file then
@@ -241,19 +266,24 @@ function BLTDownloadManager:clbk_download_finished(data, http_id, request_info)
 						local version = is_pure_xml and mod_data.params.version or mod_data.version
 						local server_version = download.update:GetServerVersion()
 						-- Server version may be nil for simple URL based dependencies
-					if server_version == nil or BLT:CompareVersions(version, server_version) == 0 then
+						if server_version == nil or BLT:CompareVersions(version, server_version) == 0 then
 							passed_check = true
 						else -- Versions don't match
-							BLT:Log(LogLevel.ERROR, string.format("[Downloads] Failed to compare downloaded version to announced '%s'", download_name))
+							BLT:Log(LogLevel.ERROR,
+								string.format("[Downloads] Failed to compare downloaded version to announced '%s'",
+									download_name))
 							BLT:Log(LogLevel.ERROR, "[Downloads] Server: ", server_version)
 							BLT:Log(LogLevel.ERROR, "[Downloads]  Local: ", version)
 						end
-
 					else
-						BLT:Log(LogLevel.ERROR, string.format("[Downloads] Could not read mod data of '%s' (invalid mod %s)", download_name, is_pure_xml and "xml" or "json"))
+						BLT:Log(LogLevel.ERROR,
+							string.format("[Downloads] Could not read mod data of '%s' (invalid mod %s)", download_name,
+								is_pure_xml and "xml" or "json"))
 					end
 				else
-					BLT:Log(LogLevel.ERROR, string.format("[Downloads] Could not read mod data of '%s' (%s unreadable)", download_name, is_pure_xml and "supermod.xml" or "mod.txt"))
+					BLT:Log(LogLevel.ERROR,
+						string.format("[Downloads] Could not read mod data of '%s' (%s unreadable)", download_name,
+							is_pure_xml and "supermod.xml" or "mod.txt"))
 				end
 			end
 		end
@@ -269,7 +299,8 @@ function BLTDownloadManager:clbk_download_finished(data, http_id, request_info)
 			if file.DirectoryExists(install_path) then
 				BLT:Log(LogLevel.INFO, string.format("[Downloads] Removing old installation of '%s'...", download_name))
 				if not io.remove_directory_and_files(install_path) then
-					BLT:Log(LogLevel.ERROR, string.format("[Downloads] Failed to delete old installation of '%s'", download_name))
+					BLT:Log(LogLevel.ERROR,
+						string.format("[Downloads] Failed to delete old installation of '%s'", download_name))
 					download.state = "failed"
 					cleanup()
 					return
@@ -281,7 +312,8 @@ function BLTDownloadManager:clbk_download_finished(data, http_id, request_info)
 		-- Move the temporary installation
 		local move_success = file.MoveDirectory(extract_path, install_path)
 		if not move_success then
-			BLT:Log(LogLevel.ERROR, string.format("[Downloads] Failed to move installation directory of '%s'", download_name))
+			BLT:Log(LogLevel.ERROR,
+				string.format("[Downloads] Failed to move installation directory of '%s'", download_name))
 			download.state = "failed"
 			cleanup()
 			return
@@ -312,9 +344,28 @@ function BLTDownloadManager:flush_complete_downloads()
 			-- Remove download
 			table.remove(self._downloads, i)
 
+			-- trigger remove event
+			self:call_event_handlers(BLTDownloadManager.EVENTS.remove, download.update)
+
 			-- Remove the pending download
 			local _, idx = self:get_pending_download(download.update)
 			table.remove(self._pending_downloads, idx)
+		end
+	end
+end
+
+function BLTDownloadManager:register_event_handler(event, id, callback)
+	self._event_handlers[event][id] = callback
+end
+
+function BLTDownloadManager:remove_event_handler(event, id)
+	self._event_handlers[event][id] = nil
+end
+
+function BLTDownloadManager:call_event_handlers(event, update)
+	for _, callback in pairs(self._event_handlers[event]) do
+		if callback then
+			callback(update)
 		end
 	end
 end

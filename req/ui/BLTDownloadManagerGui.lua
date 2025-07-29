@@ -14,10 +14,14 @@ function BLTDownloadManagerGui:init(ws, fullscreen_ws, node)
 	BLTDownloadManagerGui.super.init(self, ws, fullscreen_ws, node, "blt_download_manager")
 	self._root_panel.ctrls = self._root_panel.ctrls or {}
 
+	self._listening_to = {}
 	for _, update in ipairs(BLT.Downloads:pending_downloads()) do
 		update:register_event_handler("blt_download_manager_gui_on_update_change",
 			callback(self, self, "_on_update_change"))
+		self._listening_to[update] = true
 	end
+	BLT.Downloads:register_event_handler(BLT.Downloads.EVENTS.added, "blt_download_manager_gui_on_update_added",
+		callback(self, self, "_on_update_added"))
 end
 
 function BLTDownloadManagerGui:_set_initial_data()
@@ -74,9 +78,21 @@ function BLTDownloadManagerGui:_on_update_change(update, requires_update, error_
 	-- TODO: update related list row in dl table
 end
 
+function BLTDownloadManagerGui:_on_update_added(update)
+	update:register_event_handler("blt_download_manager_gui_on_update_change",
+		callback(self, self, "_on_update_change"))
+	self._listening_to[update] = true
+
+	-- TODO: refresh table to include newly added update
+end
+
 function BLTDownloadManagerGui:close()
-	for _, update in ipairs(BLT.Downloads:pending_downloads()) do
-		update:remove_event_handler("blt_download_manager_gui_on_update_change")
+	BLT.Downloads:remove_event_handler(BLT.Downloads.EVENTS.added, "blt_download_manager_gui_on_update_added")
+	for update, listening in pairs(self._listening_to) do
+		if update and listening then
+			update:remove_event_handler("blt_download_manager_gui_on_update_change")
+			self._listening_to[update] = nil
+		end
 	end
 
 	BLT.Downloads:flush_complete_downloads()
