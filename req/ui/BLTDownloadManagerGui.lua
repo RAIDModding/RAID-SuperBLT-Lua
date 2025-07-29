@@ -14,8 +14,8 @@ function BLTDownloadManagerGui:init(ws, fullscreen_ws, node)
 	BLTDownloadManagerGui.super.init(self, ws, fullscreen_ws, node, "blt_download_manager")
 	self._root_panel.ctrls = self._root_panel.ctrls or {}
 
-	for _, update in ipairs(queued_updates or {}) do -- FIXME
-		update:register_event_handler("blt_mods_gui_on_update_change",
+	for _, update in ipairs(BLT.Downloads:pending_downloads()) do
+		update:register_event_handler("blt_download_manager_gui_on_update_change",
 			callback(self, self, "_on_update_change"))
 	end
 end
@@ -49,9 +49,9 @@ function BLTDownloadManagerGui:_on_update_change(update, requires_update, error_
 	-- TODO: update related list row in dl table
 end
 
-function BLTDownloadManagerGui:on_close()
-	for _, update in ipairs(queued_updates or {}) do -- FIXME
-		update:remove_event_handler("blt_mods_gui_on_update_change")
+function BLTDownloadManagerGui:close()
+	for _, update in ipairs(BLT.Downloads:pending_downloads()) do
+		update:remove_event_handler("blt_download_manager_gui_on_update_change")
 	end
 
 	BLT.Downloads:flush_complete_downloads()
