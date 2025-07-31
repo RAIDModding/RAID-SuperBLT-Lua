@@ -1,3 +1,5 @@
+require("lib/managers/menu/raid_menu/controls/raidguicontrol")
+
 BLTGUIControlTableCellImageText = BLTGUIControlTableCellImageText or class(RaidGUIControl)
 BLTGUIControlTableCellImageText.FONT = tweak_data.gui.fonts.din_compressed
 BLTGUIControlTableCellImageText.FONT_SIZE = tweak_data.gui.font_sizes.small

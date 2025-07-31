@@ -1,6 +1,11 @@
+require("lib/managers/menu/raid_menu/controls/raidguicontrol")
+require("lib/managers/menu/raid_menu/controls/raidguicontrollabel")
+require("lib/managers/menu/raid_menu/controls/raidguicontroltablecell")
+
 BLT:Require("req/raid/BLTGUIControlTableRow")
-BLT:Require("req/raid/BLTGUIControlTableCellImageText")
+BLT:Require("req/raid/BLTGUIControlTableCellImage")
 BLT:Require("req/raid/BLTGuiControlTableCellDownloadStatus")
+BLT:Require("req/raid/BLTGUIControlTableCellButton")
 
 ---@class BLTDownloadManagerGui
 ---@field new fun(self, ws, fullscreen_ws, node):BLTDownloadManagerGui
@@ -42,6 +47,7 @@ function BLTDownloadManagerGui:_layout()
 	local header_height = self._node.components.raid_menu_header._screen_subtitle_label:bottom()
 	local footer_height = self._node.components.raid_menu_footer._panel_h
 	local table_h = self._object:h() - header_height - footer_height
+	local icon_w = BLTDownloadManagerGui.TABLE_ROW_HEIGHT
 	local actions_w = 250
 
 	-- relua button
@@ -77,18 +83,31 @@ function BLTDownloadManagerGui:_layout()
 		scrollable_area_ref = self._downloads_scroll,
 		table_params = {
 			columns = {
-				-- mod icon/name cell
+				-- mod icon cell
 				{
 					align = "left",
-					cell_class = BLTGUIControlTableCellImageText,
+					cell_class = BLTGUIControlTableCellImage,
 					color = tweak_data.gui.colors.raid_grey,
 					header_padding = 32,
-					header_text = self:translate("blt_download_manager_header_mod", true),
+					header_text = " ", -- empty header
 					highlight_color = tweak_data.gui.colors.raid_white,
 					padding = 32,
 					selected_color = tweak_data.gui.colors.raid_red,
 					vertical = "center",
-					w = (self._downloads_scroll:w() - actions_w) / 2,
+					w = icon_w,
+				},
+				-- mod name cell
+				{
+					align = "left",
+					cell_class = RaidGUIControlTableCell,
+					color = tweak_data.gui.colors.raid_grey,
+					header_padding = -32,
+					header_text = self:translate("blt_download_manager_header_mod", true),
+					highlight_color = tweak_data.gui.colors.raid_white,
+					padding = icon_w,
+					selected_color = tweak_data.gui.colors.raid_red,
+					vertical = "center",
+					w = (self._downloads_scroll:w() - icon_w - actions_w) / 2,
 				},
 				-- download status cell
 				{
@@ -101,7 +120,7 @@ function BLTDownloadManagerGui:_layout()
 					padding = 0,
 					selected_color = tweak_data.gui.colors.raid_red,
 					vertical = "center",
-					w = (self._downloads_scroll:w() - actions_w) / 2,
+					w = (self._downloads_scroll:w() - icon_w - actions_w) / 2,
 				},
 				-- download actions cell
 				{
@@ -159,7 +178,36 @@ function BLTDownloadManagerGui:update_buttons()
 end
 
 function BLTDownloadManagerGui:bind_controller_inputs()
-	-- TODO
+	-- TODO?
+	local bindings = {
+		-- {
+		-- 	callback = callback(self, self, "_on_refresh"),
+		-- 	key = Idstring("menu_controller_face_top"),
+		-- },
+		-- {
+		-- 	callback = callback(self, self, "_on_filter"),
+		-- 	key = Idstring("menu_controller_face_left"),
+		-- },
+	}
+
+	self:set_controller_bindings(bindings, true)
+
+	local legend = {
+		controller = {
+			"menu_legend_back",
+			-- "menu_legend_mission_join_refresh",
+			-- "menu_legend_mission_join_filter",
+			-- "menu_legend_mission_join_join",
+		},
+		keyboard = {
+			{
+				callback = callback(self, self, "_on_legend_pc_back", nil),
+				key = "footer_back",
+			},
+		},
+	}
+
+	self:set_legend(legend)
 end
 
 function BLTDownloadManagerGui:_data_source()
@@ -170,12 +218,18 @@ function BLTDownloadManagerGui:_data_source()
 			{
 				info = mod:GetName(),
 				text = mod:GetName(),
-				texture = mod:HasModImage() and mod:GetModImage() or
-					tweak_data.gui.icons[BLTDownloadManagerGui.FALLBACK_GUI_ICON].texture,
-				texture_rect = (not mod:HasModImage()) and
-					tweak_data.gui.icons[BLTDownloadManagerGui.FALLBACK_GUI_ICON].texture_rect or nil,
-				icon_w = BLTDownloadManagerGui.TABLE_MOD_ICON_SIZE,
-				icon_h = BLTDownloadManagerGui.TABLE_MOD_ICON_SIZE,
+				w = BLTDownloadManagerGui.TABLE_MOD_ICON_SIZE,
+				h = BLTDownloadManagerGui.TABLE_MOD_ICON_SIZE,
+				value = {
+					texture = mod:HasModImage() and mod:GetModImage() or
+						tweak_data.gui.icons[BLTDownloadManagerGui.FALLBACK_GUI_ICON].texture,
+					texture_rect = (not mod:HasModImage()) and
+						tweak_data.gui.icons[BLTDownloadManagerGui.FALLBACK_GUI_ICON].texture_rect or nil,
+				},
+			},
+			{
+				info = mod:GetName(),
+				text = mod:GetName(),
 				value = download,
 			},
 			{
