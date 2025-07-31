@@ -4,7 +4,7 @@ require("lib/managers/menu/raid_menu/controls/raidguicontroltablecellimage")
 
 BLTGUIControlTableCellImage = BLTGUIControlTableCellImage or blt_class(RaidGUIControlTableCellImage)
 
-function BLTGUIControlTableCellImage:init(parent, params, ...)
+function BLTGUIControlTableCellImage:init(parent, params, cell_data, table_params)
 	if params.value and params.value.texture and not params.texture then
 		params.texture = params.value.texture
 	end
@@ -27,14 +27,14 @@ function BLTGUIControlTableCellImage:highlight_on()
 end
 
 function BLTGUIControlTableCellImage:highlight_off()
-	-- if self._table_params and self._table_params.row_params and self._table_params.row_params.color and self._table_params.row_params.selected_color then
-	-- 	self:set_color(self._table_params.row_params.selected_color)
+	-- if self._table_params and self._table_params.row_params and self._table_params.row_params.color and self._table_params.row_params.highlight_color then
+	-- 	self:set_color(self._table_params.row_params.highlight_color)
 	-- end
 end
 
 function BLTGUIControlTableCellImage:select_on()
 	-- if self._params.selected_color and self._params.color then
-	-- 	self:set_color(tweak_data.gui.colors.raid_red)
+	-- 	self:set_color(self._params.selected_color)
 	-- end
 end
 

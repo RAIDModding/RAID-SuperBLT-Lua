@@ -30,6 +30,7 @@ function BLTGuiControlTableCellDownloadStatus:init(parent, params, cell_data, ta
 		font = params.font,
 		font_size = params.font_size,
 		fit_text = true,
+		color = self._table_params.row_params.highlight_color,
 	})
 	self._text:set_center_y(params.height / 2)
 
@@ -48,19 +49,19 @@ end
 
 function BLTGuiControlTableCellDownloadStatus:highlight_on()
 	if self._text and self._table_params and self._table_params.row_params and self._table_params.row_params.color and self._table_params.row_params.highlight_color then
-		self._text:set_color(tweak_data.gui.colors.raid_table_cell_highlight_on)
+		self._text:set_color(self._table_params.row_params.highlight_color)
 	end
 end
 
 function BLTGuiControlTableCellDownloadStatus:highlight_off()
 	if self._text and self._table_params and self._table_params.row_params and self._table_params.row_params.color and self._table_params.row_params.highlight_color then
-		self._text:set_color(tweak_data.gui.colors.raid_table_cell_highlight_off)
+		self._text:set_color(self._table_params.row_params.highlight_color)
 	end
 end
 
 function BLTGuiControlTableCellDownloadStatus:select_on()
 	if self._text and self._params.selected_color and self._params.color then
-		self._text:set_color(tweak_data.gui.colors.raid_red)
+		self._text:set_color(self._params.selected_color)
 	end
 end
 
