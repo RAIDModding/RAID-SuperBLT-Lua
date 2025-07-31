@@ -72,6 +72,7 @@
         <group script_path="lua/raid/">
             <post hook_id="lib/managers/menu/raid_menu/controls/raidguicontrolkeybind" :script_path="RaidGUIControlKeyBind.lua"/>
             <post hook_id="lib/setups/setup" :script_path="AddCallOnNextUpdate.lua"/>
+            <post hook_id="lib/managers/menu/raid_menu/controls/raidguicontrol" :script_path="RaidGUIControl.lua"/>
             <post hook_id="lib/managers/menu/raid_menu/controls/raidguipanel" :script_path="RaidGUIPanel.lua"/>
         </group>
         <group script_path="req/raid/">
