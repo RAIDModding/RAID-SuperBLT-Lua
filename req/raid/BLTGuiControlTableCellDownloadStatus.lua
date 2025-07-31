@@ -14,16 +14,15 @@ function BLTGuiControlTableCellDownloadStatus:init(parent, params, cell_data, ta
 	}
 
 	self._object = self._panel:panel({
-		w = params.w - params.x,
+		w = params.w,
 		h = params.height,
 		layer = params.layer,
 		x = params.x,
 		y = params.y,
 	})
 
-	-- FIXME: alignment/sizing
 	self._text = self._object:label({
-		w = params.w - params.x,
+		w = params.w,
 		h = params.height,
 		layer = params.layer + 1,
 		x = 0,
@@ -34,13 +33,12 @@ function BLTGuiControlTableCellDownloadStatus:init(parent, params, cell_data, ta
 	})
 	self._text:set_center_y(params.height / 2)
 
-	-- FIXME: alignment/sizing
 	self._progress = self._object:progress_bar({
-		w = params.w - params.x,
+		w = params.w,
 		h = params.height,
 		layer = params.layer + 1,
 		x = 0,
-		bar_width = params.w - params.x,
+		bar_width = params.w,
 		border_width = 1,
 		color = Color.white,
 	})
