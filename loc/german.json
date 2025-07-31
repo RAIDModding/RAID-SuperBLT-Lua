@@ -73,7 +73,6 @@
 	"blt_download_verifying" : "Überprüfen...",
 	"blt_download_failed" : "Fehlgeschlagen! Erneut versuchen?",
 	"blt_download_done" : "Erledigt!",
-	"blt_download_dependency" : "$dependency, erforderlich für $mod",
 	"blt_download_all" : "Alle aktualisieren",
 	"blt_download_relua_button" : "Spiel neuladen",
 	"blt_download_relua_title" : "Willst du das Spiel neuladen?",

@@ -214,10 +214,17 @@ function BLTDownloadManagerGui:_data_source()
 	local result = {}
 	for _, download in ipairs(BLT.Downloads:pending_downloads()) do
 		local mod = download.update:GetParentMod()
+
+		local mod_name = mod:GetName()
+		local download_name = download.update:GetName() or mod_name
+		if mod_name ~= download_name then
+			download_name = download_name .. " (" .. mod_name .. ")"
+		end
+
 		table.insert(result, {
 			{
-				info = mod:GetName(),
-				text = mod:GetName(),
+				info = mod_name,
+				text = download_name,
 				w = BLTDownloadManagerGui.TABLE_MOD_ICON_SIZE,
 				h = BLTDownloadManagerGui.TABLE_MOD_ICON_SIZE,
 				value = {
@@ -228,8 +235,8 @@ function BLTDownloadManagerGui:_data_source()
 				},
 			},
 			{
-				info = mod:GetName(),
-				text = mod:GetName(),
+				info = mod_name,
+				text = download_name,
 				value = download,
 			},
 			{

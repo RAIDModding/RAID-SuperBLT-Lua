@@ -68,7 +68,6 @@
 	"blt_download_verifying" : "正在验证...",
 	"blt_download_failed" : "下载失败！是否重试？",
 	"blt_download_done" : "完成！",
-	"blt_download_dependency" : "$dependency 模组依赖 $mod 模组。",
 	"blt_download_all" : "全部更新",
 
 	"blt_checking_updates" : "正在检查更新",

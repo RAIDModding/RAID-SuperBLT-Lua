@@ -68,7 +68,6 @@
 	"blt_download_verifying" : "Vérification...",
 	"blt_download_failed" : "Échoué! Réessayer?",
 	"blt_download_done" : "Terminé!",
-	"blt_download_dependency" : "$dependency, requis par $mod",
 	"blt_download_all" : "Tout mettre à jour",
 
 	"blt_checking_updates" : "Vérification des mises à jour",
