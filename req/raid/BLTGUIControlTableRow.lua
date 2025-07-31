@@ -55,3 +55,23 @@ function BLTGUIControlTableRow:init(parent, params, row_data, table_params)
 		x = x + column_data.w
 	end
 end
+
+function BLTGUIControlTableRow:mouse_released(o, button, x, y)
+	-- vanilla fix: actually pass params
+	return self:on_mouse_released(o, button, x, y)
+end
+
+function BLTGUIControlTableRow:on_mouse_released(o, button, x, y)
+	if self._params.on_row_click_callback then
+		self._params.on_row_click_callback(self.row_data, self._params.row_index)
+	end
+
+	-- vanilla fix: actually pass mouse_released event to button cells
+	for _, cell in ipairs(self.cells) do
+		if cell:inside(x, y) and cell.mouse_released then
+			cell:mouse_released(o, button, x, y)
+		end
+	end
+
+	return true
+end

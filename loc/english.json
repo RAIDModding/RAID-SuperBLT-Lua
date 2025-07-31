@@ -69,6 +69,7 @@
 	"blt_update_dll_text" : "An update is available to the BLT DLL, you will need to update this yourself by downloading and installing it again from the website.\n\nPlease update ASAP as this is a critical update which may fix crashes with your game.",
 	"blt_update_dll_goto_website" : "Go to Website",
 	"blt_update_later" : "Update Later",
+	"blt_update_now" : "Update Now",
 	
 	"blt_download_manager" : "Download Manager",
 	"blt_downloads_available_sin" : "$COUNT update available.",

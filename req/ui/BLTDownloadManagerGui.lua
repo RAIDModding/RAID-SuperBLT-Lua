@@ -107,7 +107,7 @@ function BLTDownloadManagerGui:_layout()
 					padding = icon_w,
 					selected_color = tweak_data.gui.colors.raid_red,
 					vertical = "center",
-					w = (self._downloads_scroll:w() - icon_w - actions_w) / 2,
+					w = (self._downloads_scroll:w() - icon_w - actions_w * 2) / 2,
 				},
 				-- download status cell
 				{
@@ -120,17 +120,31 @@ function BLTDownloadManagerGui:_layout()
 					padding = 0,
 					selected_color = tweak_data.gui.colors.raid_red,
 					vertical = "center",
-					w = (self._downloads_scroll:w() - icon_w - actions_w) / 2,
+					w = (self._downloads_scroll:w() - icon_w - actions_w * 2) / 2,
 				},
-				-- download actions cell
+				-- changelog cell
 				{
 					align = "left",
-					cell_class = RaidGUIControlTableCell, -- TODO: make custom Button cell: inherit RaidGUIControlTableCellButton and fix it (its not complete in vanilla)
+					cell_class = BLTGUIControlTableCellButton,
 					color = tweak_data.gui.colors.raid_grey,
 					header_padding = 0,
-					header_text = self:translate("blt_download_manager_header_actions", true),
+					header_text = self:translate("blt_download_manager_header_changes", true),
 					highlight_color = tweak_data.gui.colors.raid_white,
-					on_cell_click_callback = callback(self, self, "on_cell_click_downloads_table"),
+					on_cell_click_callback = callback(self, self, "on_cell_click_changelog"),
+					padding = 0,
+					selected_color = tweak_data.gui.colors.raid_red,
+					vertical = "center",
+					w = actions_w,
+				},
+				-- download cell
+				{
+					align = "left",
+					cell_class = BLTGUIControlTableCellButton,
+					color = tweak_data.gui.colors.raid_grey,
+					header_padding = 0,
+					header_text = self:translate("blt_download_manager_header_download", true),
+					highlight_color = tweak_data.gui.colors.raid_white,
+					on_cell_click_callback = callback(self, self, "on_cell_click_download"),
 					padding = 0,
 					selected_color = tweak_data.gui.colors.raid_red,
 					vertical = "center",
@@ -223,7 +237,7 @@ function BLTDownloadManagerGui:_data_source()
 
 		table.insert(result, {
 			{
-				info = mod_name,
+				info = download_name,
 				text = download_name,
 				w = BLTDownloadManagerGui.TABLE_MOD_ICON_SIZE,
 				h = BLTDownloadManagerGui.TABLE_MOD_ICON_SIZE,
@@ -235,19 +249,25 @@ function BLTDownloadManagerGui:_data_source()
 				},
 			},
 			{
-				info = mod_name,
+				info = download_name,
 				text = download_name,
 				value = download,
 			},
 			{
-				info = "TODO: download status",
-				text = "TODO: download status",
+				info = download_name,
+				text = self:translate("blt_download_ready", true),
 				value = download,
 				progress = 0,
 			},
 			{
-				info = "TODO: dl now btn",
-				text = "TODO: dl now btn",
+				info = download_name,
+				text = self:translate("blt_view_patch_notes", true),
+				value = download,
+				visible = download.update:GetPatchNotes() ~= nil,
+			},
+			{
+				info = download_name,
+				text = self:translate("blt_update_now", true),
 				value = download,
 			},
 		})
@@ -258,8 +278,16 @@ function BLTDownloadManagerGui:_data_source()
 	return result
 end
 
-function BLTDownloadManagerGui:on_cell_click_downloads_table(data)
+function BLTDownloadManagerGui:on_cell_click_changelog(data)
+	-- TODO: show changelog
+	log('changelog')
+	Utils.PrintTable(data, 1)
+end
+
+function BLTDownloadManagerGui:on_cell_click_download(data)
 	-- TODO: update single mod of cell row
+	log('download')
+	Utils.PrintTable(data, 1)
 end
 
 -- TODO: redesign download events and fix this
