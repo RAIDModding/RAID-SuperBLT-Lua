@@ -27,5 +27,7 @@ function BLTGUIControlTableCellButton:select_off()
 end
 
 function BLTGUIControlTableCellButton:on_double_click(button)
-	-- nth
+	if self._params.on_double_click_callback then
+		self._params.on_double_click_callback(button, self, self._data)
+	end
 end
