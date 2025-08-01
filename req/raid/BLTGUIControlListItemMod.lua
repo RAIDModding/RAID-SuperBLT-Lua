@@ -286,13 +286,6 @@ function BLTGUIControlListItemMod:select()
 	end
 	self._item_highlight_marker:show()
 
-	-- if self._data.breadcrumb then
-	-- 	managers.breadcrumb:remove_breadcrumb(self._data.breadcrumb.category, self._data.breadcrumb.identifiers)
-	-- end
-	-- managers.breadcrumb:remove_breadcrumb(BreadcrumbManager.CATEGORY_OPERATIONS, {
-	-- 	"operations_pending",
-	-- })
-
 	if self._on_item_selected_callback then
 		self._on_item_selected_callback(self, self._data)
 	end

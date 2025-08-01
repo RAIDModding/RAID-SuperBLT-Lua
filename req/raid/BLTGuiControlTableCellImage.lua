@@ -21,27 +21,19 @@ function BLTGUIControlTableCellImage:init(parent, params, cell_data, table_param
 end
 
 function BLTGUIControlTableCellImage:highlight_on()
-	-- if self._table_params and self._table_params.row_params and self._table_params.row_params.color and self._table_params.row_params.highlight_color then
-	-- 	self:set_color(self._table_params.row_params.highlight_color)
-	-- end
+	-- nth
 end
 
 function BLTGUIControlTableCellImage:highlight_off()
-	-- if self._table_params and self._table_params.row_params and self._table_params.row_params.color and self._table_params.row_params.highlight_color then
-	-- 	self:set_color(self._table_params.row_params.highlight_color)
-	-- end
+	-- nth
 end
 
 function BLTGUIControlTableCellImage:select_on()
-	-- if self._params.selected_color and self._params.color then
-	-- 	self:set_color(self._params.selected_color)
-	-- end
+	-- nth
 end
 
 function BLTGUIControlTableCellImage:select_off()
-	-- if self._params.selected_color and self._params.color then
-	-- 	self:set_color(self._params.color)
-	-- end
+	-- nth
 end
 
 function BLTGUIControlTableCellImage:on_double_click(button)
