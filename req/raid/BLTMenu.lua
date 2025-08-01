@@ -378,7 +378,7 @@ end
 
 function BLTMenu:_show_description(params)
 	if params.desc then
-		self._description_label:set_text(string.gsub(params.localize_desc and managers.localization:text(params.desc) or params.desc, "\n", " "))
+		self._description_label:set_text(string.gsub(params.localize_desc and self:translate(params.desc) or params.desc, "\n", " "))
 		self:adjust_description_label()
 		self._description_label:set_visible(true)
 	end
@@ -543,7 +543,7 @@ function BLTMenu:ColorButton(params)
 	local btn
 	btn_params.callback = function()
 		BLT.Dialogs:Color():Show({
-			title = btn_params.override_title or btn_params.localize ~= false and managers.localization:text(btn_params.text) or btn_params.text,
+			title = btn_params.override_title or btn_params.localize ~= false and self:translate(btn_params.text) or btn_params.text,
 			color = btn._params.value,
 			force = true,
 			callback = function(color)

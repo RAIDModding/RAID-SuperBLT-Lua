@@ -2,6 +2,7 @@ require("lib/managers/menu/raid_menu/controls/raidguicontrol")
 
 ---@class BLTGUIControlListItemMod
 ---@field new fun(self, parent, params, data):BLTGUIControlListItemMod
+---@field translate fun(self, text, upper_case_flag, additional_macros)
 ---@field super table
 ---@field _name string
 ---@field _panel table
@@ -227,12 +228,12 @@ function BLTGUIControlListItemMod:_refresh_mod_status()
 	end
 
 	if self._mod:GetUpdateError() then
-		self._mod_status:set_text(managers.localization:text("blt_update_mod_error_short"))
+		self._mod_status:set_text(self:translate("blt_update_mod_error_short"))
 		self._mod_status:set_color(tweak_data.gui.colors.raid_red)
 	elseif self._mod:IsCheckingForUpdates() then
-		self._mod_status:set_text(managers.localization:text("blt_checking_updates"))
+		self._mod_status:set_text(self:translate("blt_checking_updates"))
 	elseif BLT.Downloads:get_pending_downloads_for(self._mod) then
-		self._mod_status:set_text(managers.localization:text("blt_update_mod_available_short", {
+		self._mod_status:set_text(self:translate("blt_update_mod_available_short", false, {
 			name = self._mod:GetName()
 		}))
 		self._mod_status:set_color(tweak_data.gui.colors.progress_yellow)
@@ -248,14 +249,6 @@ end
 ---
 
 function BLTGUIControlListItemMod:on_mouse_released(button)
-	-- if self._data.breadcrumb then
-	-- 	managers.breadcrumb:remove_breadcrumb(self._data.breadcrumb.category, self._data.breadcrumb.identifiers)
-	-- end
-
-	-- managers.breadcrumb:remove_breadcrumb(BreadcrumbManager.CATEGORY_OPERATIONS, {
-	-- 	"operations_pending",
-	-- })
-
 	if self._mouse_click_sound then
 		managers.menu_component:post_event(self._mouse_click_sound)
 	end
