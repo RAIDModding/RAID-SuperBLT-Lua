@@ -204,8 +204,8 @@ function BLTDownloadManager:clbk_download_finished(p, data, http_id, request_inf
 			if full then
 				os.remove(file_path)
 			end
-			if complete_clbk then
-				complete_clbk(download)
+			if p.callback then
+				p.callback(download)
 			end
 		end
 
