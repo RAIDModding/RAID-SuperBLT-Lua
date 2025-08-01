@@ -34,17 +34,18 @@ function BLTGuiControlTableCellDownloadStatus:init(parent, params, cell_data, ta
 	})
 	self._text:set_center_y(params.height / 2)
 
-	self._progress = self._object:progress_bar({
-		w = params.w, -- FIXME
-		h = params.height, -- FIXME
+	self._progress = self._object:progress_bar_simple({
+		w = params.w - 32,
+		h = 4,
 		layer = params.layer + 1,
 		x = 0,
-		bar_width = params.w,
+		bar_width = params.w - 32,
 		border_width = 1,
-		color = Color.white, -- FIXME
-		visible = false,
+		left = "slider_large_left",
+		center = "slider_large_center",
+		right = "slider_large_right",
 	})
-	self._progress:set_center_y(params.height / 2)
+	self._progress:set_bottom(params.height - 10)
 
 	BLT.Downloads:register_event_handler(BLT.Downloads.EVENTS.download_state_changed,
 		"blt_downloads_gui_list_on_download_state_changed" .. params.value.update:GetName(),
@@ -108,27 +109,22 @@ end
 
 function BLTGuiControlTableCellDownloadStatus:_update_complete(download, percent)
 	self._text:set_text(self:translate("blt_download_done"))
-	self._progress:hide()
 end
 
 function BLTGuiControlTableCellDownloadStatus:_update_failed(download, percent)
 	self._text:set_text(self:translate("blt_download_failed"))
-	self._progress:hide()
 end
 
 function BLTGuiControlTableCellDownloadStatus:_update_verifying(download, percent)
 	self._text:set_text(self:translate("blt_download_verifying"))
-	self._progress:hide()
 end
 
 function BLTGuiControlTableCellDownloadStatus:_update_extracting(download, percent)
 	self._text:set_text(self:translate("blt_download_extracting"))
-	self._progress:hide()
 end
 
 function BLTGuiControlTableCellDownloadStatus:_update_saving(download, percent)
 	self._text:set_text(self:translate("blt_download_saving"))
-	self._progress:hide()
 end
 
 function BLTGuiControlTableCellDownloadStatus:_update_download(download, progress)
@@ -147,10 +143,8 @@ function BLTGuiControlTableCellDownloadStatus:_update_download(download, progres
 	}
 	self._text:set_text(self:translate("blt_download_downloading", false, macros))
 	self._progress:set_progress(progress)
-	self._progress:show()
 end
 
 function BLTGuiControlTableCellDownloadStatus:_update_waiting(download, progress)
 	self._text:set_text(self:translate("blt_download_waiting"))
-	self._progress:hide()
 end

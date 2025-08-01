@@ -240,7 +240,7 @@ function BLTDownloadManagerGui:_data_source()
 			},
 			{
 				info = download_name,
-				text = self:translate("blt_download_ready", true),
+				text = self:translate("blt_download_ready"),
 				value = download,
 			},
 			{
