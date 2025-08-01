@@ -1233,7 +1233,7 @@ function BLTModsGui:bind_controller_inputs()
 		},
 		{
 			callback = callback(self, self, "clbk_open_download_manager"),
-			key = Idstring("menu_controller_face_left"),
+			key = Idstring("menu_controller_face_top"),
 		},
 	}
 	self:set_controller_bindings(bindings, true)
@@ -1251,7 +1251,7 @@ function BLTModsGui:bind_controller_inputs()
 			},
 			"menu_legend_mission_column",
 			{
-				translated_text = managers.localization:get_default_macros().BTN_X .. " " ..
+				translated_text = managers.localization:get_default_macros().BTN_Y .. " " ..
 					self:translate("blt_download_manager", true),
 			},
 		},

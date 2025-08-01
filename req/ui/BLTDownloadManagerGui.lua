@@ -200,15 +200,15 @@ function BLTDownloadManagerGui:bind_controller_inputs()
 		-- TODO?: view patch notes (of selected mod)
 		-- TODO?: download mod (of selected mod)
 	}
-	if has_pending_downloads then
-		table.insert(bindings, {
-			callback = callback(self, self, "clbk_download_all"),
-			key = Idstring("menu_controller_face_left"),
-		})
-	end
 	if can_relua then
 		table.insert(bindings, {
 			callback = callback(self, self, "clbk_relua_button"),
+			key = Idstring("menu_controller_face_left"),
+		})
+	end
+	if has_pending_downloads then
+		table.insert(bindings, {
+			callback = callback(self, self, "clbk_download_all"),
 			key = Idstring("menu_controller_face_top"),
 		})
 	end
@@ -225,16 +225,16 @@ function BLTDownloadManagerGui:bind_controller_inputs()
 			},
 		},
 	}
-	if has_pending_downloads then
-		table.insert(legend.controller, {
-			translated_text = managers.localization:get_default_macros().BTN_X .. " " ..
-				self:translate("blt_download_all", true),
-		})
-	end
 	if can_relua then
 		table.insert(legend.controller, {
-			translated_text = managers.localization:get_default_macros().BTN_Y .. " " ..
+			translated_text = managers.localization:get_default_macros().BTN_X .. " " ..
 				self:translate("blt_download_relua_button", true),
+		})
+	end
+	if has_pending_downloads then
+		table.insert(legend.controller, {
+			translated_text = managers.localization:get_default_macros().BTN_Y .. " " ..
+				self:translate("blt_download_all", true),
 		})
 	end
 	self:set_legend(legend)
