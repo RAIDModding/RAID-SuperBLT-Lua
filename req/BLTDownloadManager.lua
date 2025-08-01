@@ -3,6 +3,13 @@
 BLTDownloadManager = BLTDownloadManager or blt_class(BLTModule)
 BLTDownloadManager.__type = "BLTDownloadManager"
 
+BLTDownloadManager.EVENTS = {
+	download_added = 'download_added',
+	download_state_changed = 'download_state_changed',
+	download_remove = 'download_remove',
+	download_removed = 'download_removed',
+}
+
 function BLTDownloadManager:init()
 	---@diagnostic disable-next-line: undefined-field
 	BLTDownloadManager.super.init(self)
@@ -10,6 +17,9 @@ function BLTDownloadManager:init()
 	self._pending_downloads = {}
 	self._downloads = {}
 	self._event_handlers = {}
+	for event in pairs(BLTDownloadManager.EVENTS) do
+		self._event_handlers[event] = {}
+	end
 end
 
 --------------------------------------------------------------------------------
@@ -59,8 +69,8 @@ function BLTDownloadManager:add_pending_download(update)
 	}
 	table.insert(self._pending_downloads, download)
 
-	-- trigger change event
-	self:call_event_handlers()
+	-- trigger download_added event
+	self:call_event_handlers(BLTDownloadManager.EVENTS.download_added, download)
 
 	BLT:Log(LogLevel.INFO,
 		string.format("[Downloads] Added pending download for %s (%s)", update:GetName(), update:GetParentMod():GetName()))
@@ -130,8 +140,8 @@ function BLTDownloadManager:start_download(update, complete_clbk, progress_clbk)
 
 	-- Start the download
 	local url = update:GetDownloadURL()
-	local http_id = dohttpreq(url, callback(self, self, "clbk_download_finished", complete_clbk),
-		callback(self, self, "clbk_download_progress", progress_clbk))
+	local http_id = dohttpreq(url, callback(self, self, "clbk_download_finished", { callback = complete_clbk }),
+		callback(self, self, "clbk_download_progress", { callback = progress_clbk }))
 
 	-- Cache the download for access
 	local download = {
@@ -139,23 +149,31 @@ function BLTDownloadManager:start_download(update, complete_clbk, progress_clbk)
 		http_id = http_id,
 		state = "waiting"
 	}
+	-- trigger download_state_changed event
+	self:call_event_handlers(BLTDownloadManager.EVENTS.download_state_changed, download)
 	table.insert(self._downloads, download)
 
 	return true
 end
 
-function BLTDownloadManager:clbk_download_finished(complete_clbk, data, http_id, request_info)
+function BLTDownloadManager:clbk_download_finished(p, data, http_id, request_info)
 	local download = self:get_download_from_http_id(http_id)
 	if not download then
 		return
 	end
 	local download_name = download.update:GetName()
 
+	local function set_state(state)
+		download.state = state
+		-- trigger download_state_changed event
+		self:call_event_handlers(BLTDownloadManager.EVENTS.download_state_changed, download)
+	end
+
 	if not request_info.querySucceeded or string.is_nil_or_empty(data) then
 		BLT:Log(LogLevel.ERROR, string.format("[Downloads] Download of '%s' failed", download_name))
-		download.state = "failed"
-		if complete_clbk then
-			complete_clbk(download)
+		set_state("failed")
+		if p.callback then
+			p.callback(download)
 		end
 		return
 	end
@@ -193,7 +211,7 @@ function BLTDownloadManager:clbk_download_finished(complete_clbk, data, http_id,
 
 		-- Save download to disk
 		BLT:Log(LogLevel.INFO, string.format("[Downloads] Saving '%s' data to file...", download_name))
-		download.state = "saving"
+		set_state("saving")
 		wait()
 
 		-- Save file to downloads
@@ -203,14 +221,14 @@ function BLTDownloadManager:clbk_download_finished(complete_clbk, data, http_id,
 			f:close()
 		else
 			BLT:Log(LogLevel.ERROR, string.format("[Downloads] Failed to save '%s' data to file", download_name))
-			download.state = "failed"
+			set_state("failed")
 			cleanup()
 			return
 		end
 
 		-- Start download extraction
 		BLT:Log(LogLevel.INFO, string.format("[Downloads] Extracting '%s'...", download_name))
-		download.state = "extracting"
+		set_state("extracting")
 		wait()
 
 		unzip(file_path, temp_install_dir)
@@ -222,7 +240,7 @@ function BLTDownloadManager:clbk_download_finished(complete_clbk, data, http_id,
 
 		-- Verify content hash with the server hash
 		BLT:Log(LogLevel.INFO, string.format("[Downloads] Verifying '%s'...", download_name))
-		download.state = "verifying"
+		set_state("verifying")
 		wait()
 
 		local passed_check = false
@@ -286,7 +304,7 @@ function BLTDownloadManager:clbk_download_finished(complete_clbk, data, http_id,
 			end
 		end
 		if not passed_check then
-			download.state = "failed"
+			set_state("failed")
 			cleanup()
 			return
 		end
@@ -299,7 +317,7 @@ function BLTDownloadManager:clbk_download_finished(complete_clbk, data, http_id,
 				if not io.remove_directory_and_files(install_path) then
 					BLT:Log(LogLevel.ERROR,
 						string.format("[Downloads] Failed to delete old installation of '%s'", download_name))
-					download.state = "failed"
+					set_state("failed")
 					cleanup()
 					return
 				end
@@ -312,28 +330,29 @@ function BLTDownloadManager:clbk_download_finished(complete_clbk, data, http_id,
 		if not move_success then
 			BLT:Log(LogLevel.ERROR,
 				string.format("[Downloads] Failed to move installation directory of '%s'", download_name))
-			download.state = "failed"
+			set_state("failed")
 			cleanup()
 			return
 		end
 
 		-- Mark download as complete
 		BLT:Log(LogLevel.INFO, string.format("[Downloads] Finished '%s'", download_name))
-		download.state = "complete"
+		set_state("complete")
 		cleanup(true)
 	end
 
 	download.coroutine:animate(save)
 end
 
-function BLTDownloadManager:clbk_download_progress(progress_clbk, http_id, bytes, total_bytes)
+function BLTDownloadManager:clbk_download_progress(p, http_id, bytes, total_bytes)
 	local download = self:get_download_from_http_id(http_id)
 	if download then
 		download.state = "downloading"
 		download.bytes = bytes
 		download.total_bytes = total_bytes
-		if progress_clbk then
-			progress_clbk(download)
+		self:call_event_handlers(BLTDownloadManager.EVENTS.download_state_changed, download)
+		if p.callback then
+			p.callback(download)
 		end
 	end
 end
@@ -342,6 +361,9 @@ function BLTDownloadManager:flush_complete_downloads()
 	for i = #self._downloads, 0, -1 do
 		local download = self._downloads[i]
 		if download and download.state == "complete" then
+			-- trigger download_remove event
+			self:call_event_handlers(BLTDownloadManager.EVENTS.download_remove, download)
+
 			-- Remove download
 			table.remove(self._downloads, i)
 
@@ -349,24 +371,27 @@ function BLTDownloadManager:flush_complete_downloads()
 			local _, idx = self:get_pending_download(download.update)
 			table.remove(self._pending_downloads, idx)
 
-			-- trigger change event
-			self:call_event_handlers()
+			-- trigger download_removed event
+			self:call_event_handlers(BLTDownloadManager.EVENTS.download_removed)
 		end
 	end
 end
 
-function BLTDownloadManager:register_event_handler(id, callback)
-	self._event_handlers[id] = callback
+function BLTDownloadManager:register_event_handler(event, id, callback, update)
+	self._event_handlers[event][id] = {
+		callback = callback,
+		update = update
+	}
 end
 
-function BLTDownloadManager:remove_event_handler(id)
-	self._event_handlers[id] = nil
+function BLTDownloadManager:remove_event_handler(event, id)
+	self._event_handlers[event][id] = nil
 end
 
-function BLTDownloadManager:call_event_handlers()
-	for _, callback in pairs(self._event_handlers) do
-		if callback then
-			callback()
+function BLTDownloadManager:call_event_handlers(event, download)
+	for _, data in pairs(self._event_handlers[event]) do
+		if (data.update == nil) or (data.update == download.update) then
+			data.callback(download)
 		end
 	end
 end

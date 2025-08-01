@@ -35,16 +35,26 @@ function BLTGuiControlTableCellDownloadStatus:init(parent, params, cell_data, ta
 	self._text:set_center_y(params.height / 2)
 
 	self._progress = self._object:progress_bar({
-		w = params.w,
-		h = params.height,
+		w = params.w, -- FIXME
+		h = params.height, -- FIXME
 		layer = params.layer + 1,
 		x = 0,
 		bar_width = params.w,
 		border_width = 1,
-		color = Color.white,
+		color = Color.white, -- FIXME
+		visible = false,
 	})
 	self._progress:set_center_y(params.height / 2)
-	self:set_progress(cell_data.progress)
+
+	BLT.Downloads:register_event_handler(BLT.Downloads.EVENTS.download_state_changed,
+		"blt_downloads_gui_list_on_download_state_changed" .. params.value.update:GetName(),
+		callback(self, self, "_on_download_state_changed"),
+		params.value.update)
+end
+
+function BLTGuiControlTableCellDownloadStatus:close()
+	BLT.Downloads:remove_event_handler(BLT.Downloads.EVENTS.download_state_changed,
+		"blt_downloads_gui_list_on_download_state_changed" .. self._params.value.update:GetName())
 end
 
 function BLTGuiControlTableCellDownloadStatus:highlight_on()
@@ -77,19 +87,70 @@ function BLTGuiControlTableCellDownloadStatus:on_double_click(button)
 	end
 end
 
-function BLTGuiControlTableCellDownloadStatus:set_text(text)
-	if self._text then
-		self._text:set_text(text)
+function BLTGuiControlTableCellDownloadStatus:_on_download_state_changed(download)
+	local percent = (download.total_bytes or 0) / (download.bytes or 1)
+	if download.state == "complete" then
+		self:_update_complete(download, percent)
+	elseif download.state == "failed" then
+		self:_update_failed(download, percent)
+	elseif download.state == "verifying" then
+		self:_update_verifying(download, percent)
+	elseif download.state == "extracting" then
+		self:_update_extracting(download, percent)
+	elseif download.state == "saving" then
+		self:_update_saving(download, percent)
+	elseif download.state == "downloading" then
+		self:_update_download(download, percent)
+	elseif download.state == "waiting" then
+		self:_update_waiting(download, percent)
 	end
 end
 
-function BLTGuiControlTableCellDownloadStatus:set_progress(progress)
-	if self._progress then
-		self._progress:set_progress(progress)
-		if progress == 0 then
-			self._progress:hide()
-		else
-			self._progress:show()
-		end
+function BLTGuiControlTableCellDownloadStatus:_update_complete(download, percent)
+	self._text:set_text(self:translate("blt_download_done"))
+	self._progress:hide()
+end
+
+function BLTGuiControlTableCellDownloadStatus:_update_failed(download, percent)
+	self._text:set_text(self:translate("blt_download_failed"))
+	self._progress:hide()
+end
+
+function BLTGuiControlTableCellDownloadStatus:_update_verifying(download, percent)
+	self._text:set_text(self:translate("blt_download_verifying"))
+	self._progress:hide()
+end
+
+function BLTGuiControlTableCellDownloadStatus:_update_extracting(download, percent)
+	self._text:set_text(self:translate("blt_download_extracting"))
+	self._progress:hide()
+end
+
+function BLTGuiControlTableCellDownloadStatus:_update_saving(download, percent)
+	self._text:set_text(self:translate("blt_download_saving"))
+	self._progress:hide()
+end
+
+function BLTGuiControlTableCellDownloadStatus:_update_download(download, progress)
+	local current = download.bytes / 1024
+	local total = download.total_bytes / 1024
+	local unit = "KB"
+	if total > 1024 then
+		current = current / 1024
+		total = total / 1024
+		unit = "MB"
 	end
+	local macros = {
+		current = string.format("%.1f", current),
+		total = string.format("%.1f", total),
+		unit = unit
+	}
+	self._text:set_text(self:translate("blt_download_downloading", false, macros))
+	self._progress:set_progress(progress)
+	self._progress:show()
+end
+
+function BLTGuiControlTableCellDownloadStatus:_update_waiting(download, progress)
+	self._text:set_text(self:translate("blt_download_waiting"))
+	self._progress:hide()
 end

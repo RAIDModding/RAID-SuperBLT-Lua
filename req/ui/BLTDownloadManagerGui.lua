@@ -26,8 +26,12 @@ function BLTDownloadManagerGui:init(ws, fullscreen_ws, node)
 	BLTDownloadManagerGui.super.init(self, ws, fullscreen_ws, node, "blt_download_manager")
 	self._root_panel.ctrls = self._root_panel.ctrls or {}
 
-	BLT.Downloads:register_event_handler("blt_download_manager_gui_on_update_list_changed",
-		callback(self, self, "_on_update_list_changed"))
+	BLT.Downloads:register_event_handler(BLT.Downloads.EVENTS.download_added,
+		"blt_download_manager_gui_on_download_added",
+		callback(self, self, "_on_download_list_changed"))
+	BLT.Downloads:register_event_handler(BLT.Downloads.EVENTS.download_removed,
+		"blt_download_manager_gui_on_download_removed",
+		callback(self, self, "_on_download_list_changed"))
 end
 
 function BLTDownloadManagerGui:_set_initial_data()
@@ -238,7 +242,6 @@ function BLTDownloadManagerGui:_data_source()
 				info = download_name,
 				text = self:translate("blt_download_ready", true),
 				value = download,
-				progress = 0,
 			},
 			{
 				info = download_name,
@@ -282,14 +285,17 @@ function BLTDownloadManagerGui:_on_download_completed(download)
 	self:update_buttons()
 end
 
-function BLTDownloadManagerGui:_on_update_list_changed()
+function BLTDownloadManagerGui:_on_download_list_changed()
 	self._downloads_table:refresh_data()
 	self._downloads_scroll:setup_scroll_area()
 	self:update_buttons()
 end
 
 function BLTDownloadManagerGui:close()
-	BLT.Downloads:remove_event_handler("blt_download_manager_gui_on_update_list_changed")
+	BLT.Downloads:remove_event_handler(BLT.Downloads.EVENTS.download_added,
+		"blt_download_manager_gui_on_download_added")
+	BLT.Downloads:remove_event_handler(BLT.Downloads.EVENTS.download_removed,
+		"blt_download_manager_gui_on_download_removed")
 	BLT.Downloads:flush_complete_downloads()
 
 	self._root_panel:clear()
