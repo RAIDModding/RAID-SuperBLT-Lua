@@ -19,15 +19,26 @@ function BLTGUIControlTableCellButton:init(parent, params, cell_data, table_para
 end
 
 function BLTGUIControlTableCellButton:select_on()
-	-- nth
+	self:set_selected(true)
 end
 
 function BLTGUIControlTableCellButton:select_off()
-	-- nth
+	self:set_selected(false)
 end
 
 function BLTGUIControlTableCellButton:on_double_click(button)
 	if self._params.on_double_click_callback then
 		self._params.on_double_click_callback(button, self, self._data)
+	end
+end
+
+function BLTGUIControlTableCellButton:confirm_pressed()
+	if self._params.no_click then
+		return true
+	end
+
+	if self._selected and self._on_click_callback then
+		self:_on_click_callback(self, self, self._data)
+		return true
 	end
 end

@@ -2,6 +2,7 @@ require("lib/managers/menu/raid_menu/controls/raidguicontrol")
 require("lib/managers/menu/raid_menu/controls/raidguicontrollabel")
 require("lib/managers/menu/raid_menu/controls/raidguicontroltablecell")
 
+BLT:Require("req/raid/BLTGUIControlTable")
 BLT:Require("req/raid/BLTGUIControlTableRow")
 BLT:Require("req/raid/BLTGUIControlTableCellImage")
 BLT:Require("req/raid/BLTGuiControlTableCellDownloadStatus")
@@ -73,7 +74,7 @@ function BLTDownloadManagerGui:_layout()
 		w = self._object:w(),
 		h = table_h,
 	})
-	self._downloads_table = self._downloads_scroll:get_panel():table({
+	self._downloads_table = self._downloads_scroll:get_panel():create_custom_control(BLTGUIControlTable, {
 		loop_items = true,
 		name = "downloads_table",
 		on_selected_callback = callback(self, self, "bind_controller_inputs"),
@@ -292,15 +293,15 @@ function BLTDownloadManagerGui:_data_source()
 	return result
 end
 
-function BLTDownloadManagerGui:on_cell_click_changelog(_, _, data)
-	local update = data.value.update
+function BLTDownloadManagerGui:on_cell_click_changelog(_, cell)
+	local update = cell._data.value.update
 	if update then
 		update:ViewPatchNotes()
 	end
 end
 
-function BLTDownloadManagerGui:on_cell_click_download(_, _, data)
-	local update = data.value.update
+function BLTDownloadManagerGui:on_cell_click_download(_, cell)
+	local update = cell._data.value.update
 	if update then
 		if not BLT.Downloads:get_download(update) then
 			BLT.Downloads:start_download(update,

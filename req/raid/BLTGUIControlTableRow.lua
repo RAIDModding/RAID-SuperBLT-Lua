@@ -6,6 +6,7 @@ function BLTGUIControlTableRow:init(parent, params, row_data, table_params)
 	RaidGUIControlTableRow.super.init(self, parent, params)
 
 	self.cells = {}
+	self.button_cells = {}
 	self.row_data = row_data
 	self._selected = false
 	self._type = "raid_gui_control_table_row"
@@ -50,7 +51,11 @@ function BLTGUIControlTableRow:init(parent, params, row_data, table_params)
 		-- vanilla fix: pass row_data[column_index] (vanilla just does row_data, while not passing column_index at all)
 		local cell = self:create_custom_control(cell_class, cell_params, row_data[column_index], table_params)
 
-		table.insert(self.cells, cell)
+		if cell._params.on_click_callback then -- distinguish between regular cells and button cells
+			table.insert(self.button_cells, cell)
+		else
+			table.insert(self.cells, cell)
+		end
 
 		x = x + column_data.w
 	end
@@ -66,8 +71,8 @@ function BLTGUIControlTableRow:on_mouse_released(o, button, x, y)
 		self._params.on_row_click_callback(self.row_data, self._params.row_index)
 	end
 
-	-- vanilla fix: actually pass mouse_released event to button cells
-	for _, cell in ipairs(self.cells) do
+	-- pass mouse_released event to button cells
+	for _, cell in ipairs(self.button_cells) do
 		if cell:inside(x, y) and cell.mouse_released then
 			cell:mouse_released(o, button, x, y)
 		end
@@ -76,29 +81,14 @@ function BLTGUIControlTableRow:on_mouse_released(o, button, x, y)
 	return true
 end
 
-function RaidGUIControlTableRow:highlight_on()
-	if self._selected then
-		return
-	end
-
-	for _, cell in pairs(self.cells) do
-		if not cell._params.on_click_callback then -- skip here for anything clickable (buttons etc)
-			cell:highlight_on()
-		end
-	end
-
-	if self._params.highlight_background_color and self._params.background_color then
-		self:set_background_color(self._params.highlight_background_color)
-	end
-end
-
 function BLTGUIControlTableRow:mouse_moved(o, x, y)
 	local inside = self:inside(x, y)
 
 	if inside then
-		for _, cell in pairs(self.cells) do
-			if cell._params.on_click_callback and cell:mouse_moved(o, x, y) then -- route mouse_moved to anything clickable (buttons etc)
-				return true, self._pointer_type                         -- return if handled
+		-- route mouse_moved to button cells
+		for _, cell in ipairs(self.button_cells) do
+			if cell:mouse_moved(o, x, y) then
+				return true, self._pointer_type
 			end
 		end
 	end
@@ -119,4 +109,77 @@ function BLTGUIControlTableRow:mouse_moved(o, x, y)
 	end
 
 	return false
+end
+
+function BLTGUIControlTableRow:select_off()
+	BLTGUIControlTableRow.super.select_off(self)
+
+	-- unselect all button cells
+	for _, cell in ipairs(self.button_cells) do
+		cell:select_off()
+	end
+end
+
+function BLTGUIControlTableRow:move_left()
+	if self._selected_button_idx then
+		-- unselect current button
+		self.button_cells[self._selected_button_idx]:select_off()
+	end
+
+	local btn_count = #self.button_cells
+
+	if self._selected_button_idx == 1 then
+		-- if current button was last one, unselect everything and return
+		self._selected_button_idx = nil
+		return true
+	end
+
+	-- try select next button
+	for i = (self._selected_button_idx or (btn_count + 1)) - 1, btn_count, -1 do
+		local button = self.button_cells[i]
+		if button and button:visible() and button:enabled() then
+			button:select_on()
+			self._selected_button_idx = i -- remember and return
+			return true
+		end
+	end
+
+	-- no next btn
+	self._selected_button_idx = nil
+	return true
+end
+
+function BLTGUIControlTableRow:move_right()
+	if self._selected_button_idx then
+		-- unselect current button
+		self.button_cells[self._selected_button_idx]:select_off()
+	end
+
+	local btn_count = #self.button_cells
+
+	if self._selected_button_idx == btn_count then
+		-- if current button was last one, unselect everything and return
+		self._selected_button_idx = nil
+		return true
+	end
+
+	-- try select next button
+	for i = (self._selected_button_idx or 0) + 1, btn_count do
+		local button = self.button_cells[i]
+		if button and button:visible() and button:enabled() then
+			button:select_on()
+			self._selected_button_idx = i -- remember and return
+			return true
+		end
+	end
+
+	-- no next btn
+	self._selected_button_idx = nil
+	return true
+end
+
+function BLTGUIControlTableRow:confirm_pressed()
+	if self._selected_button_idx then
+		self.button_cells[self._selected_button_idx]:confirm_pressed()
+	end
 end
