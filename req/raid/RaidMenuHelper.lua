@@ -41,8 +41,7 @@ function RaidMenuHelper:CreateMenu(params)
 		params.localize = true
 	end
 	if params.inject_menu == "blt_options" then
-		log("inject_menu = \"blt_options\" is deprecated, use inject_list = \"blt_options\" instead. (menu: " ..
-			name .. ")")
+		BLT:Log(LogLevel.WARN, "inject_menu = \"blt_options\" is deprecated, use inject_list = \"blt_options\" instead. (menu: ", name, ")")
 		params.inject_list = "blt_options"
 		params.inject_menu = nil
 	end
