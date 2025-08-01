@@ -18,14 +18,6 @@ function BLTGUIControlTableCellButton:init(parent, params, cell_data, table_para
 	self:set_center_y(params.height / 2)
 end
 
-function BLTGUIControlTableCellButton:highlight_on()
-	-- nth
-end
-
-function BLTGUIControlTableCellButton:highlight_off()
-	-- nth
-end
-
 function BLTGUIControlTableCellButton:select_on()
 	-- nth
 end

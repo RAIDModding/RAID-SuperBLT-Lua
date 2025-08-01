@@ -26,15 +26,8 @@ function BLTDownloadManagerGui:init(ws, fullscreen_ws, node)
 	BLTDownloadManagerGui.super.init(self, ws, fullscreen_ws, node, "blt_download_manager")
 	self._root_panel.ctrls = self._root_panel.ctrls or {}
 
-	-- TODO: redesign download events and fix this
-	-- self._listening_to = {}
-	-- for _, download in ipairs(BLT.Downloads:pending_downloads()) do
-	-- 	download.update:register_event_handler("blt_download_manager_gui_on_update_change", -- FIXME: dirty fix
-	-- 		callback(self, self, "_on_update_change"))
-	-- 	self._listening_to[download] = true
-	-- end
-	-- BLT.Downloads:register_event_handler(BLT.Downloads.EVENTS.added, "blt_download_manager_gui_on_update_added",
-	-- 	callback(self, self, "_on_update_added"))
+	BLT.Downloads:register_event_handler("blt_download_manager_gui_on_update_list_changed",
+		callback(self, self, "_on_update_list_changed"))
 end
 
 function BLTDownloadManagerGui:_set_initial_data()
@@ -192,16 +185,7 @@ function BLTDownloadManagerGui:update_buttons()
 end
 
 function BLTDownloadManagerGui:bind_controller_inputs()
-	-- TODO?
 	local bindings = {
-		-- {
-		-- 	callback = callback(self, self, "_on_refresh"),
-		-- 	key = Idstring("menu_controller_face_top"),
-		-- },
-		-- {
-		-- 	callback = callback(self, self, "_on_filter"),
-		-- 	key = Idstring("menu_controller_face_left"),
-		-- },
 	}
 
 	self:set_controller_bindings(bindings, true)
@@ -209,9 +193,6 @@ function BLTDownloadManagerGui:bind_controller_inputs()
 	local legend = {
 		controller = {
 			"menu_legend_back",
-			-- "menu_legend_mission_join_refresh",
-			-- "menu_legend_mission_join_filter",
-			-- "menu_legend_mission_join_join",
 		},
 		keyboard = {
 			{
@@ -269,6 +250,7 @@ function BLTDownloadManagerGui:_data_source()
 				info = download_name,
 				text = self:translate("blt_update_now", true),
 				value = download,
+				visible = not download.update:DisallowsUpdate(),
 			},
 		})
 	end
@@ -278,42 +260,36 @@ function BLTDownloadManagerGui:_data_source()
 	return result
 end
 
-function BLTDownloadManagerGui:on_cell_click_changelog(data)
-	-- TODO: show changelog
-	log('changelog')
-	Utils.PrintTable(data, 1)
+function BLTDownloadManagerGui:on_cell_click_changelog(_, _, data)
+	local update = data.value.update
+	if update then
+		update:ViewPatchNotes()
+	end
 end
 
-function BLTDownloadManagerGui:on_cell_click_download(data)
-	-- TODO: update single mod of cell row
-	log('download')
-	Utils.PrintTable(data, 1)
+function BLTDownloadManagerGui:on_cell_click_download(_, _, data)
+	local update = data.value.update
+	if update then
+		if not BLT.Downloads:get_download(update) then
+			BLT.Downloads:start_download(update,
+				callback(self, self, "_on_download_completed")
+			)
+		end
+	end
 end
 
--- TODO: redesign download events and fix this
-function BLTDownloadManagerGui:_on_update_change(update, requires_update, error_reason)
-	-- TODO: update related list row in dl table (find DownloadStatus cell and call set_text/set_progress on it)
+function BLTDownloadManagerGui:_on_download_completed(download)
+	self:update_buttons()
 end
 
--- TODO: redesign download events and fix this
-function BLTDownloadManagerGui:_on_update_added(download)
-	-- download.update:register_event_handler("blt_download_manager_gui_on_update_change",
-	-- 	callback(self, self, "_on_update_change"))
-	-- self._listening_to[download] = true
-
+function BLTDownloadManagerGui:_on_update_list_changed()
 	self._downloads_table:refresh_data()
+	self._downloads_scroll:setup_scroll_area()
+	self:update_buttons()
 end
 
 function BLTDownloadManagerGui:close()
-	-- TODO: redesign download events and fix this
-	-- BLT.Downloads:remove_event_handler(BLT.Downloads.EVENTS.added, "blt_download_manager_gui_on_update_added")
-	-- for download, listening in pairs(self._listening_to) do
-	-- 	if download and listening then
-	-- 		download.update:remove_event_handler("blt_download_manager_gui_on_update_change") -- FIXME: dirty fix
-	-- 		self._listening_to[download] = nil
-	-- 	end
-	-- end
-
+	BLT.Downloads:remove_event_handler("blt_download_manager_gui_on_update_list_changed")
 	BLT.Downloads:flush_complete_downloads()
 
 	self._root_panel:clear()
@@ -321,7 +297,9 @@ function BLTDownloadManagerGui:close()
 end
 
 function BLTDownloadManagerGui:clbk_download_all()
-	BLT.Downloads:download_all()
+	BLT.Downloads:download_all(
+		callback(self, self, "_on_download_completed")
+	)
 end
 
 function BLTDownloadManagerGui:clbk_relua_button()

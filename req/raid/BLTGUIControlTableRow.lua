@@ -75,3 +75,48 @@ function BLTGUIControlTableRow:on_mouse_released(o, button, x, y)
 
 	return true
 end
+
+function RaidGUIControlTableRow:highlight_on()
+	if self._selected then
+		return
+	end
+
+	for _, cell in pairs(self.cells) do
+		if not cell._params.on_click_callback then -- skip here for anything clickable (buttons etc)
+			cell:highlight_on()
+		end
+	end
+
+	if self._params.highlight_background_color and self._params.background_color then
+		self:set_background_color(self._params.highlight_background_color)
+	end
+end
+
+function BLTGUIControlTableRow:mouse_moved(o, x, y)
+	local inside = self:inside(x, y)
+
+	if inside then
+		for _, cell in pairs(self.cells) do
+			if cell._params.on_click_callback and cell:mouse_moved(o, x, y) then -- route mouse_moved to anything clickable (buttons etc)
+				return true, self._pointer_type                         -- return if handled
+			end
+		end
+	end
+
+	if self:selected() then
+		return
+	end
+
+	if inside then
+		if not self._mouse_inside then
+			self:on_mouse_over(x, y)
+		end
+		return true, self._pointer_type
+	end
+
+	if self._mouse_inside then
+		self:on_mouse_out(x, y)
+	end
+
+	return false
+end
