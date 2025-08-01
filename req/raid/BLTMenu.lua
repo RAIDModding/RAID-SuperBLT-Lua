@@ -8,7 +8,7 @@ BLT:Require("req/raid/BLTGUIControlMenuButton")
 BLT:Require("req/raid/BLTGUIControlStepperIconsSimple")
 BLT:Require("req/raid/BLTGUIControlStepperIcons")
 
-BLTMenu = BLTMenu or class(RaidGuiBase)
+BLTMenu = BLTMenu or blt_class(RaidGuiBase)
 --core functions
 function BLTMenu:init(ws, fullscreen_ws, node, name, args)
 	self._name = name

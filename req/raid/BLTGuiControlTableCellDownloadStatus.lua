@@ -1,4 +1,4 @@
-BLTGuiControlTableCellDownloadStatus = BLTGuiControlTableCellDownloadStatus or class(RaidGUIControl)
+BLTGuiControlTableCellDownloadStatus = BLTGuiControlTableCellDownloadStatus or blt_class(RaidGUIControl)
 BLTGuiControlTableCellDownloadStatus.FONT = tweak_data.gui.fonts.din_compressed
 BLTGuiControlTableCellDownloadStatus.FONT_SIZE = tweak_data.gui.font_sizes.small
 

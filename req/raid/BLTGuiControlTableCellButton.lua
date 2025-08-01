@@ -2,7 +2,7 @@ require("lib/managers/menu/raid_menu/controls/raidguicontrol")
 require("lib/managers/menu/raid_menu/controls/raidguicontrolbutton")
 require("lib/managers/menu/raid_menu/controls/raidguicontrolbuttonshortsecondary")
 
-BLTGUIControlTableCellButton = BLTGUIControlTableCellButton or class(RaidGUIControlButtonShortSecondary)
+BLTGUIControlTableCellButton = BLTGUIControlTableCellButton or blt_class(RaidGUIControlButtonShortSecondary)
 
 function BLTGUIControlTableCellButton:init(parent, params, cell_data, table_params)
 	params.on_click_callback = params.on_cell_click_callback

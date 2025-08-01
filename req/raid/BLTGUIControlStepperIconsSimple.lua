@@ -1,4 +1,4 @@
-BLTGUIControlStepperIconsSimple = BLTGUIControlStepperIconsSimple or class(RaidGUIControlStepperSimple)
+BLTGUIControlStepperIconsSimple = BLTGUIControlStepperIconsSimple or blt_class(RaidGUIControlStepperSimple)
 
 function BLTGUIControlStepperIconsSimple:_create_stepper_controls(sort_descending)
 	BLTGUIControlStepperIconsSimple.super._create_stepper_controls(self, sort_descending)

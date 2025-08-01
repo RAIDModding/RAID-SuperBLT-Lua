@@ -1,5 +1,5 @@
 
-BLTGUIControlMenuButton = BLTGUIControlMenuButton or class(BLTGUIControlButton)
+BLTGUIControlMenuButton = BLTGUIControlMenuButton or blt_class(BLTGUIControlButton)
 
 BLTGUIControlMenuButton.TEXT_PADDING = 16
 BLTGUIControlMenuButton.TEXT_COLOR = tweak_data.gui.colors.raid_grey

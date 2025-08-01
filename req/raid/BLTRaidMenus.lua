@@ -1,4 +1,4 @@
-BLTOptionsMenu = BLTOptionsMenu or class(RaidMenuLeftOptions)
+BLTOptionsMenu = BLTOptionsMenu or blt_class(RaidMenuLeftOptions)
 
 function BLTOptionsMenu:init(ws, fullscreen_ws, node, component_name)
 	BLTOptionsMenu.super.init(self, ws, fullscreen_ws, node, component_name)
@@ -43,7 +43,7 @@ function BLTOptionsMenu:_list_menu_options_data_source()
 	return {} -- filled by RaidMenuHelper:CreateMenu injection
 end
 
-BLTKeybindsMenu = BLTKeybindsMenu or class(BLTMenu)
+BLTKeybindsMenu = BLTKeybindsMenu or blt_class(BLTMenu)
 function BLTKeybindsMenu:Init(root)
 	self:Title({text = "menu_header_options_main_screen_name"})
 	self:SubTitle({text = "blt_options_menu_keybinds"})

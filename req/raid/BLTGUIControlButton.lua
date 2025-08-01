@@ -1,5 +1,5 @@
 
-BLTGUIControlButton = BLTGUIControlButton or class(RaidGUIControlButton)
+BLTGUIControlButton = BLTGUIControlButton or blt_class(RaidGUIControlButton)
 
 function BLTGUIControlButton:init(parent, params)
 	BLTGUIControlButton.super.init(self, parent, params)

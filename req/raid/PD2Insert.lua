@@ -9,7 +9,7 @@ tweak_data.menu.pd2_small_font = "ui/fonts/pf_din_text_comp_pro_medium_18_mf"
 --Allow mods to hook to this
 BLT:RunHookTable(BLT.hook_tables.pre, "lib/managers/menu/scrollablepanel")
 
-ScrollablePanel = ScrollablePanel or class()
+ScrollablePanel = ScrollablePanel or blt_class()
 local PANEL_PADDING = 10
 local FADEOUT_SPEED = 5
 local SCROLL_SPEED = 28

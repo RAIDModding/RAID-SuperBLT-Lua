@@ -1,6 +1,6 @@
 require("lib/managers/menu/raid_menu/controls/raidguicontroltablerow")
 
-BLTGUIControlTableRow = BLTGUIControlTableRow or class(RaidGUIControlTableRow)
+BLTGUIControlTableRow = BLTGUIControlTableRow or blt_class(RaidGUIControlTableRow)
 
 function BLTGUIControlTableRow:init(parent, params, row_data, table_params)
 	RaidGUIControlTableRow.super.init(self, parent, params)

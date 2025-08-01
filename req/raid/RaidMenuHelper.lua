@@ -223,7 +223,7 @@ function RaidMenuHelper:LoadMenu(data, path, mod)
 			data.class = loadstring("return "..tostring(data.class))()
 			clss = data.class
 		else
-			clss = class(BLTMenu)
+			clss = blt_class(BLTMenu)
 			rawset(_G, clss, data.global_name or data.name.."Menu")
 		end
 		if data.get_value and clss then
