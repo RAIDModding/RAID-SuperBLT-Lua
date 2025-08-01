@@ -86,9 +86,6 @@ function BLTModsGui:_layout()
 	self:_layout_primary_paper()
 	self:_layout_secondary_paper()
 
-	-- local header_height = self._node.components.raid_menu_header._screen_subtitle_label:bottom()
-	-- local footer_height = self._node.components.raid_menu_footer._panel_h
-
 	-- _list_panel
 	self._list_panel = self._root_panel:panel({
 		h = 690,
@@ -113,17 +110,11 @@ function BLTModsGui:_layout()
 	-- _list_tabs
 	local tabs_params = {
 		{
-			-- breadcrumb = {
-			-- 	category = BreadcrumbManager.CATEGORY_CONSUMABLE_MISSION,
-			-- },
 			callback_param = BLTModsGui.TABS_REGULAR_MODS,
 			name = BLTModsGui.TABS_REGULAR_MODS,
 			text = self:translate("blt_regular_mods_tab", true),
 		},
 		{
-			-- breadcrumb = {
-			-- 	category = BreadcrumbManager.CATEGORY_OPERATIONS,
-			-- },
 			callback_param = BLTModsGui.TABS_CORE_MODS,
 			name = BLTModsGui.TABS_CORE_MODS,
 			text = self:translate("blt_core_mods_tab", true),
@@ -154,7 +145,7 @@ function BLTModsGui:_layout()
 		name = "blt_regular_mods_list",
 		data_source_callback = callback(self, self, "_mods_list_data_source", BLTModsGui.TABS_REGULAR_MODS),
 		scrollable_area_ref = self._regular_mods_list_panel,
-		loop_items = false,
+		loop_items = true,
 		selection_enabled = true,
 		padding_top = 2,
 		vertical_spacing = 2,
@@ -166,14 +157,7 @@ function BLTModsGui:_layout()
 		on_mouse_over_sound_event = "highlight",
 		w = self._regular_mods_list_panel:w(),
 		on_item_clicked_callback = callback(self, self, "_on_mod_selected"),
-		-- on_item_double_clicked_callback = callback(self, self, "_on_mods_list_double_clicked"),
 		on_item_selected_callback = callback(self, self, "_on_mod_selected"),
-		-- selected_callback = callback(self, self, "_on_regular_mods_list_selected"),
-		-- unselected_callback = callback(self, self, "_on_regular_mods_list_unselected"),
-		on_menu_move = {
-			-- up = "blt_download_manager_btn",
-			down = "blt_download_manager_btn",
-		},
 	})
 	self._regular_mods_list_panel:setup_scroll_area()
 
@@ -192,7 +176,7 @@ function BLTModsGui:_layout()
 		name = "blt_core_mods_list",
 		data_source_callback = callback(self, self, "_mods_list_data_source", BLTModsGui.TABS_CORE_MODS),
 		scrollable_area_ref = self._core_mods_list_panel,
-		loop_items = false,
+		loop_items = true,
 		selection_enabled = true,
 		padding_top = 2,
 		vertical_spacing = 2,
@@ -203,14 +187,7 @@ function BLTModsGui:_layout()
 		on_mouse_click_sound_event = "menu_enter",
 		on_mouse_over_sound_event = "highlight",
 		on_item_clicked_callback = callback(self, self, "_on_mod_selected"),
-		-- on_item_double_clicked_callback = callback(self, self, "_on_mods_list_double_clicked"),
 		on_item_selected_callback = callback(self, self, "_on_mod_selected"),
-		-- selected_callback = callback(self, self, "_on_core_mods_list_selected"),
-		-- unselected_callback = callback(self, self, "_on_core_mods_list_unselected"),
-		on_menu_move = {
-			-- up = "blt_download_manager_btn",
-			down = "blt_download_manager_btn",
-		},
 	})
 	self._core_mods_list_panel:setup_scroll_area()
 
@@ -605,11 +582,6 @@ function BLTModsGui:_select_regular_mods_tab()
 	self._core_mods_list_panel:set_alpha(0)
 	self._regular_mods_list_panel:set_visible(true)
 	self._regular_mods_list_panel:set_alpha(1)
-
-	self._download_manager_button:set_menu_move_controls({
-		up = "blt_regular_mods_list",
-		-- down = "blt_regular_mods_list",
-	})
 end
 
 function BLTModsGui:_select_core_mods_tab()
@@ -621,11 +593,6 @@ function BLTModsGui:_select_core_mods_tab()
 	self._regular_mods_list_panel:set_alpha(0)
 	self._core_mods_list_panel:set_visible(true)
 	self._core_mods_list_panel:set_alpha(1)
-
-	self._download_manager_button:set_menu_move_controls({
-		up = "blt_core_mods_list",
-		-- down = "blt_core_mods_list",
-	})
 end
 
 function BLTModsGui:_on_list_tabs_left()
@@ -917,7 +884,8 @@ function BLTModsGui:_update_info_buttons(mod)
 
 	if has_mod then
 		if not mod:IsUndisablable() then
-			self._info_button_mod_toggle_enable._text:set_text(mod:IsEnabled() and self:translate("blt_infobtn_disable_state") or self:translate("blt_infobtn_enable_state"))
+			self._info_button_mod_toggle_enable._text:set_text(mod:IsEnabled() and
+				self:translate("blt_infobtn_disable_state") or self:translate("blt_infobtn_enable_state"))
 			self._info_button_mod_toggle_enable:_fit_size()
 		end
 
@@ -1263,14 +1231,13 @@ function BLTModsGui:bind_controller_inputs()
 			callback = callback(self, self, "_on_column_right"),
 			key = Idstring("menu_controller_trigger_right"),
 		},
+		{
+			callback = callback(self, self, "clbk_open_download_manager"),
+			key = Idstring("menu_controller_face_left"),
+		},
 	}
-	-- if Network:is_server() then
-	-- 	table.insert(bindings, {
-	-- 		callback = callback(self, self, "_on_start_raid"),
-	-- 		key = Idstring("menu_controller_face_top"),
-	-- 	})
-	-- end
 	self:set_controller_bindings(bindings, true)
+
 	local legend = {
 		controller = {
 			"menu_legend_back",
@@ -1283,6 +1250,10 @@ function BLTModsGui:bind_controller_inputs()
 					self:translate("blt_core_mods_tab", true),
 			},
 			"menu_legend_mission_column",
+			{
+				translated_text = managers.localization:get_default_macros().BTN_X .. " " ..
+					self:translate("blt_download_manager", true),
+			},
 		},
 		keyboard = {
 			{
@@ -1291,9 +1262,6 @@ function BLTModsGui:bind_controller_inputs()
 			},
 		},
 	}
-	-- if Network:is_server() then
-	-- 	table.insert(legend.controller, "menu_legend_mission_start_raid")
-	-- end
 	self:set_legend(legend)
 end
 

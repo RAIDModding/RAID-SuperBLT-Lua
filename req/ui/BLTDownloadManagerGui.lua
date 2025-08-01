@@ -173,25 +173,44 @@ function BLTDownloadManagerGui:_layout()
 		use_selector_mark = true,
 		w = self._downloads_scroll:w() - padding * 2,
 		y = header_height + padding,
-		x = padding
+		x = padding,
 	})
-
 	self._downloads_scroll:setup_scroll_area()
-	self:update_buttons()
+
+	self._downloads_table:set_selected(true)
+	self:bind_controller_inputs()
 end
 
-function BLTDownloadManagerGui:update_buttons()
-	local pending_downloads = BLT.Downloads:pending_downloads()
-	local has_pending_downloads = (table.size(pending_downloads) > 0)
-
-	self._download_all_btn:set_visible(has_pending_downloads)
-	self._relua_btn:set_visible(has_pending_downloads and BLT:CheckUpdatesReluaPossible(pending_downloads))
+function BLTDownloadManagerGui:_additional_active_controls()
+	return {
+		self._downloads_table
+	}
 end
 
 function BLTDownloadManagerGui:bind_controller_inputs()
-	local bindings = {
-	}
+	local pending_downloads = BLT.Downloads:pending_downloads()
+	local has_pending_downloads = (table.size(pending_downloads) > 0)
+	local can_relua = has_pending_downloads and BLT:CheckUpdatesReluaPossible(pending_downloads)
 
+	self._download_all_btn:set_visible(has_pending_downloads)
+	self._relua_btn:set_visible(can_relua)
+
+	local bindings = {
+		-- TODO?: view patch notes (of selected mod)
+		-- TODO?: download mod (of selected mod)
+	}
+	if has_pending_downloads then
+		table.insert(bindings, {
+			callback = callback(self, self, "clbk_download_all"),
+			key = Idstring("menu_controller_face_left"),
+		})
+	end
+	if can_relua then
+		table.insert(bindings, {
+			callback = callback(self, self, "clbk_relua_button"),
+			key = Idstring("menu_controller_face_top"),
+		})
+	end
 	self:set_controller_bindings(bindings, true)
 
 	local legend = {
@@ -205,7 +224,18 @@ function BLTDownloadManagerGui:bind_controller_inputs()
 			},
 		},
 	}
-
+	if has_pending_downloads then
+		table.insert(legend.controller, {
+			translated_text = managers.localization:get_default_macros().BTN_X .. " " ..
+				self:translate("blt_download_all", true),
+		})
+	end
+	if can_relua then
+		table.insert(legend.controller, {
+			translated_text = managers.localization:get_default_macros().BTN_Y .. " " ..
+				self:translate("blt_download_relua_button", true),
+		})
+	end
 	self:set_legend(legend)
 end
 
@@ -282,13 +312,13 @@ function BLTDownloadManagerGui:on_cell_click_download(_, _, data)
 end
 
 function BLTDownloadManagerGui:_on_download_completed(download)
-	self:update_buttons()
+	self:bind_controller_inputs()
 end
 
 function BLTDownloadManagerGui:_on_download_list_changed()
 	self._downloads_table:refresh_data()
 	self._downloads_scroll:setup_scroll_area()
-	self:update_buttons()
+	self:bind_controller_inputs()
 end
 
 function BLTDownloadManagerGui:close()
