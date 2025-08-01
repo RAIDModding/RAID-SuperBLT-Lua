@@ -135,7 +135,7 @@ function BLTGUIControlTableRow:move_left()
 	end
 
 	-- try select next button
-	for i = (self._selected_button_idx or (btn_count + 1)) - 1, btn_count, -1 do
+	for i = (self._selected_button_idx or (btn_count + 1)) - 1, 1, -1 do
 		local button = self.button_cells[i]
 		if button and button:visible() and button:enabled() then
 			button:select_on()
