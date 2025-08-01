@@ -283,7 +283,6 @@ function BLTDownloadManagerGui:_data_source()
 				info = download_name,
 				text = self:translate("blt_update_now", true),
 				value = download,
-				visible = not download.update:DisallowsUpdate(),
 			},
 		})
 	end

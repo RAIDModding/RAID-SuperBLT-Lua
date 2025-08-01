@@ -798,7 +798,7 @@ function BLTMod:_load_updates_xml(scope, tag)
 				end
 			})
 			if update.host or update.provider then
-				update.disallow_update = Utils:ToBoolean(update.disallow_update)
+				update.disallow_update = update.disallow_update
 				update.critical = Utils:ToBoolean(update.critical)
 				self:AddUpdate(update)
 			end

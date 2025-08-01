@@ -104,9 +104,7 @@ end
 
 function BLTDownloadManager:download_all(complete_clbk, progress_clbk)
 	for _, download in ipairs(self:pending_downloads()) do
-		if not download.update:DisallowsUpdate() then
-			self:start_download(download.update, complete_clbk, progress_clbk)
-		end
+		self:start_download(download.update, complete_clbk, progress_clbk)
 	end
 end
 
