@@ -45,7 +45,7 @@ function BLTGuiControlTableCellDownloadStatus:init(parent, params, cell_data, ta
 		center = "slider_large_center",
 		right = "slider_large_right",
 	})
-	self._progress:set_bottom(params.height - 10)
+	self._progress:set_bottom(params.height - 16)
 
 	BLT.Downloads:register_event_handler(BLT.Downloads.EVENTS.download_state_changed,
 		"blt_downloads_gui_list_on_download_state_changed" .. params.value.update:GetName(),
