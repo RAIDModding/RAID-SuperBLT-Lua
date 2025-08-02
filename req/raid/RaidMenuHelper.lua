@@ -31,24 +31,23 @@ function RaidMenuHelper:CreateMenu(params)
 		managers.raid_menu.menus[component_name] = {name = component_name, class = params.class}
 	end
 	if params.class then
-        if managers.menu_component then
-            MenuHelper:AddComponent(component_name, params.class, params.args)
-        else
-            BLT:Log(LogLevel.ERROR, "BLTMenuHelper", "You're building the menu too early! menu component isn't loaded yet.")
-        end
+		if managers.menu_component then
+			MenuHelper:AddComponent(component_name, params.class, params.args)
+		else
+			BLT:Log(LogLevel.ERROR, "BLTMenuHelper", "You're building the menu too early! menu component isn't loaded yet.")
+		end
 	end
 	if params.localize == nil then
 		params.localize = true
 	end
 	if params.inject_menu == "blt_options" then
-		log("inject_menu = \"blt_options\" is deprecated, use inject_list = \"blt_options\" instead. (menu: " ..
-			name .. ")")
+		BLT:Log(LogLevel.WARN, "inject_menu = \"blt_options\" is deprecated, use inject_list = \"blt_options\" instead. (menu: ", name, ")")
 		params.inject_list = "blt_options"
 		params.inject_menu = nil
 	end
-    if params.inject_list then
-        self:InjectButtons(params.inject_list, params.inject_after, {
-            self:PrepareListButton(text, params.localize, self:MakeNextMenuClbk(component_name), params.flags, params.icon)
+	if params.inject_list then
+		self:InjectButtons(params.inject_list, params.inject_after, {
+			self:PrepareListButton(text, params.localize, self:MakeNextMenuClbk(component_name), params.flags, params.icon)
 		}, true)
 	elseif params.inject_menu then
 		local menu = managers.raid_menu.menus[params.inject_menu]
@@ -69,17 +68,17 @@ function RaidMenuHelper:CreateMenu(params)
 				self:PrepareButton(text, params.localize, clbk, params.icon)
 			})
 		end
-    end
-    return params.name
+	end
+	return params.name
 end
 
 function RaidMenuHelper:InjectButtons(menu, point, buttons, is_list)
-    BLT.raid_menus[menu] = BLT.raid_menus[menu] or {}
-    table.insert(BLT.raid_menus[menu], {
-        buttons = buttons,
+	BLT.raid_menus[menu] = BLT.raid_menus[menu] or {}
+	table.insert(BLT.raid_menus[menu], {
+		buttons = buttons,
 		point = point,
 		is_list = is_list
-    })
+	})
 end
 
 function RaidMenuHelper:PrepareButton(text, localize, callback, icon)
@@ -108,7 +107,7 @@ end
 function RaidMenuHelper:MakeNextMenuClbk(next_menu)
 	local id = "open_menu_" .. next_menu
 	RaidMenuCallbackHandler[id] = RaidMenuCallbackHandler[id] or function(this)
-        managers.raid_menu:open_menu(next_menu)
+		managers.raid_menu:open_menu(next_menu)
 	end
 	return id
 end
@@ -223,7 +222,7 @@ function RaidMenuHelper:LoadMenu(data, path, mod)
 			data.class = loadstring("return "..tostring(data.class))()
 			clss = data.class
 		else
-			clss = class(BLTMenu)
+			clss = blt_class(BLTMenu)
 			rawset(_G, clss, data.global_name or data.name.."Menu")
 		end
 		if data.get_value and clss then
@@ -250,6 +249,7 @@ function RaidMenuHelper:LoadMenu(data, path, mod)
 			clss._items_data = {}
 			for k, item in ipairs(data) do
 				if type(item) == "table" and item.type then
+					-- FIXME?: string.CamelCase ??
 					item.type = string.CamelCase(item.type) -- write the types how you want(multi_choice, MultiChoice)
 					if item.type == "Menu" then
 						item.inject_menu = item.inject_menu or data.name
@@ -258,7 +258,7 @@ function RaidMenuHelper:LoadMenu(data, path, mod)
 						self:LoadMenu(item, path, mod)
 					else
 						if item.callback then
-							if item.callback:begins("callback") then
+							if string.begins(item.callback, "callback") then
 								item.callback = loadstring("return "..tostring(item.callback))
 							elseif clss[item.callback] then
 								item.callback = callback(clss, clss, item.callback)

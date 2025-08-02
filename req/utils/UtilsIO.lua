@@ -18,11 +18,11 @@ function c.TraverseXML(xml, parent_scope, callbacks, allow_unknown)
 				local first, last = val:find("#{%a[%w_]-}")
 				if not first then break end
 
-				local name = val:sub(first + 2, last - first)
-				local target_var = scope[name]
+				local _name = val:sub(first + 2, last - first)
+				local target_var = scope[_name]
 
 				assert(target_var, "Trying to use missing parameter '"
-					.. name .. "' as a #{value} in " .. tag._doc.filename)
+					.. _name .. "' as a #{value} in " .. tag._doc.filename)
 
 				val = val:sub(1, first - 1) .. target_var .. val:sub(last + 1)
 			end
@@ -59,7 +59,7 @@ function c.ReplaceIncludesInXML(xml, path)
 		if tag.name == ":include" then
 			local file_path = path .. tag.params.src
 
-			-- Attempt to read the mod defintion file
+			-- Attempt to read the mod definition file
 			local file = io.open(file_path)
 			assert(file, "Could not open " .. file_path)
 
@@ -109,7 +109,7 @@ function io.remove_directory_and_files(path, verbose)
 	end
 
 	if not path then
-		BLT:Log(LogLevel.ERROR, "Paramater #1 to io.remove_directory_and_files, string expected, recieved " .. tostring(path))
+		BLT:Log(LogLevel.ERROR, "Parameter #1 to io.remove_directory_and_files, string expected, received " .. tostring(path))
 		return false
 	end
 

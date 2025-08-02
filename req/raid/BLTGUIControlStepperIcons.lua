@@ -1,4 +1,4 @@
-BLTGUIControlStepperIcons = BLTGUIControlStepperIcons or class(RaidGUIControlStepper)
+BLTGUIControlStepperIcons = BLTGUIControlStepperIcons or blt_class(RaidGUIControlStepper)
 
 function BLTGUIControlStepperIcons:_create_stepper_controls()
 	local sideline_params = {

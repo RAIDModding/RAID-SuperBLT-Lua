@@ -1,5 +1,5 @@
 {
-	"blt_options_menu_blt_mods" : "(S)BLT Моды",
+	"blt_options_menu_blt_mods" : "SuperBLT Моды",
 	"blt_options_menu_blt_mods_desc" : "Обновление и управление установленными BLT модами",
 	"blt_options_menu_lua_mod_options" : "Настройки модов",
 	"blt_options_menu_lua_mod_options_desc" : "Настройки установленные BLT моды",
@@ -37,9 +37,9 @@
 	"blt_mod_safemode_disabled" : "Безопасный режим:\nОтключено",
 	"blt_mod_safemode_disabled_help" : "Данный мод не будет выключен после основных обновлений игры.",
 
-	"blt_mod_updates_enabled" : "Автообновления:\nВключено",
+	"blt_mod_updates_enabled" : "Автообновления: Включено",
 	"blt_mod_updates_enabled_help" : "Автоматически проверять обновления на сервере PaydayMods для актуализации версии мода.",
-	"blt_mod_updates_disabled" : "Автообновления:\nОтключено",
+	"blt_mod_updates_disabled" : "Автообновления: Отключено",
 	"blt_mod_updates_disabled_help" : "Данный мод не будет автоматически проверяться на сервере PaydayMods для актуализации версии мода.",
 
 	"blt_mod_check_for_updates" : "Проверить обновления",
@@ -60,7 +60,6 @@
 	"blt_update_later" : "Обновить позже",
 	
 	"blt_download_manager" : "Менеджер загрузок",
-	"blt_download_manager_help" : "Обновите свои BLT моды.\nРади всего святого, обновите их!",
 	"blt_download_ready" : "Готов к загрузке",
 	"blt_download_waiting" : "Ожидание...",
 	"blt_download_downloading" : "Загрузка... $current; $unit; / $total; $unit;",
@@ -69,7 +68,6 @@
 	"blt_download_verifying" : "Проверка...",
 	"blt_download_failed" : "Неудача! Попробовать ещё раз?",
 	"blt_download_done" : "Завершено!",
-	"blt_download_dependency" : "$dependency, требуется $mod",
 	"blt_download_all" : "Обновить всё",
 
 	"blt_checking_updates" : "Проверка обновлений",

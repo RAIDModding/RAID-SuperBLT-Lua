@@ -4,6 +4,7 @@ BLTPersistScripts = blt_class(BLTModule)
 BLTPersistScripts.__type = "BLTPersistScripts"
 
 function BLTPersistScripts:init()
+	---@diagnostic disable-next-line: undefined-field
 	BLTPersistScripts.super.init(self)
 
 	Hooks:Add("MenuUpdate", "BLTPersistScripts.MenuUpdate", function(t, dt)

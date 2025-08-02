@@ -1,5 +1,5 @@
 ---@class QuickMenu
----@field new fun(self, title: string, text: string, options: table, show_immediately: boolean?):QuickMenu
+---@field new fun(self, title: string, text: string, options: table|nil, show_immediately: boolean?):QuickMenu
 QuickMenu = QuickMenu or blt_class()
 QuickMenu._menu_id_key = "quick_menu_id_"
 QuickMenu._menu_id_index = 0
@@ -17,6 +17,7 @@ function QuickMenu:init(title, text, options, show_immediately)
 	local add_default = false
 	if (not options) or (options ~= nil and type(options) ~= "table") or (options ~= nil and type(options) == "table" and #options == 0) then
 		add_default = true
+		options = options or {}
 	end
 	if add_default then
 		local tbl = {

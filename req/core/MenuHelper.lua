@@ -16,9 +16,9 @@ function MenuHelper:SetupMenuButton(menu, id, button_name)
 
 	local button_id
 	if button_name then
-		for id, item in pairs(menu[id]:items()) do
+		for _id, item in pairs(menu[id]:items()) do
 			if type(item) == "table" and item._parameters and item._parameters.name == button_name then
-				button_id = id
+				button_id = _id
 			end
 		end
 	else
@@ -743,7 +743,7 @@ function MenuHelper:LoadFromJsonFile(file_path, parent_class, data_table)
 end
 
 ---Resets all specified items to a specific value
----@param item any @Menu item for which the helper function can retreive any items specified in `items_table`
+---@param item any @Menu item for which the helper function can retrieve any items specified in `items_table`
 ---@param items_table table @Table of items, where the item name is the key, which should be reset to the value
 ---@param value any @Value which all items specified should be reset to
 function MenuHelper:ResetItemsToDefaultValue(item, items_table, value)
@@ -773,7 +773,7 @@ function MenuHelper:ResetItemsToDefaultValue(item, items_table, value)
 	managers.viewport:resolution_changed()
 end
 
----Registers a new BLTCustomComponent  
+---Registers a new Gui Component (RaidGuiBase based or similar)
 ---Note that you still need to set up your component in BLTMenuNodes
 ---
 ---This does the following:
@@ -829,8 +829,9 @@ function MenuHelper:AddComponent(name, clss, args)
 				this._active_controls[component] = {}
 				if this[u_name]._root_panel then
 					local final_list = this._active_controls[component]
-					for _, control in ipairs(this[u_name]._root_panel._controls) do
-						this:_collect_controls(control, final_list)
+					this:_collect_controls(this[u_name]._root_panel, final_list)
+					if this[u_name]._additional_active_controls then
+						this:_collect_controls(this[u_name]:_additional_active_controls(), final_list)
 					end
 				end
 			end
@@ -842,7 +843,10 @@ function MenuHelper:AddComponent(name, clss, args)
 		end
 
 		-- function MenuComponentManager:close_name_gui()
-		MenuComponentManager[close] = function(this)
+		MenuComponentManager[close] = function(this, node, component)
+			if component then
+				this._active_controls[component] = {}
+			end
 			if this[u_name] then
 				if this[u_name].update then
 					this:remove_update_component(this[u_name])

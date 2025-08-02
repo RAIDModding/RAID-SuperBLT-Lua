@@ -4,6 +4,19 @@ This lists the changes between different versions of the RAID-SuperBLT basemod,
 the changes for the DLL are listed in their own changelog.
 Contributors other than maintainers are listed in parenthesis after specific changes.
 
+## v2.0.0
+
+- entirely rewritten mods/downloads manager pages (and notifications panel) to fit the RAID theme much better, (based on RaidGuiBase).
+- implemented controller/keyboard support to same pages (not to notifications gui in main menu though, use the entries in options instead)
+- dropped pd2-themed custom icons in favor of new ones by dribbleondo and shinrax2
+- dropped BLTCustomComponent and other old PD2 based GUI controls
+- added `BLTMenu:AutoBindNamedControlsBegin()` and `BLTMenu:AutoBindNamedControlsEnd()` for auto routing `on_menu_move` param when building custom option menus (pass `no_auto_bind = true` to single controls, to skip)
+- added `auto_select_on_hover = true` param to BLTMenu controls. (defaults to false for backwards compat) - this also makes sure descriptions are shown, when using kb/controller
+- improved handling of ui updates when download states change in BLTUpdate and DownloadManager
+- unified yes/no button-order in dialogs with the game
+- several internal fixes and cleanups
+- re-enabled use of blt.init_db (which is now fixed in dll)
+
 ## v1.3.0
 
 - new mod options sub menu, matching the style of main menu and options.

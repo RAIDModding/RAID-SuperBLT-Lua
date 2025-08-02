@@ -99,6 +99,7 @@ function LuaNetworking:SendToPeersExcept(peer_id, id, data)
 	local except = type(peer_id) == "table" and table.list_to_set(peer_id) or { [peer_id] = true }
 	local peerStr = type(peer_id) == "table" and table.concat(peer_id, ",") or peer_id
 	local message = LuaNetworking.ExceptPeerString:format(LuaNetworking.ExceptPeer, peerStr, id, data)
+	-- FIXME: table.filter ??
 	self:SendStringThroughChat(message, table.filter(self:GetPeers(), function (peer) return except[peer:id()] == nil end))
 end
 

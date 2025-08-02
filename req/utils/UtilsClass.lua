@@ -1,11 +1,9 @@
-
 -- BLT Class definition, same as Payday 2 definition
 
 BLT.__overrides = {}
 BLT.__everyclass = {}
 
 function blt_class(...)
-
 	local super = (...)
 	if select("#", ...) >= 1 and super == nil then
 		error("trying to inherit from nil", 2)
@@ -29,5 +27,4 @@ function blt_class(...)
 	end
 
 	return class_table
-
 end

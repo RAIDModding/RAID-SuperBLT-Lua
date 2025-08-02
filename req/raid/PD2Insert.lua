@@ -9,7 +9,7 @@ tweak_data.menu.pd2_small_font = "ui/fonts/pf_din_text_comp_pro_medium_18_mf"
 --Allow mods to hook to this
 BLT:RunHookTable(BLT.hook_tables.pre, "lib/managers/menu/scrollablepanel")
 
-ScrollablePanel = ScrollablePanel or class()
+ScrollablePanel = ScrollablePanel or blt_class()
 local PANEL_PADDING = 10
 local FADEOUT_SPEED = 5
 local SCROLL_SPEED = 28
@@ -50,15 +50,6 @@ function ScrollablePanel:init(parent_panel, name, data)
 			y = self:y_padding(),
 			w = self:canvas():w()
 		})
-
-		BoxGuiObject:new(scroll_up_indicator_shade, {
-			sides = {
-				0,
-				0,
-				2,
-				0
-			}
-		}):set_aligns("scale", "scale")
 	end
 
 	if data.ignore_down_indicator == nil or not data.ignore_down_indicator then
@@ -73,15 +64,6 @@ function ScrollablePanel:init(parent_panel, name, data)
 			w = self:canvas():w(),
 			h = self:panel():h() - self:y_padding() * 2
 		})
-
-		BoxGuiObject:new(scroll_down_indicator_shade, {
-			sides = {
-				0,
-				0,
-				0,
-				2
-			}
-		}):set_aligns("scale", "scale")
 	end
 
 	local texture, rect = "guis/blt/scrollbar_arrows", {1, 1, 9, 10}
@@ -133,26 +115,16 @@ function ScrollablePanel:init(parent_panel, name, data)
 		halign = "grow",
 	})
 
-	self._scroll_bar_box_class = BoxGuiObject:new(self._scroll_bar, {
-		sides = {
-			2,
-			2,
-			0,
-			0
-		}
-	})
-
-	self._scroll_bar_box_class:set_aligns("scale", "scale")
 	self._scroll_bar:set_w(data.scroll_w or 8)
 	self._scroll_bar:set_bottom(scroll_down_indicator_arrow:top())
 	self._scroll_bar:set_center_x(scroll_down_indicator_arrow:center_x())
 
 	self._bar_minimum_size = data.bar_minimum_size or 5
-	self._thread = self._panel:animate(function (o, self)
+	self._thread = self._panel:animate(function (o, this)
 		while true do
 			local dt = coroutine.yield()
 
-			self:_update(dt)
+			this:_update(dt)
 		end
 	end, self)
 end
@@ -302,7 +274,6 @@ function ScrollablePanel:set_canvas_size(w, h)
 	if not show_scrollbar then
 		self._scroll_bar:set_alpha(0)
 		self._scroll_bar:set_visible(false)
-		self._scroll_bar_box_class:hide()
 		self:set_element_alpha_target("scroll_up_indicator_arrow", 0, 100)
 		self:set_element_alpha_target("scroll_down_indicator_arrow", 0, 100)
 		self:set_element_alpha_target("scroll_up_indicator_shade", 0, 100)
@@ -310,7 +281,6 @@ function ScrollablePanel:set_canvas_size(w, h)
 	else
 		self._scroll_bar:set_alpha(1)
 		self._scroll_bar:set_visible(true)
-		self._scroll_bar_box_class:show()
 		self:_set_scroll_indicator()
 		self:_check_scroll_indicator_states()
 	end

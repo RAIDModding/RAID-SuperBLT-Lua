@@ -4,7 +4,7 @@
     description="The collection of Lua files that allow the BLT hook to function."
     author="ZNix, James Wilkinson, RAIDModding"
     contact="https://discord.gg/9tAtgtGpx9"
-    version="1.3.0"
+    version="2.0.0"
     priority="1001"
     image="assets/guis/blt/icon.png"
     color="255 0 255"
@@ -48,11 +48,10 @@
 
     <assets base_path="assets/">
         <group name="guis/blt/">
-            <file :name="check_updates.png"/>
-            <file :name="download.png"/>
-            <file :name="enable.png"/>
             <file :name="updates.png"/>
             <file :name="scrollbar_arrows.texture"/>
+            <file :name="lock.texture"/>
+            <file :name="questionmark.texture"/>
         </group>
     </assets>
 
@@ -70,11 +69,11 @@
         <group script_path="lua/raid/">
             <post hook_id="lib/managers/menu/raid_menu/controls/raidguicontrolkeybind" :script_path="RaidGUIControlKeyBind.lua"/>
             <post hook_id="lib/setups/setup" :script_path="AddCallOnNextUpdate.lua"/>
+            <post hook_id="lib/managers/menu/raid_menu/controls/raidguicontrol" :script_path="RaidGUIControl.lua"/>
             <post hook_id="lib/managers/menu/raid_menu/controls/raidguipanel" :script_path="RaidGUIPanel.lua"/>
         </group>
         <group script_path="req/raid/">
             <post hook_id="lib/managers/menu/menucomponentmanager" :script_path="PD2Insert.lua"/>
-            <pre hook_id="lib/managers/menu/menucomponentmanager" :script_path="MenuGuiComponentGeneric.lua"/>
             <post hook_id="lib/managers/menu/menucomponentmanager" :script_path="BLTMenu.lua"/>
             <post hook_id="lib/managers/menu/menucomponentmanager" :script_path="BLTRaidMenus.lua"/>
             <post hook_id="lib/entry" :script_path="RaidMenuHelper.lua"/>
@@ -82,7 +81,6 @@
 
         <group script_path="req/">
             <group :script_path="ui/">
-                <post hook_id="lib/managers/menu/menucomponentmanager" :script_path="BLTCustomComponent.lua"/>
                 <post hook_id="lib/managers/menu/menucomponentmanager" :script_path="BLTModsGui.lua"/>
                 <post hook_id="lib/managers/menu/menucomponentmanager" :script_path="BLTDownloadManagerGui.lua"/>
                 <post hook_id="lib/managers/menu/menucomponentmanager" :script_path="BLTNotificationsGui.lua"/>

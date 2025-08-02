@@ -31,11 +31,7 @@ function BLTModDependency:GetServerName()
 end
 
 function BLTModDependency:GetName()
-	local macros = {
-		dependency = self:GetServerName(),
-		mod = self:GetParentMod():GetName()
-	}
-	return managers.localization:text("blt_download_dependency", macros)
+	return self:GetServerName()
 end
 
 function BLTModDependency:DisallowsUpdate()

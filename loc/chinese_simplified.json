@@ -1,5 +1,5 @@
 {
-	"blt_options_menu_blt_mods" : "(S)BLT 模组",
+	"blt_options_menu_blt_mods" : "SuperBLT 模组",
 	"blt_options_menu_blt_mods_desc" : "更新与管理您已安装的 BLT 模组",
 	"blt_options_menu_lua_mod_options" : "模组选项",
 	"blt_options_menu_lua_mod_options_desc" : "个性化定制您已安装的 BLT 模组。",
@@ -37,9 +37,9 @@
 	"blt_mod_safemode_disabled" : "安全模式：\n已禁用",
 	"blt_mod_safemode_disabled_help" : "本模组将在重大更新以后取消自动禁用。",
 
-	"blt_mod_updates_enabled" : "自动更新：\n启用",
+	"blt_mod_updates_enabled" : "自动更新： 启用",
 	"blt_mod_updates_enabled_help" : "将自动检查本模组的最新版本。",
-	"blt_mod_updates_disabled" : "自动更新：\n禁用",
+	"blt_mod_updates_disabled" : "自动更新： 禁用",
 	"blt_mod_updates_disabled_help" : "本模组将不再自动检查最新版本。",
 
 	"blt_mod_check_for_updates" : "现在检查更新",
@@ -60,7 +60,6 @@
 	"blt_update_later" : "稍后更新",
 	
 	"blt_download_manager" : "下载管理器",
-	"blt_download_manager_help" : "记得更新您的 BLT 模组。\n看在上帝的份上，记得更新您的模组。",
 	"blt_download_ready" : "准备下载",
 	"blt_download_waiting" : "请稍后...",
 	"blt_download_downloading" : "正在下载... $current; $unit; / $total; $unit;",
@@ -69,7 +68,6 @@
 	"blt_download_verifying" : "正在验证...",
 	"blt_download_failed" : "下载失败！是否重试？",
 	"blt_download_done" : "完成！",
-	"blt_download_dependency" : "$dependency 模组依赖 $mod 模组。",
 	"blt_download_all" : "全部更新",
 
 	"blt_checking_updates" : "正在检查更新",

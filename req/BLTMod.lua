@@ -121,7 +121,7 @@ function BLTMod:LoadXML()
 	local mod_path = self:GetPath()
 	local supermod_path = mod_path .. (self.data and self.data.supermod_definition or "supermod.xml")
 
-	-- Attempt to read the mod defintion file
+	-- Attempt to read the mod definition file
 	local file = io.open(supermod_path)
 	if file then
 
@@ -152,8 +152,8 @@ function BLTMod:LoadXML()
 			if v == "init" or (type(v) == "table" and v.event == "init") then
 				local clbk = type(v) == "table" and v.xml_callback or self["_load_"..tag.."_xml"] or self["_load_"..tag]
 				if clbk then
-					load_tags[tag] = function(scope, tag)
-						clbk(self, scope, tag)
+					load_tags[tag] = function(scope, _tag)
+						clbk(self, scope, _tag)
 					end
 				end
 			end
@@ -200,8 +200,8 @@ function BLTMod:PostInit()
 
 		if event == "post_init" then
 			if xml_clbk then
-				load_tags[tag] = function(scope, tag)
-					xml_clbk(self, scope, tag)
+				load_tags[tag] = function(scope, _tag)
+					xml_clbk(self, scope, _tag)
 				end
 			end
 			if data_clbk and tag_data then
@@ -209,9 +209,9 @@ function BLTMod:PostInit()
 			end
 		elseif event == "setup" then  -- Load them later in :Setup
 			if xml_clbk then
-				load_tags[tag] = function(scope, tag)
+				load_tags[tag] = function(scope, _tag)
 					table.insert(self._setup_callbacks, function()
-						xml_clbk(self, scope, tag)
+						xml_clbk(self, scope, _tag)
 					end)
 				end
 			end
@@ -360,7 +360,7 @@ function BLTMod:LastError()
 end
 
 function BLTMod:IsOutdated()
-	return self._outdated -- FIXME: implement min_sblt_version as in RaidBLT?
+	return self._outdated -- FIXME: _outdated is never set! implement min_sblt_version as in RaidBLT?
 end
 
 function BLTMod:IsEnabled()
@@ -555,7 +555,8 @@ function BLTMod:clbk_check_for_updates(update, required, reason)
 	self._update_cache[update:GetId()] = {
 		requires_update = required,
 		reason = reason,
-		update = update
+		update = update,
+		mod = update:GetParentMod(),
 	}
 
 	if self._update_cache.clbk and not self:IsCheckingForUpdates() then
@@ -655,8 +656,8 @@ end
 
 function BLTMod:RetrieveDependencies()
 	for _, dependency in ipairs(self:GetMissingDependencies()) do
-		dependency:Retrieve(function(dependency, exists_on_server)
-			self:clbk_retrieve_dependency(dependency, exists_on_server)
+		dependency:Retrieve(function(dep, exists_on_server)
+			self:clbk_retrieve_dependency(dep, exists_on_server)
 		end)
 	end
 end
@@ -680,35 +681,38 @@ function BLTMod:GetDeveloperInfo()
 	local hooks = self:GetHooks() or {}
 	local prehooks = self:GetPreHooks() or {}
 	local persists = self:GetPersistScripts() or {}
+	local min_sblt_version = self:GetMinSBLTVer() or nil
 
-	append("Path:", self:GetPath())
-	append("Load Priority:", self:GetPriority())
-	append("Version:", self:GetVersion())
-	append("Disablable:", not self:IsUndisablable())
-	append("Allow Safe Mode:", not self:DisableSafeMode())
+	append(managers.localization:text("blt_devinfo_path") .. ":", self:GetPath())
+	append(managers.localization:text("blt_devinfo_loadprio") .. ":", self:GetPriority())
+	if min_sblt_version then
+		append(managers.localization:text("blt_mod_info_min_sblt_version") .. ":", min_sblt_version)
+	end
+	append(managers.localization:text("blt_devinfo_disablable") .. ":", not self:IsUndisablable())
+	append(managers.localization:text("blt_devinfo_allowsafemode") .. ":", not self:DisableSafeMode())
 
 	if table.size(hooks) < 1 then
-		append("No Hooks")
+		append(managers.localization:text("blt_devinfo_nohooks"))
 	else
-		append("Hooks:")
+		append(managers.localization:text("blt_devinfo_hooks") .. ":")
 		for _, hook in ipairs(hooks) do
 			append("   ", tostring(hook))
 		end
 	end
 
 	if table.size(prehooks) < 1 then
-		append("No Pre-Hooks")
+		append(managers.localization:text("blt_devinfo_noprehooks"))
 	else
-		append("Pre-Hooks:")
+		append(managers.localization:text("blt_devinfo_prehooks") .. ":")
 		for _, hook in ipairs(prehooks) do
 			append("   ", tostring(hook))
 		end
 	end
 
 	if table.size(persists) < 1 then
-		append("No Persisent Scripts")
+		append(managers.localization:text("blt_devinfo_nopersistentscripts"))
 	else
-		append("Persisent Scripts:")
+		append(managers.localization:text("blt_devinfo_persistentscripts") .. ":")
 		for _, script in ipairs(persists) do
 			append("   ", script.global, "->", script.file)
 		end
@@ -738,8 +742,8 @@ function BLTMod:_load_persist_scripts_data()
 	end
 end
 
-function BLTMod:_load_persist_scripts_xml(scope, tag)
-	Utils.IO.TraverseXML(tag, scope, {
+function BLTMod:_load_persist_scripts_xml(_scope, tag)
+	Utils.IO.TraverseXML(tag, _scope, {
 		script = function(scope)
 			if scope.global and scope.script_path then
 				self:AddPersistScript(scope.global, scope.script_path)
@@ -749,13 +753,13 @@ function BLTMod:_load_persist_scripts_xml(scope, tag)
 end
 
 function BLTMod:_load_keybinds_data(data)
-	for _, data in ipairs(data or {}) do
-		self:AddKeybind(data)
+	for _, _data in ipairs(data or {}) do
+		self:AddKeybind(_data)
 	end
 end
 
-function BLTMod:_load_keybinds_xml(scope, tag)
-	Utils.IO.TraverseXML(tag, scope, {
+function BLTMod:_load_keybinds_xml(_scope, tag)
+	Utils.IO.TraverseXML(tag, _scope, {
 		keybind = function(scope)
 			scope.run_in_menu = Utils:ToBoolean(scope.run_in_menu)
 			scope.run_in_game = Utils:ToBoolean(scope.run_in_game)
@@ -794,7 +798,7 @@ function BLTMod:_load_updates_xml(scope, tag)
 				end
 			})
 			if update.host or update.provider then
-				update.disallow_update = Utils:ToBoolean(update.disallow_update)
+				update.disallow_update = update.disallow_update
 				update.critical = Utils:ToBoolean(update.critical)
 				self:AddUpdate(update)
 			end
@@ -833,8 +837,8 @@ function BLTMod:_load_hooks_data()
 	self:AddHooks("pre_hooks", BLT.hook_tables.pre, BLT.hook_tables.wildcards)
 end
 
-function BLTMod:_load_hooks_xml(scope, tag)
-	Utils.IO.TraverseXML(tag, scope, {
+function BLTMod:_load_hooks_xml(_scope, tag)
+	Utils.IO.TraverseXML(tag, _scope, {
 		pre = function(scope)
 			self:AddHook("hooks", scope.hook_id, scope.script_path, BLT.hook_tables.pre)
 		end,
@@ -873,13 +877,13 @@ function BLTMod:_load_native_module(data)
 end
 
 function BLTMod:_load_scripts_data(data)
-	for _, data in ipairs(data.scripts or {}) do
-		dofile(self:GetPath() .. data.script_path)
+	for _, _data in ipairs(data.scripts or {}) do
+		dofile(self:GetPath() .. _data.script_path)
 	end
 end
 
-function BLTMod:_load_scripts_xml(scope, tag)
-	Utils.IO.TraverseXML(tag, scope, {
+function BLTMod:_load_scripts_xml(_scope, tag)
+	Utils.IO.TraverseXML(tag, _scope, {
 		script = function(scope)
 			if scope.script_path then
 				dofile(self:GetPath() .. scope.script_path)
@@ -927,17 +931,17 @@ function BLTMod:_load_localization_xml_inner(scope)
 end
 
 function BLTMod:_apply_localization()
-    local lang_key = Steam:current_language()
+	local lang_key = Steam:current_language()
 	local default_loc = self.localizations[self.default_language]
-    local loc = self.localizations[lang_key] or default_loc
-    if loc then
+	local loc = self.localizations[lang_key] or default_loc
+	if loc then
 		-- load localization matching game language
-        for _, path in pairs(loc) do
-            if not LocalizationManager:load_localization_file(path) then
-                BLT:Log(LogLevel.ERROR, string.format("Language file has errors and cannot be loaded! Path %s", path))
-            end
-        end
-		-- load default localtization as fallback
+		for _, path in pairs(loc) do
+			if not LocalizationManager:load_localization_file(path) then
+				BLT:Log(LogLevel.ERROR, string.format("Language file has errors and cannot be loaded! Path %s", path))
+			end
+		end
+		-- load default localization as fallback
 		if default_loc then
 			for _, path in pairs(default_loc) do
 				if not LocalizationManager:load_localization_file(path, false) then
@@ -945,10 +949,10 @@ function BLTMod:_apply_localization()
 				end
 			end
 		end
-    else -- legacy
-        local path = (self.localization_directory .. self.default_localization)
-        if not LocalizationManager:load_localization_file(path) then
-            BLT:Log(LogLevel.ERROR, string.format("Language file has errors and cannot be loaded! Path %s", path))
-        end
-    end
+	else -- legacy
+		local path = (self.localization_directory .. self.default_localization)
+		if not LocalizationManager:load_localization_file(path) then
+			BLT:Log(LogLevel.ERROR, string.format("Language file has errors and cannot be loaded! Path %s", path))
+		end
+	end
 end

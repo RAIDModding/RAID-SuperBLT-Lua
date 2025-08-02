@@ -1,5 +1,5 @@
 {
-	"blt_options_menu_blt_mods" : "Mod (S)BLT",
+	"blt_options_menu_blt_mods" : "Mod SuperBLT",
 	"blt_options_menu_blt_mods_desc" : "Aggiorna e gestisci le mod BLT che hai installato",
 	"blt_options_menu_lua_mod_options" : "Opzioni mod",
 	"blt_options_menu_lua_mod_options_desc" : "Configura e personalizza le mod BLT che hai installato",
@@ -33,9 +33,9 @@
 	"blt_mod_safemode_disabled" : "Modalità Sicura:\nDisabilitata",
 	"blt_mod_safemode_disabled_help" : "Questa mod non verrà disabilitata dopo un aggiornamento importante del gioco.",
 
-	"blt_mod_updates_enabled" : "Aggiornamenti Automatici:\nAbilitati",
+	"blt_mod_updates_enabled" : "Aggiornamenti Automatici: Abilitati",
 	"blt_mod_updates_enabled_help" : "Controlla automaticamente la presenza di aggiornamenti con il server PaydayMods per questa mod.",
-	"blt_mod_updates_disabled" : "Aggiornamenti Automatici:\nDisabilitati",
+	"blt_mod_updates_disabled" : "Aggiornamenti Automatici: Disabilitati",
 	"blt_mod_updates_disabled_help" : "Disabilita il controllo automatico degli aggiornamenti con il server PaydayMods per questa mod.",
 
 	"blt_mod_check_for_updates" : "Controlla aggiornamenti",
@@ -56,7 +56,6 @@
 	"blt_update_later" : "Aggiorna in seguito",
 	
 	"blt_download_manager" : "Coda dei download",
-	"blt_download_manager_help" : "Aggiorna le mod BLT che hai installato.\nPer l'amor di Dio aggiornale.",
 	"blt_download_ready" : "Pronto a scaricare",
 	"blt_download_waiting" : "In attesa...",
 	"blt_download_downloading" : "Scaricando... $current; $unit; / $total; $unit;",
@@ -65,7 +64,6 @@
 	"blt_download_verifying" : "Verifica...",
 	"blt_download_failed" : "Operazione fallita! Riprovare?",
 	"blt_download_done" : "Fatto!",
-	"blt_download_dependency" : "$mod richiede $dependency",
 	"blt_download_all" : "Aggiorna tutto",
 
 	"blt_checking_updates" : "Controllo degli aggiornamenti",

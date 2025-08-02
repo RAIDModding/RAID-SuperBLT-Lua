@@ -4,6 +4,7 @@ BLTAssetManager = BLTAssetManager or blt_class(BLTModule)
 BLTAssetManager.__type = "BLTAssetManager"
 
 function BLTAssetManager:init()
+	---@diagnostic disable-next-line: undefined-field
 	BLTAssetManager.super.init(self)
 
 	self._recode = {}
@@ -24,7 +25,7 @@ end
 -- * It will automatically recode Windows-based binary files to their Linux counterparts (and vice-versa), enabling Linux compatibility for
 --     asset-adding mods without any extra effort on the mod's part
 -- * In the future, it will likely support additional special features
--- * Note the path and extention arguments are in the opposite order to create_entry
+-- * Note the path and extension arguments are in the opposite order to create_entry
 function BLTAssetManager:CreateEntry(path, ext, file, options)
 	if not blt.db_create_entry then
 		DB:create_entry(ext, path, file)
