@@ -15,7 +15,7 @@ Contributors other than maintainers are listed in parenthesis after specific cha
 - improved handling of ui updates when download states change in BLTUpdate and DownloadManager
 - unified yes/no button-order in dialogs with the game
 - several internal fixes and cleanups
-- re-enabled use of blt.init_db (which is now fixed in dll)
+- re-enabled use of blt.asset_db (which is now fixed in dll)
 
 ## v1.3.0
 
