@@ -182,7 +182,7 @@ function BLTNotificationsGui:add_notification(parameters)
 		})
 	end
 
-	local _x = math.round((icon and icon:right() or 0) + padding)
+	local _x = math.round((icon and icon:right() or 64) + padding)
 
 	local title = new_notif:text({
 		text = parameters.title or "No Title",
