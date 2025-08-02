@@ -316,37 +316,35 @@ function BLTNotificationsGui:set_bar_width(w, random)
 	self._bar:set_texture_coordinates(mvector_tl, mvector_tr, mvector_bl, mvector_br)
 end
 
+-- Animation
+function BLTNotificationsGui:_swipe_func(params)
+	animating = true
+	local speed = params.a:w() / CHANGE_TIME
+
+	params.a:set_visible(true)
+	params.b:set_visible(true)
+
+	while params.a and params.b and params.a:right() >= 0 do
+		local dt = coroutine.yield()
+		params.a:set_x(params.a:x() - dt * speed)
+		params.b:set_x(params.a:right())
+	end
+
+	params.a:set_x(0)
+	params.a:set_visible(false)
+	params.b:set_x(0)
+	params.b:set_visible(true)
+
+	animating = false
+	self._current = params.destination
+end
+
 function BLTNotificationsGui:_move_to_notification(destination)
-	-- Animation
-	local swipe_func = function(o, other_object, duration)
-		if not o or not other_object then
-			return
-		end
-
-		animating = true
-		duration = duration or CHANGE_TIME
-		local speed = o:w() / duration
-
-		o:set_visible(true)
-		other_object:set_visible(true)
-
-		while o and other_object and o:right() >= 0 do
-			local dt = coroutine.yield()
-			o:move(-dt * speed, 0)
-			other_object:set_x(o:right())
-		end
-
-		if o then
-			o:set_x(0)
-			o:set_visible(false)
-		end
-		if other_object then
-			other_object:set_x(0)
-			other_object:set_visible(true)
-		end
-
-		animating = false
-		self._current = destination
+	-- Start swap animation for next notification
+	local a = self._notifications[self._current]
+	local b = self._notifications[destination]
+	if not a.panel or not b.panel then
+		return
 	end
 
 	-- Stop all animations
@@ -358,10 +356,11 @@ function BLTNotificationsGui:_move_to_notification(destination)
 		end
 	end
 
-	-- Start swap animation for next notification
-	local a = self._notifications[self._current]
-	local b = self._notifications[destination]
-	a.panel:animate(swipe_func, b.panel, CHANGE_TIME)
+	a.panel:animate(callback(self, self, "_swipe_func", {
+		a = a.panel,
+		b = b.panel,
+		destination = destination
+	}))
 
 	-- Update bar
 	self._bar:set_top(self._buttons[destination]:top() + BAR_Y)
