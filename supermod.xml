@@ -48,9 +48,6 @@
 
     <assets base_path="assets/">
         <group name="guis/blt/">
-            <file :name="check_updates.png"/>
-            <file :name="download.png"/>
-            <file :name="enable.png"/>
             <file :name="updates.png"/>
             <file :name="scrollbar_arrows.texture"/>
             <file :name="lock.texture"/>
