@@ -3,7 +3,7 @@
     name="RAID-SuperBLT"
     description="The collection of Lua files that allow the BLT hook to function."
     author="ZNix, James Wilkinson, RAIDModding"
-    contact="https://discord.gg/9tAtgtGpx9"
+    contact="https://modworkshop.net/mod/49744"
     version="2.0.0"
     priority="1001"
     image="assets/guis/blt/icon.png"
