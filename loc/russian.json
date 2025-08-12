@@ -2,23 +2,29 @@
 	"blt_options_menu_blt_mods" : "SuperBLT Моды",
 	"blt_options_menu_blt_mods_desc" : "Обновление и управление установленными BLT модами",
 	"blt_options_menu_lua_mod_options" : "Настройки модов",
-	"blt_options_menu_lua_mod_options_desc" : "Настройки установленные BLT моды",
+	"blt_options_menu_lua_mod_options_desc" : "Настройки установленных BLT модов",
 	"blt_options_menu_keybinds" : "Горячие клавиши модов",
-	"blt_options_menu_keybinds_desc" : "Настройте горячие клавиши для BLT модов",
-
+	"blt_options_menu_keybinds_desc" : "Настройки горячих клавиш для BLT модов",
+	
 	"blt_installed_mods" : "Установленные моды",
 	"blt_libraries" : "$count библиотек",
 	"blt_mod_icons" : "Иконки модов",
-
+	
+	"blt_regular_mods_tab" : "Моды",
+	"blt_core_mods_tab" : "Ядро/Библиотеки",
+	
 	"blt_mod_outdated" : "Данный мод предназначен для более старой версии BLT и больше не поддерживается; разработчик должен обновить данный мод до последней версии BLT. У вас возникнут ошибки и сбои, если вы оставите данный мод включенным.",
 	"blt_mod_missing_dependencies" : "Данный мод требует запуска других модов, которые не установлены, поэтому он отключен.",
 	"blt_mod_missing_dependency" : "    Отсутствует: $dependency",
 	"blt_mod_missing_dependency_download" : "    Отсутствует: $dependency, добавьте в Менеджер Загрузок",
+	"blt_mod_missing_dependencies_short": "Отсутствуют требуемые моды",
 	"blt_mod_dependency_disabled" : "Данный мод требует запуска других модов, которые не включены, поэтому он отключен.",
 	"blt_mod_disabled_dependency" : "    Отключен: $dependency",
 
 	"blt_mod_info_author" : "Автор",
 	"blt_mod_info_contact" : "Связь",
+	"blt_mod_info_min_sblt_version": "Требуемая версия RAID-SuperBLT",
+	"blt_mod_info_min_sblt_ver_not_met": "Этот мод требует более новой версии RAID-SuperBLT",
 
 	"blt_mod_state_enabled" : "Включен",
 	"blt_mod_state_enabled_desc" : "Данный мод загружается при запуске игры.",
@@ -33,45 +39,57 @@
 	"blt_mod_state_disabled_on_restart_desc" : "Данный мод не будет загружен при следующем запуске игры.",
 
 	"blt_mod_safemode_enabled" : "Безопасный режим:\nВключено",
-	"blt_mod_safemode_enabled_help" : "Отключает данный мод после основных обновлений игры для предовтращения сбоев.",
+	"blt_mod_safemode_enabled_help" : "Отключает данный мод после основных обновлений игры для предотвращения сбоев.",
 	"blt_mod_safemode_disabled" : "Безопасный режим:\nОтключено",
-	"blt_mod_safemode_disabled_help" : "Данный мод не будет выключен после основных обновлений игры.",
+	"blt_mod_safemode_disabled_help" : "Данный мод не будет отключен после основных обновлений игры.",
 
 	"blt_mod_updates_enabled" : "Автообновления: Включено",
-	"blt_mod_updates_enabled_help" : "Автоматически проверять обновления на сервере PaydayMods для актуализации версии мода.",
+	"blt_mod_updates_enabled_help" : "Автоматически проверять обновления для актуализации версии мода.",
 	"blt_mod_updates_disabled" : "Автообновления: Отключено",
-	"blt_mod_updates_disabled_help" : "Данный мод не будет автоматически проверяться на сервере PaydayMods для актуализации версии мода.",
+	"blt_mod_updates_disabled_help" : "Данный мод не будет автоматически проверять наличие обновления.",
 
 	"blt_mod_check_for_updates" : "Проверить обновления",
-	"blt_mod_check_for_updates_desc" : "Проверить наличие обновлений на сервере PaydayMods прямо сейчас.",
+	"blt_mod_check_for_updates_desc" : "Проверить наличие обновлений прямо сейчас.",
 
 	"blt_mod_toggle_dev" : "Переключение информации разработчика",
 	"blt_mod_toggle_dev_desc" : "Показать/скрыть информацию разработчика для данного мода.",
 
+	"blt_mod_open_contact": "Открыть сайт мода",
+	"blt_mod_open_contact_desc": "Открывает контактный сайт мода.",
+
 	"blt_update_mod_title" : "$name Обновление",
 	"blt_update_mod_up_to_date" : "$name уже обновлен.",
 	"blt_update_mod_error" : "Не удалось проверить мод на обновления.\n$reason",
+	"blt_update_mod_error_short" : "ОШИБКА: Проверьте статус обновления",
 	"blt_update_mod_available" : "Обновление для $name доступно! Оно добавлено в Менеджер Загрузок!",
+	"blt_update_mod_available_short": "Есть обновление!",
 	"blt_update_mod_goto_manager" : "Перейти в Менеджер Загрузок",
 
 	"blt_update_dll_title" : "Критическое Обновление",
-	"blt_update_dll_text" : "Доступно обновление для BLT DLL, вам необходимо обновить его самостоятельно, загрузив и установив его с сайта.\n\nПожалуйста, обновите ASAP так как это критическое обновление, которое может устранить сбои в игре.",
-	"blt_update_dll_goto_website" : "Перейти на страницу загрузки PaydayMods",
+	"blt_update_dll_text" : "Доступно обновление для BLT DLL, вам необходимо обновить его самостоятельно, загрузив и установив его с сайта.\n\nПожалуйста, обновитесь как можно быстрее, так как это критическое обновление, которое может устранить сбои в игре.",
+	"blt_update_dll_goto_website" : "Перейти на сайт",
 	"blt_update_later" : "Обновить позже",
+	"blt_update_now" : "Обновить сейчас",
 	
 	"blt_download_manager" : "Менеджер загрузок",
+	"blt_downloads_available_plu": "Доступно $COUNT обновлений.",
+	"blt_downloads_available_sin": "Доступно $COUNT обновление.",
+
 	"blt_download_ready" : "Готов к загрузке",
 	"blt_download_waiting" : "Ожидание...",
 	"blt_download_downloading" : "Загрузка... $current; $unit; / $total; $unit;",
 	"blt_download_saving" : "Сохранение на диск...",
 	"blt_download_extracting" : "Распаковка...",
 	"blt_download_verifying" : "Проверка...",
-	"blt_download_failed" : "Неудача! Попробовать ещё раз?",
+	"blt_download_failed" : "Ошибка! Попробовать ещё раз?",
 	"blt_download_done" : "Завершено!",
 	"blt_download_all" : "Обновить всё",
+	"blt_download_relua_button": "Перезагрузить игру",
+	"blt_download_relua_text": "Это перезагрузит весь Lua код, кроме SuperBLT и ресурсов",
+	"blt_download_relua_title": "Вы хотите перезагрузить игру?",
 
 	"blt_checking_updates" : "Проверка обновлений",
-	"blt_checking_updates_help" : "Проверка обновлений модов на сервере PaydayMods, пожалуйста подождите...",
+	"blt_checking_updates_help" : "Проверка обновлений модов. Пожалуйста, подождите...",
 	"blt_checking_updates_required" : "Требуются обновления",
 	"blt_checking_updates_required_help" : "Обновления для ваших модов доступны, посетите Менеджер Загрузок!",
 	"blt_view_patch_notes" : "Посмотреть изменения",
@@ -79,7 +97,7 @@
 	"blt_checking_updates_none_required_help" : "Все моды актуальны!",
 
 	"blt_settings" : "BLT настройки",
-	"blt_settings_desc" : "Изменить настройки основного BLT",
+	"blt_settings_desc" : "Изменить настройки ядра BLT",
 
 	"blt_log_level_select" : "Запись логов",
 	"blt_log_level_select_desc" : "Выберите какие логи будут записываться",
@@ -97,8 +115,33 @@
 	"blt_logs_two_weeks" : "2 недели",
 	"blt_logs_thirty_days" : "30 дней",
 
-	"blt_no_image" : "Отсутствует изображение",
+	"blt_no_image" : "",
 	"blt_no_name" : "Отсутствует название",
-	"blt_no_desc" : "Отсутствует описание"
+	"blt_no_desc" : "Отсутствует описание",
 
+	"blt_openurl_title" : "Открыть ссылку",
+	"blt_openurl_text_browser" : "Вы хотите открыть эту ссылку в браузере?\nСсылка: %s",
+	"blt_openurl_text_steamoverlay" : "Вы хотите открыть эту ссылку в оверлее Steam?\nСсылка: %s",
+
+	"blt_devinfo" : "Информация разработчика",
+	"blt_devinfo_path" : "Путь",
+	"blt_devinfo_loadprio" : "Приоритет",
+	"blt_devinfo_disablable" : "Можно отключить",
+	"blt_devinfo_allowsafemode" : "Можно поставить в безопасный режим",
+	"blt_devinfo_hooks" : "Хуки",
+	"blt_devinfo_nohooks" : "Нет хуков",
+	"blt_devinfo_prehooks" : "Пре-хуки",
+	"blt_devinfo_noprehooks" : "Нет Пре-хуков",
+	"blt_devinfo_persistentscripts" : "Постоянные скрипты",
+	"blt_devinfo_nopersistentscripts" : "Нет постоянных скриптов",
+
+	"blt_infobtn_enable_update" : "РАЗРЕШИТЬ АВТООБНОВЛЕНИЯ",
+	"blt_infobtn_disable_update" : "ЗАПРЕТИТЬ АВТООБНОВЛЕНИЯ",
+	"blt_infobtn_checknow" : "ПРОВЕРИТЬ ОБНОВЛЕНИЯ",
+	"blt_infobtn_enable_state" : "ВКЛЮЧИТЬ",
+	"blt_infobtn_disable_state" : "ОТКЛЮЧИТЬ",
+	"blt_infobtn_contact" : "КОНТАКТЫ",
+
+	"blt_download_manager_header_mod" : "Загрузка / Мод",
+	"blt_download_manager_header_download_status" : "Статус"
 }
