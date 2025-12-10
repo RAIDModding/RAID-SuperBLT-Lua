@@ -20,6 +20,7 @@
 	"blt_mod_info_author" : "Autor",
 	"blt_mod_info_contact" : "Contacto",
 
+	"blt_mod_state_status" : "Estado",
 	"blt_mod_state_enabled" : "Activado",
 	"blt_mod_state_enabled_desc" : "Este mod se carga al iniciar el juego.",
 	"blt_mod_state_disabled" : "Desactivado",

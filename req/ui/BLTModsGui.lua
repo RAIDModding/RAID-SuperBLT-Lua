@@ -1019,7 +1019,7 @@ function BLTModsGui:refresh_mod_details(mod_data)
 	end
 
 	-- mod state
-	local text = "Status: "
+	local text = self:translate("blt_mod_state_status") .. ": "
 	local color = tweak_data.gui.colors.raid_black
 	if mod:IsEnabled() then
 		text = text .. self:translate("blt_mod_state_enabled")

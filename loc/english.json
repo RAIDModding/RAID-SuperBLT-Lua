@@ -26,6 +26,7 @@
 	"blt_mod_info_min_sblt_version" : "Required RAID-SuperBLT version",
 	"blt_mod_info_min_sblt_ver_not_met" : "This mod requires a newer version of RAID-SuperBLT",
 
+	"blt_mod_state_status" : "Status",
 	"blt_mod_state_enabled" : "Enabled",
 	"blt_mod_state_enabled_desc" : "This mod is loaded when the game is started.",
 	"blt_mod_state_disabled" : "Disabled",
