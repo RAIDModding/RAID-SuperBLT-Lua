@@ -4,6 +4,12 @@ This lists the changes between different versions of the RAID-SuperBLT basemod,
 the changes for the DLL are listed in their own changelog.
 Contributors other than maintainers are listed in parenthesis after specific changes.
 
+## v2.0.1
+
+- updated spanish translation by ErnestJugend
+- updated russian translation by Punished Bernadetta
+- translate status text on modsgui
+
 ## v2.0.0
 
 - entirely rewritten mods/downloads manager pages (and notifications panel) to fit the RAID theme much better, (based on RaidGuiBase).
