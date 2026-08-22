@@ -4,6 +4,9 @@ This lists the changes between different versions of the RAID-SuperBLT basemod,
 the changes for the DLL are listed in their own changelog.
 Contributors other than maintainers are listed in parenthesis after specific changes.
 
+## next
+- fixed some leaking globals from json-1.0.lua
+
 ## 2.0.3
 - updated chinese translation by FR0Z3_N3.Borealis and Schordinger_Sig
 
